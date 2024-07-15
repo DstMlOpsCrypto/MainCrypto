@@ -106,14 +106,12 @@
 
 ## Résultats attendus
 
- Un pipeline MLOps entièrement fonctionnel pour la prévision des prix des cryptomonnaies.
+ - Un pipeline MLOps entièrement fonctionnel pour la prévision des prix des cryptomonnaies.
 
- Analyse comparative de différents modèles d'apprentissage automatique.
+ - Analyse comparative de différents modèles d'apprentissage automatique.
 
- Processus automatisés de déploiement, de surveillance et de recyclage.
+ - Processus automatisés de déploiement, de surveillance et de recyclage.
 
- 8. Conclusion
+## Conclusion
 
- Ce projet fournira une expérience pratique dans la mise en place d'un pipeline MLOps et l'application de modèles d'apprentissage automatique à un problème du monde réel.  Il offrira également des informations précieuses sur les défis et les meilleures pratiques du MLOps dans le contexte de la prévision des prix des cryptomonnaies.
-
- J'espère que cette proposition vous aidera à démarrer votre projet !  Si vous avez besoin d'aide supplémentaire ou si vous avez des questions, n'hésitez pas à les poser.  Bonne chance!  😊
+ Ce projet fournira une expérience pratique dans la mise en place d'un pipeline MLOps et l'application de modèles d'apprentissage automatique à un problème du monde réel.  
