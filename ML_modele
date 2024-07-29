@@ -1,0 +1,193 @@
+This section explore target ML models that might be used for our project.
+
+
+# HIGHT LEVEL PROCESS ( reminder )
+
+Refer to CALL FOR PROJECT for the whole process.
+
+1. Data Collection
+Source Data: Gather historical price data, trading volumes, and other relevant metrics from sources like CoinGecko or CoinMarketCap or Binance.
+APIs: Use APIs to fetch real-time and historical data.
+
+2. Data Preprocessing
+Cleaning: Handle missing values, remove outliers, and ensure data consistency.
+Feature Engineering: Create new features that might help the model, such as moving averages, trading volumes, and sentiment analysis from social media.
+Normalization: Scale the data to ensure all features contribute equally to the model.
+
+3. Model Selection
+Machine Learning Models: Linear Regression, Random Forest, Support Vector Machines (SVM)2.
+Deep Learning Models: Long Short-Term Memory (LSTM), Convolutional Neural Networks (CNN), Transformer models3.
+
+4. Model Training
+Split Data: Divide the data into training and testing sets.
+Training: Train the model on the training set, adjusting parameters to minimize prediction error.
+Validation: Use a validation set to fine-tune the model and prevent overfitting.
+
+5. Model Evaluation
+Metrics: Evaluate the model using metrics like Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and R-squared.
+Backtesting: Test the model on historical data to see how well it predicts past prices.
+
+6. Deployment
+Integration: Integrate the model into a trading platform or a web interface.
+Real-time Predictions: Use the model to make real-time predictions and provide trading signals.
+
+7. Monitoring and Maintenance
+Performance Tracking: Continuously monitor the model’s performance and update it with new data.
+Adaptation: Adjust the model to changing market conditions to maintain accuracy2.
+Would you like more details on any specific step?
+
+# MODELS SELECTION
+
+This part is a sum up of various sources and  show some codes exemple that need to be finetuned for the project.
+
+## Linear Regression
+Linear Regression is a simple yet powerful model that assumes a linear relationship between the input features and the target variable. It predicts the price based on a weighted sum of the input features.
+
+### Usage:
+
+- Data Preparation: Ensure your data is clean and normalized.
+- Feature Selection: Choose relevant features like historical prices, trading volume, and market sentiment.
+- Model Training: Use libraries like scikit-learn in Python to train the model.
+- Evaluation: Evaluate the model using metrics like Mean Absolute Error (MAE) and R-squared.
+
+```python
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+```
+
+## Random Forest
+
+Random Forest is an ensemble learning method that builds multiple decision trees and merges them to get a more accurate and stable prediction.
+
+### Usage:
+
+- Data Preparation: Similar to Linear Regression.
+- Feature Selection: Include technical indicators and historical prices.
+- Model Training: Use scikit-learn to train the Random Forest model.
+- Evaluation: Use metrics like RMSE and MAE.
+
+```python
+from sklearn.ensemble import RandomForestRegressor
+model = RandomForestRegressor(n_estimators=100)
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+```
+
+## Support Vector Machines (SVM)
+
+SVM is a powerful classification and regression technique that finds the hyperplane that best separates the data into different classes.
+
+### Usage:
+
+- Data Preparation: Normalize the data.
+- Feature Selection: Use historical prices and technical indicators.
+- Model Training: Use scikit-learn to train the SVM model.
+- Evaluation: Evaluate using metrics like MAE and RMSE.
+
+```python
+from sklearn.svm import SVR
+model = SVR(kernel='rbf')
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+```
+
+## Long Short-Term Memory (LSTM)
+
+LSTM is a type of recurrent neural network (RNN) that is well-suited for time series prediction due to its ability to remember long-term dependencies.
+
+### Usage:
+
+- Data Preparation: Normalize and reshape the data for LSTM input.
+- Feature Selection: Use historical prices and trading volumes.
+- Model Training: Use libraries like TensorFlow or Keras to build and train the LSTM model.
+- Evaluation: Use metrics like RMSE and MAE.
+
+```python
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
+
+model = Sequential()
+model.add(LSTM(50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
+model.add(LSTM(50, return_sequences=False))
+model.add(Dense(1))
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+model.fit(X_train, y_train, epochs=10, batch_size=32)
+predictions = model.predict(X_test)
+```
+
+## Convolutional Neural Networks (CNN)
+
+CNNs are typically used for image data but can be adapted for time series prediction by treating the time series as a one-dimensional image.
+
+### Usage:
+
+- Data Preparation: Normalize and reshape the data for CNN input.
+- Feature Selection: Use historical prices and technical indicators.
+- Model Training: Use TensorFlow or Keras to build and train the CNN model.
+- Evaluation: Use metrics like RMSE and MAE.
+
+```python
+from keras.models import Sequential
+from keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
+
+model = Sequential()
+model.add(Conv1D(filters=64, kernel_size=2, activation='relu', input_shape=(X_train.shape[1], 1)))
+model.add(MaxPooling1D(pool_size=2))
+model.add(Flatten())
+model.add(Dense(50, activation='relu'))
+model.add(Dense(1))
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+model.fit(X_train, y_train, epochs=10, batch_size=32)
+predictions = model.predict(X_test)
+```
+
+## Transformer Models
+
+Transformer models, known for their success in natural language processing, can also be applied to time series prediction due to their ability to capture long-range dependencies.
+
+### Usage:
+
+- Data Preparation: Normalize and reshape the data for Transformer input.
+- Feature Selection: Use historical prices, trading volumes, and technical indicators.
+- Model Training: Use libraries like TensorFlow or PyTorch to build and train the Transformer model.
+- Evaluation: Use metrics like RMSE and MAE.
+
+```python
+import torch
+from torch import nn
+
+class TransformerModel(nn.Module):
+    def __init__(self, input_dim, model_dim, num_heads, num_layers):
+        super(TransformerModel, self).__init__()
+        self.transformer = nn.Transformer(d_model=model_dim, nhead=num_heads, num_encoder_layers=num_layers)
+        self.fc = nn.Linear(model_dim, 1)
+
+    def forward(self, src):
+        output = self.transformer(src)
+        output = self.fc(output[-1])
+        return output
+
+model = TransformerModel(input_dim=10, model_dim=512, num_heads=8, num_layers=6)
+criterion = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+# Training loop
+for epoch in range(epochs):
+    model.train()
+    optimizer.zero_grad()
+    output = model(X_train)
+    loss = criterion(output, y_train)
+    loss.backward()
+    optimizer.step()
+
+# Prediction
+model.eval()
+predictions = model(X_test)
+Code généré par l'IA. Examinez et utilisez soigneusement. Plus d'informations sur la FAQ.
+Each of these models has its strengths and can be chosen based on the specific requirements of your prediction task. Would you like to explore any of these models in more detail?
+```
+
