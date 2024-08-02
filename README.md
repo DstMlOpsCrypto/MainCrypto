@@ -1,6 +1,6 @@
 # MainCrypto
 ```mermaid
-flowchart TB
+flowchart LR
     A --> C
     A --> D
     B --> C
