@@ -2,8 +2,8 @@
 name: Minutes meeting Template
 about: use this template for minute meetings
 title: Meet_yyyymmdd
-labels: documentation
-assignees: mis7ern9o, TWR-RWT, FredericLAGNIEZ
+labels: Minutes
+assignees: FredericLAGNIEZ, mis7ern9o, TWR-RWT
 
 ---
 
