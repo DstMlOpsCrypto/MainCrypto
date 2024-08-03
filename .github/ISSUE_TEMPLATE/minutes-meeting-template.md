@@ -9,10 +9,17 @@ assignees: FredericLAGNIEZ, mis7ern9o, TWR-RWT
 
 # Topics
 
-- New feature
-- Painful bug
-- Any other business
+- topic 1
+- topic 2
+- topic 3
+
+# Decisions
+
+- decision 1 (refer/link to discussions)
+- decision 2 (refer/link to discussions)
+- decision 3 (refer/link to discussions)
 
 # Actions
-- action1 (reference/link to  issue)
-- action1 (reference/link to  issue)
+
+- action1 (refer/link  to  issue)
+- action1 (refer/link to  issue)
