@@ -5,20 +5,18 @@ Cryptocurrency markets are highly volatile, making price prediction a challengin
 ## Index
 
 - [Introduction](#Introduction)
-- [Usage](#usage)
-  - [Installation](#installation)
-  - [Commands](#commands)
-- [Development](#development)
-  - [Pre-Requisites](#pre-requisites)
-  - [Developmen Environment](#development-environment)
-  - [File Structure](#file-structure)
+- [Purpose](#purpose)
+- [Project-structure](#project-structure)
+- [Pre-Requisites](#pre-requisites)
+- [Installation](#installation)
+  - [Development-Environment](#development-environment)
+    - [Data-Processing](#data-processing)
+    - [fastAPI](#fastapi)
+    - [MLFlow](#mlflow)  
   - [Build](#build)  
-  - [Deployment](#deployment)  
-- [Community](#community)
-  - [Contribution](#contribution)
-  - [Branches](#branches)
-  - [Guideline](guideline)  
-- [FAQ](#faq)
+- [Deployment](#deployment)
+- [Usage](#usage)
+- [Contribution](#contribution)
 - [Resources](#resources)
 - [Gallery](#gallery)
 - [Credit/Acknowledgment](#creditacknowledgment)
@@ -33,7 +31,7 @@ Architecture is based on 3 VM (EC2) spread on 3 different AWS unmanaged accounts
 Meanwhile this light architecture, this project aimed to implement a (almost) full CI/CD based on Github Actions, docker, MLflow, fastAPI, graphical UI.
 Trunk branching strategy is used.
 
-# Project structure
+# Project-Structure
 
 This project is composed of 4 directories (app)
 - db : oHCLVT data are stored in postgreSQL 
@@ -44,14 +42,13 @@ For local test, for each app, bash scripts allowed developer to facilitate requi
 
 TO COMPLETE
 
-### Pre-Requisites
+# Pre-Requisites
 List all the pre-requisites the system needs to develop this project.
 This project is adapted to a Linux environment and as been tested on 
 - Arch Linux - Linux 6.10.3
 - xxx
 
 # Installation
-
 
 - clone the repo
 
@@ -60,14 +57,14 @@ git clone https://github.com/DstMlOpsCrypto/MainCrypto.git
 cd MainCrypto.git
 ```
 
-## Development Environment
+## Development-Environment
 To set up a local environment with Docker, PostgreSQL on Docker, and Python, follow these steps: 
 
 - install Docker on your linux machine. Use local_docker_install.sh file
 - pull the PostgreSQL image by running docker pull postgres in your terminal by using local_postgrSQL_install.sh
 - install python virtualenv and dependencies by using se local_venv_install.sh
 
-### Data processing process
+### Data-Processing
 
 - launch test to ensure everything is operational. Tests are located in /{app}/tests
 - load historical (extract) ohclvt data file in db by using  TODO
@@ -77,33 +74,18 @@ pytest {app}/tests/
 ### fastAPI
 
 
-*
-Next, create and run a PostgreSQL container using the command docker run --name my_postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres. Ensure you have Python installed on your machine; if not, download and install it from the official Python website. You can then use pip to install any necessary Python packages. Finally, connect your Python application to the PostgreSQL database by using a library like psycopg2 and configuring the connection parameters to match those of your Docker container. This setup will provide a robust local development environment with all the necessary components.
+### MLFlow
 
 
 ## Build
 Write the build Instruction here.
 
+
+
 ## Deployment
 Write the deployment instruction here.
 
 # Usage
-TBD
-
-## Historical Data ingestion
-TBD
-
-## Real Time data ingestion
-TBD
-
-# Model Training
-TBD
-
-# Prediction
-TBD
-
-
-# Monitoring and Maintenance
 TBD
 
 # Contribution
