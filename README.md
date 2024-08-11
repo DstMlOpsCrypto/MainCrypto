@@ -61,7 +61,42 @@ cd MainCrypto.git
 To set up a local environment with Docker, PostgreSQL on Docker, and Python, follow these steps: 
 
 - install Docker on your linux machine. Use local_docker_install.sh file
+```bash
+# check if docker is running
+sudo systemctl status docker
+```
 - pull the PostgreSQL image by running docker pull postgres in your terminal by using local_postgrSQL_install.sh
+```bash
+# check if a PostgreSQL container is running in Docker,
+docker ps
+```
+
+```bash
+# check the connection to a PostgreSQL database
+docker exec -it {container-id or container-name} -U postgres
+```
+- load ohvclvt historical data and unzip (remove zip) into "data/raw" folder then use local_db_init.sh to create database, table and load data into table
+
+> [!NOTE]
+>- We use OHLCVT data from Kaggle. For this exemple, we will use distincts data (currency by currency) from [here](https://support.kraken.com/hc/fr/articles/360047124832-Downloadable-historical-OHLCVT-Open-High-Low-Close-Volume-Trades-data)
+>- Datetime are in Epoch format
+
+```bash
+# List all databases
+docker exec -it "$CONTAINER_NAME" psql -U postgres -c "\l"
+
+# list all table commend sql \dt+
+docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "\dt+"
+
+# List all columns properties for specific table
+docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "\d+ {table_name}"
+
+# view data from a PostgreSQL table
+docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "SELECT * FROM {table_name};"
+```
+
+
+
 - install python virtualenv and dependencies by using se local_venv_install.sh
 
 ### Data-Processing
@@ -71,6 +106,8 @@ To set up a local environment with Docker, PostgreSQL on Docker, and Python, fol
 ```python
 pytest {app}/tests/
 ```
+
+docker exec -it postgres psql -h localhost -p 5432 -U postgres -d ohlcvt -c
 ### fastAPI
 
 
