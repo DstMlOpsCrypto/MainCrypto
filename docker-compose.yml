@@ -1,0 +1,25 @@
+version: '3.8'
+# Lancer l'API et le frontend avec la commande : docker-compose up --build
+# Arrêter l'API et le frontend avec la commande : docker-compose down
+
+services:
+  api:
+    # Construit l'image Docker pour l'API à partir du Dockerfile dans le dossier ./API
+    build: ./API
+    # Expose le port 3000 du conteneur sur le port 3000 de l'hôte
+    ports:
+      - "3000:3000"
+    # Définit des variables d'environnement pour le conteneur
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug # du moins détaillé au plus détaillé : ERROR, WARNING, INFO, DEBUG
+    # Monte le dossier ./API dans le conteneur sur le dossier /app
+    volumes:
+      - ./API:/app
+    # Commande à exécuter au démarrage du conteneur
+    # Cette commande fait plusieurs choses :
+    # 1. Change le répertoire courant vers /app
+    # 2. Définit PYTHONPATH pour inclure /app
+    # 3. Exécute les tests avec pytest
+    # 4. Lance l'application avec Gunicorn et Uvicorn
+    command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
