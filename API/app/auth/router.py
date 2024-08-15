@@ -22,7 +22,7 @@ class UserCreate(BaseModel):
     username: str
     email: str
     password: str
-    full_name: str
+
 
 # Route pour l'inscription (signup)
 @router.post("/signup", response_model=User)
@@ -38,7 +38,6 @@ async def signup(user: UserCreate, current_user: User = Depends(get_current_user
     # Ajout de l'utilisateur à la base de données fictive
     fake_users_db[user.username] = {
         "username": user.username,
-        "full_name": user.full_name,
         "email": user.email,
         "hashed_password": hashed_password,
         "role": "user",

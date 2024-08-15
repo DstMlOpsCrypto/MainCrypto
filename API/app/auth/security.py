@@ -23,7 +23,6 @@ class Token(BaseModel):
 class User(BaseModel):
     username: str
     email: str
-    full_name: str
     role: str
 
 # Fonction pour vérifier le mot de passe

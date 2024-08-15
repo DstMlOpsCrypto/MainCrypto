@@ -7,8 +7,7 @@ def test_signup(client: TestClient, admin_token: str):
         json={
             "username": "newuser",
             "email": "newuser@example.com",
-            "password": "newpassword",
-            "full_name": "New User"
+            "password": "newpassword"
         },
         headers={"Authorization": f"Bearer {admin_token}"}
     )
