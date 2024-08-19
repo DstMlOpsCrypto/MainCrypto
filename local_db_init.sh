@@ -5,7 +5,8 @@ DB_HOST="localhost"
 DB_PORT="5432"
 CONTAINER_NAME="cpostgres"
 DB_NAME="ohlcvt"
-TBL_NAME="historical"
+TBL_DATA="historical"
+TBL_USER="user"
 DB_USER="postgres"
 DB_PASSWORD="funky"
 
@@ -48,26 +49,75 @@ else
 fi
 
 
-# Check if the table exists
-TABLE_EXISTS=$(docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "
+# =====
+# table : DATA
+# =====
+
+# Check if the table data exists
+TABLE_DATA_EXISTS=$(docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "
     SELECT EXISTS (
         SELECT FROM information_schema.tables
-        WHERE table_name = '$TBL_NAME'
+        WHERE table_name = '$TBL_DATA'
     );" -tAX)
 
-if [ "$TABLE_EXISTS" = "t" ]; then
+if [ "$TABLE_DATA_EXISTS" = "t" ]; then
     # Table exists, try to delete it
-    echo "Deleting table '$TBL_NAME'..."
-    docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "DROP TABLE $TBL_NAME;" || true
+    echo "Deleting table '$TBL_DATA'..."
+    docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "DROP TABLE $TBL_DATA;" || true
 fi
 
-# Check if the table exists
-TABLE_EXISTS=$(docker exec "$CONTAINER_NAME" psql -U postgres -d "$DB_NAME" -c "
+
+# Create the table
+docker exec -i $CONTAINER_NAME psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME <<EOF
+CREATE TABLE IF NOT EXISTS $TBL_DATA (
+    asset TEXT,
+    epoch BIGINT,
+    open NUMERIC,
+    high NUMERIC,
+    low NUMERIC,
+    close NUMERIC,
+    volume NUMERIC,
+    trades NUMERIC
+);
+EOF
+
+echo "Table '$TBL_DATA' created successfully."
+
+# =====
+# table : USER
+# =====
+
+# Check if the table data exists
+TABLE_USER_EXISTS=$(docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "
     SELECT EXISTS (
         SELECT FROM information_schema.tables
-        WHERE table_name = '$TBL_NAME'
+        WHERE table_name = '$TBL_USER'
     );" -tAX)
 
+if [ "$TABLE_USER_EXISTS" = "t" ]; then
+    # Table exists, try to delete it
+    echo "Deleting table '$TBL_USER'..."
+    docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -c "DROP TABLE $TBL_USER;" || true
+fi
+
+# Create the table
+docker exec -i $CONTAINER_NAME psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME <<EOF
+CREATE TABLE IF NOT EXISTS $TBL_USER (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user'
+);
+EOF
+
+echo "Table '$TBL_USER' created successfully."
+# =====
+# POPULATE TABLES
+# =====
+
+# OHCVLT DATA
+# ===========
 
 # Check if the folder exists
 if [ ! -d "$CSV_FOLDER" ]; then
@@ -76,7 +126,6 @@ if [ ! -d "$CSV_FOLDER" ]; then
 else
     echo "folder "$CSV_FOLDER" checked"
 fi
-
 
 # Create a temporary folder to store modified CSV files
 if [ -d "$CSV_FOLDER_MODIFY" ]; then
@@ -104,21 +153,10 @@ docker cp combined.csv $CONTAINER_NAME:/combined.csv
 # Access the PostgreSQL container and run the COPY command
 echo "Create table $DB_NAME and bulk import data"
 docker exec -i $CONTAINER_NAME psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME <<EOF
-CREATE TABLE IF NOT EXISTS $TBL_NAME (
-    asset TEXT,
-    epoch BIGINT,
-    open NUMERIC,
-    high NUMERIC,
-    low NUMERIC,
-    close NUMERIC,
-    volume NUMERIC,
-    trades NUMERIC
-);
-
 DO \$\$
 BEGIN
     BEGIN
-        COPY $TBL_NAME (asset, epoch, open, high, low, close, volume, trades)
+        COPY $TBL_DATA (asset, epoch, open, high, low, close, volume, trades)
         FROM '/combined.csv' DELIMITER ',' CSV HEADER;
     EXCEPTION WHEN OTHERS THEN
         RAISE NOTICE 'Skipping problematic line: %', SQLERRM;
@@ -126,4 +164,19 @@ BEGIN
 END \$\$;
 EOF
 
-echo "Data import completed."
+echo "Data OHCVLT import completed."
+
+
+# USER DATA
+# ===========
+
+# Copy the JSON file into the Docker container
+docker cp "$JSON_FILE_PATH" "$CONTAINER_NAME":/tmp/file.json
+
+docker exec -i "$CONTAINER_NAME" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "
+    COPY $TABLE_NAME FROM '/tmp/file.json'
+    WITH (
+        FORMAT 'json',
+        FREEZE 'true'
+    );
+"
