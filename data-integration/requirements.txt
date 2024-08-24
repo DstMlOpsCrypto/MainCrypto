@@ -1,3 +1,0 @@
-csv
-psycopg2
-pytest

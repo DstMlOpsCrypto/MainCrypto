@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres
+    build: ./db
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user-name
+      POSTGRES_PASSWORD: strong-password
+      POSTGRES_DB: ohlcvt
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - db_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - db_network
+  #
+  # webserver:
+  #   image: apache/airflow:2.5.1
+  #   environment:
+  #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+  #     AIRFLOW__WEBSERVER__SECRET_KEY: 'YOUR_SECRET_KEY'
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - airflow_network
+
+  # scheduler:
+  #   image: apache/airflow:2.5.1
+  #   environment:
+  #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - airflow_network
+
+  # worker:
+  #   image: apache/airflow:2.5.1
+  #   environment:
+  #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - airflow_network
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
+
+
+networks:
+  db_network:
+    driver: bridge
+  # airflow_network:
+  #     driver: bridge
