@@ -7,8 +7,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: user-name
-      POSTGRES_PASSWORD: strong-password
+      POSTGRES_USER: crypto
+      POSTGRES_PASSWORD: cryptonic
       POSTGRES_DB: ohlcvt
       POSTGRES_PORT: 5432
     volumes:
@@ -23,8 +23,8 @@ services:
     ports:
       - "8888:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
-      PGADMIN_DEFAULT_PASSWORD: strong-password
+      PGADMIN_DEFAULT_EMAIL: mis7er.neo@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: cryptonic
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
@@ -32,13 +32,14 @@ services:
   #
   # webserver:
   #   image: apache/airflow:2.5.1
+  #   restart: always
   #   environment:
   #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
   #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
   #     AIRFLOW__WEBSERVER__SECRET_KEY: 'YOUR_SECRET_KEY'
   #   depends_on:
-  #     - postgres
+  #     - db
   #   ports:
   #     - "8080:8080"
   #   networks:
@@ -46,23 +47,25 @@ services:
 
   # scheduler:
   #   image: apache/airflow:2.5.1
+  #   restart: always
   #   environment:
   #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
   #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
   #   depends_on:
-  #     - postgres
+  #     - db
   #   networks:
   #     - airflow_network
 
   # worker:
   #   image: apache/airflow:2.5.1
+  #   restart: always
   #   environment:
   #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
   #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
   #   depends_on:
-  #     - postgres
+  #     - db
   #   networks:
   #     - airflow_network
 
@@ -74,5 +77,5 @@ volumes:
 networks:
   db_network:
     driver: bridge
-  # airflow_network:
-  #     driver: bridge
+  airflow_network:
+    driver: bridge

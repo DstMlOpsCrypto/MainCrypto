@@ -104,7 +104,11 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "SELECT * FROM {table_name};"
 ```
 
+
 ## Data-Processing
+
+
+
 
 - TODO :
   - cronjob feed historical data by user manuel upload (csv)
@@ -144,3 +148,18 @@ Credit the authors here.
 
 ##  License
 Add a license here, or a link to it.
+
+
+
+The coordination and automation of data flow across various tools and systems to deliver quality data products and analytics.
+
+Manual and error-prone processes
+Lack of standards around data formats, processes, and processing techniques
+
+Time-based scheduling tools (e.g., Cron)
+ Rise of proprietary scheduling and workload management tools (e.g., AutoSys)
+
+
+*An increase in data size and complexity of scheduling and workloads
+ *Tools that were designed for specific ecosystems (e.g., Hadoop)
+
