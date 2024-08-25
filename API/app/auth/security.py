@@ -8,6 +8,7 @@ from .database import fake_users_db
 from .utils import pwd_context, get_password_hash
 from .database import fake_users_db
 
+
 # Secret key for JWT token (in production, store this securely)
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
@@ -16,11 +17,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 360
 # Définition du schéma OAuth2 pour la génération de tokens
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")#auth/login
 
+
 # Définition des modèles Pydantic pour les tokens et les utilisateurs
 class Token(BaseModel):
     access_token: str
     token_type: str
     role: str
+
 
 class User(BaseModel):
     username: str
@@ -59,6 +62,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if username is None or role is None:
             raise credentials_exception
         token_data = {"username": username, "role": role}
+
     except JWTError:
         raise credentials_exception
     # Récupération de l'utilisateur à partir de la base de données fictive (à changer)

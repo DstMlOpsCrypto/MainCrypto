@@ -9,12 +9,14 @@ from .security import (
     verify_password,
     User,
     Token,
+
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
 # Importation de la base de données fictive
 # il faudra changer cette base de données pour une base de données réelle quand disponible
 from .database import fake_users_db 
 from datetime import timedelta
+
 ####
 
 # Création d'un routeur FastAPI
@@ -28,6 +30,7 @@ class UserCreate(BaseModel):
 
 # Définition de oauth2_scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
 
 # Route pour l'inscription (signup)
 @router.post("/signup", response_model=User)
@@ -43,6 +46,7 @@ async def signup(user: UserCreate, current_user: User = Depends(get_current_user
     hashed_password = get_password_hash(user.password)
     # Ajout de l'utilisateur à la base de données fictive
     new_user = {
+
         "username": user.username,
         "email": user.email,
         "hashed_password": hashed_password,
@@ -51,6 +55,7 @@ async def signup(user: UserCreate, current_user: User = Depends(get_current_user
     fake_users_db[user.username] = new_user
     # Retourne l'utilisateur créé
     return User(**new_user)
+
 
 # Route pour la connexion (login)
 @router.post("/login", response_model=Token)
@@ -72,6 +77,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer", role=user["role"])
+
 
 # Route pour lire les informations de l'utilisateur actuel
 @router.get("/users/me", response_model=User)
@@ -143,3 +149,4 @@ async def get_all_users(current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins can view all users")
     return list(fake_users_db.values())
+

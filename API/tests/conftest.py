@@ -13,6 +13,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 15
 # Add the parent directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+
 # This fixture creates a test client for the FastAPI app.
 # It can be used in tests to make requests to the app.
 @pytest.fixture
@@ -27,6 +28,7 @@ def admin_token():
         data={"sub": "admin", "role": "admin"},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+
 
 # This fixture creates an access token for a test user.
 # It can be used in tests that require test user authentication.
@@ -57,3 +59,4 @@ def reset_fake_db():
             "role": "user",
         }
     })
+

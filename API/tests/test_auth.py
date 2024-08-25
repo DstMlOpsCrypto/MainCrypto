@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from app.auth.database import fake_users_db
 
+
 # This test function checks if the signup process works correctly
 def test_signup(client: TestClient, admin_token: str):
     response = client.post(
@@ -112,3 +113,4 @@ def test_get_all_users_non_admin(client: TestClient, user_token: str):
         headers={"Authorization": f"Bearer {user_token}"}
     )
     assert response.status_code == 403
+
