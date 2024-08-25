@@ -1,47 +1,81 @@
-version: '3.8'
-# Lancer l'API et le frontend avec la commande : docker-compose up --build
-# Arrêter l'API et le frontend avec la commande : docker-compose down
-
 services:
-  api:
-    # Construit l'image Docker pour l'API à partir du Dockerfile dans le dossier ./API
-    build: ./API
-    # Expose le port 3000 du conteneur sur le port 3000 de l'hôte
+  db:
+    image: postgres
+    build: ./db
+    container_name: local_pgdb
+    restart: always
     ports:
-      - "3000:3000"
-    # Définit des variables d'environnement pour le conteneur
+      - "5432:5432"
     environment:
-      - WORKERS_PER_CORE=2
-      - LOG_LEVEL=debug # du moins détaillé au plus détaillé : ERROR, WARNING, INFO, DEBUG
-    # Monte le dossier ./API dans le conteneur sur le dossier /app
+      POSTGRES_USER: crypto
+      POSTGRES_PASSWORD: cryptonic
+      POSTGRES_DB: ohlcvt
+      POSTGRES_PORT: 5432
     volumes:
-      - ./API:/app
-    # Commande à exécuter au démarrage du conteneur
-    # Cette commande fait plusieurs choses :
-    # 1. Change le répertoire courant vers /app
-    # 2. Définit PYTHONPATH pour inclure /app
-    # 3. Exécute les tests avec pytest
-    # 4. Lance l'application avec Gunicorn et Uvicorn
-
-    command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+      - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
     networks:
-      - app-network
+      - db_network
 
-
-  frontend:
-    build: ./frontend
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
     ports:
-      - "8501:8501"
-    volumes:
-      - ./frontend:/app
-    depends_on:
-      - api
+      - "8888:80"
     environment:
-      - API_URL=http://api:3000
+      PGADMIN_DEFAULT_EMAIL: mis7er.neo@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: cryptonic
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     networks:
-      - app-network
+      - db_network
+  #
+  # webserver:
+  #   image: apache/airflow:2.5.1
+  #   restart: always
+  #   environment:
+  #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+  #     AIRFLOW__WEBSERVER__SECRET_KEY: 'YOUR_SECRET_KEY'
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - airflow_network
+
+  # scheduler:
+  #   image: apache/airflow:2.5.1
+  #   restart: always
+  #   environment:
+  #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - airflow_network
+
+  # worker:
+  #   image: apache/airflow:2.5.1
+  #   restart: always
+  #   environment:
+  #     AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  #     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #     AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - airflow_network
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
+
 
 networks:
-  app-network:
+  db_network:
     driver: bridge
-
+  airflow_network:
+    driver: bridge

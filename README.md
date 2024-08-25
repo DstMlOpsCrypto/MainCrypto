@@ -46,7 +46,7 @@ TO COMPLETE
 List all the pre-requisites the system needs to develop this project.
 This project is adapted to a Linux environment and as been tested on 
 - Arch Linux - Linux 6.10.3
-- xxx
+- Ubuntu|Debian
 
 # Installation
 
@@ -60,33 +60,42 @@ cd MainCrypto.git
 ## Development-Environment
 To set up a local environment with Docker, PostgreSQL on Docker, and Python, follow these steps: 
 
-- install Docker on your linux machine. Use local_docker_install.sh file
+### install Docker and Docker compose on your linux machine. 
+
+Script : local_docker_install.sh file
+
+The script follow these steps:
+
+- update system
+- install docker
+- install docker-compose
+- launch docker-compose.yml
+
+The script "local_dockercompose_remove.sh" uninstall docker and docker-compose.
+
+### Command
+
 ```bash
+# check compose version
+docker compose version
+
 # check if docker is running
 sudo systemctl status docker
-```
-- pull the PostgreSQL image by running docker pull postgres in your terminal by using local_postgrSQL_install.sh
-```bash
-# check if a PostgreSQL container is running in Docker,
-docker ps
-```
 
-```bash
+# check containers
+docker-compose ps
+docker ps
+
 # check the connection to a PostgreSQL database
 docker exec -it {container-id or container-name} -U postgres
-```
-- load ohvclvt historical data and unzip (remove zip) into "data/raw" folder then use local_db_init.sh to create database, table and load data into table
 
-> [!NOTE]
->- We use OHLCVT data from Kaggle. For this exemple, we will use distincts data (currency by currency) from [here](https://support.kraken.com/hc/fr/articles/360047124832-Downloadable-historical-OHLCVT-Open-High-Low-Close-Volume-Trades-data)
->- Datetime are in Epoch format
-
-```bash
 # List all databases
 docker exec -it "$CONTAINER_NAME" psql -U postgres -c "\l"
+docker exec -it 2c356056a66b psql -U postgres -c "\l"
 
 # list all table commend sql \dt+
 docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "\dt+"
+docker exec -it cpostgres psql -U postgres -d ohlcvt -c "\dt+"
 
 # List all columns properties for specific table
 docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "\d+ {table_name}"
@@ -96,22 +105,21 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 ```
 
 
+## Data-Processing
 
-- install python virtualenv and dependencies by using se local_venv_install.sh
 
-### Data-Processing
 
-- launch test to ensure everything is operational. Tests are located in /{app}/tests
-- load historical (extract) ohclvt data file in db by using  TODO
-```python
-pytest {app}/tests/
+
+- TODO :
+  - cronjob feed historical data by user manuel upload (csv)
+  - cronjob feed realtime data from currency list (csv)
+  - (option : install airflow)
 ```
 
-docker exec -it postgres psql -h localhost -p 5432 -U postgres -d ohlcvt -c
-### fastAPI
+## fastAPI
 
 
-### MLFlow
+## MLFlow
 
 
 ## Build
@@ -140,3 +148,18 @@ Credit the authors here.
 
 ##  License
 Add a license here, or a link to it.
+
+
+
+The coordination and automation of data flow across various tools and systems to deliver quality data products and analytics.
+
+Manual and error-prone processes
+Lack of standards around data formats, processes, and processing techniques
+
+Time-based scheduling tools (e.g., Cron)
+ Rise of proprietary scheduling and workload management tools (e.g., AutoSys)
+
+
+*An increase in data size and complexity of scheduling and workloads
+ *Tools that were designed for specific ecosystems (e.g., Hadoop)
+

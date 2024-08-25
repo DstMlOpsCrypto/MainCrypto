@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "=== update linux distrib ==="
+
 # Get the operating system value
 OS=$(hostnamectl | awk -F': ' '/Operating System/ {print $2}' | tr -d ' ')
 
@@ -27,6 +29,10 @@ case "$OS" in
         exit 1
         ;;
 esac
+
+echo "...done"
+
+echo "=== Install Docker based on the distribution ==="
 
 # Install Docker based on the distribution
 case "$OS" in
@@ -58,4 +64,16 @@ case "$OS" in
         ;;
 esac
 
-echo "Docker installation completed successfully!"
+echo "...done"
+
+echo "=== Add current user to the docker group ==="
+# Add the current user to the docker group
+sudo usermod -aG docker $USER
+echo "...done"
+
+echo "=== Launch swarm Cluster ==="
+#docker swarm init
+
+echo "=== Launch docker-compose.yml ==="
+# Launch docker-compose.yml
+docker-compose up -d
