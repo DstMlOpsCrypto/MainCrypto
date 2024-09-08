@@ -71,9 +71,8 @@ echo "=== Add current user to the docker group ==="
 sudo usermod -aG docker $USER
 echo "...done"
 
-echo "=== Launch swarm Cluster ==="
-#docker swarm init
 
-echo "=== Launch docker-compose.yml ==="
+#  echo "=== Launch docker-compose.yml ==="
 # Launch docker-compose.yml
-docker-compose up -d
+# docker-compose up airflow-init
+# docker-compose up -d
