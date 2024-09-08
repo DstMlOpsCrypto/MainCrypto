@@ -69,11 +69,85 @@ The script follow these steps:
 - update system
 - install docker
 - install docker-compose
-- launch docker-compose.yml
+
+### Install environnement
+
+```bash
+docker-compose up airflow-init
+
+docker-compose up -d
+```
+
+### Airflow
+
+DAG refer to connection id set withing airflow.
+Setting this connection to "Data server" is mandatory to run DAG
+
+#### Launch Airflow
+
+- Point to '0.0.0.0:8080' on your browser
+- login: airflow
+- password: airflow
+
+#### Setting connection
+
+- goto /administration
+- goto /connection
+  - name: postgres_crypto
+  - type : Postgres
+  - service/host: db
+  - database: cryptoDb
+  - user: crypto
+  - pw: crypto
+  - port: 5432
+- save
+
+#### Run DAG
+
+Current DAG "crypto_ohcl_dag.py" do following actions
+- get all assets (list) from table "assets" withing CryptoDb database
+- for each assets, get current crypto price
+
+The DAG is forcast to run every 1 mn (for dev purpose)
+By default the DAG is on standby. Just toggle it and wait
+
+### Pgadmin
+
+#### Launch pgadmin
+
+- Point to '0.0.0.0:8888' on your browser
+- login : admin@admin.com
+- password : admin
+
+#### Connect to Servers (containers)
+
+- **Airflow server**
+  - host(service): postgres
+  - user: airflow
+  - pw: airflow
+- **Data server**
+  - host(service): db
+  - user: crypto
+  - pw: crypto
+
+Goto Public to see shemas
+
+### Remove Docker, Docker compose and containers cache
+
+Script : local_docker_clean.sh file
+
+The script follow these steps:
+
+- Stop all running containers
+- Remove all stopped containers
+- Remove all images
+- Remove any  volumes
+- Remove any  networks
+- Remove all unused data
 
 The script "local_dockercompose_remove.sh" uninstall docker and docker-compose.
 
-### Command
+### Usefull Commands
 
 ```bash
 # check compose version
@@ -102,19 +176,6 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 
 # view data from a PostgreSQL table
 docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}" -c "SELECT * FROM {table_name};"
-```
-
-
-
-## Data-Processing
-
-
-
-
-- TODO :
-  - cronjob feed historical data by user manuel upload (csv)
-  - cronjob feed realtime data from currency list (csv)
-  - (option : install airflow)
 ```
 
 ## fastAPI
