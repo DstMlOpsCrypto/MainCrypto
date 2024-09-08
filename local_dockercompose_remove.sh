@@ -13,15 +13,18 @@ is_docker_installed() {
 is_docker_compose_installed() {
     if command -v docker-compose >/dev/null 2>&1; then
         # Stop all running containers:
-        docker-compose down
-        # Remove any stopped containers:
-        docker-compose rm -f
-        # Remove any unused Docker images:
-        docker image prune
+        docker stop $(docker ps -a -q)
+        #docker-compose down
+        # Remove all stopped containers:
+        docker rm $(docker ps -a -q)
+        #docker container prune -f
+        # Remove all unused images:
+        
         # Remove any unused volumes:
-        docker volume prune
+        docker volume prune -f
         # Remove any unused networks:
-        docker network prune
+        docker network prune -f
+
         return 0  # Docker Compose is installed
     else
         return 1  # Docker Compose is not installed

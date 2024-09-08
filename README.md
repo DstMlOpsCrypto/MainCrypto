@@ -105,6 +105,7 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 ```
 
 
+
 ## Data-Processing
 
 
@@ -163,3 +164,6 @@ Time-based scheduling tools (e.g., Cron)
 *An increase in data size and complexity of scheduling and workloads
  *Tools that were designed for specific ecosystems (e.g., Hadoop)
 
+
+
+# airflow https://www.youtube.com/watch?v=In7zwp0FDX4
