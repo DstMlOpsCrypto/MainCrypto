@@ -1,8 +1,6 @@
 #mlflow
 import mlflow
 from mlflow.tracking.client import MlflowClient
-#client = mlflow.tracking.MlflowClient()
-client = MlflowClient(tracking_uri="http://0.0.0.0:5000")
 
 #other packages
 import datetime
@@ -21,7 +19,7 @@ sys.path.append(parent_current_dir)
 
 from src.data.import_raw_data import load_data, load_transform_data
 from src.features.preprocess import normalize_data
-from src.evaluation.ml_flow import get_check_experiment, load_best_model
+from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_mlflow_experiment
 
 #Arguments du script
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
@@ -30,10 +28,12 @@ parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selec
 args = parser.parse_args()
 
 #params
-tracking_uri="http://0.0.0.0:5000"
+tracking_uri= "sqlite:///mydb.sqlite"
 client = MlflowClient(tracking_uri=tracking_uri)
 exp_name = "Projet_Bitcoin_price_prediction"
 
+# Initialize MLFlow experiment
+experiment = init_mlflow_experiment(exp_name = exp_name)
 
 def pipeline():
            
@@ -48,7 +48,7 @@ def pipeline():
     X_test, df_index, scaler = load_transform_data(period = period,ticker = ticker)
     
     #load best_model
-    best_model = load_best_model(period = period, exp_name = exp_name, model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
+    best_model = load_best_model(period = period, experiment=experiment, model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
     
     #prediction
     test_predict = best_model.predict(X_test)

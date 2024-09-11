@@ -1,0 +1,25 @@
+artifact_path: tf-lstm-reg-model-1d
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.tensorflow
+    python_version: 3.12.4
+  tensorflow:
+    code: null
+    data: data
+    keras_version: 2.17.0
+    model_type: keras
+    save_format: tf
+mlflow_version: 2.15.1
+model_size_bytes: 5939890
+model_uuid: 0a3ad14a6379406d8449fd371de84559
+run_id: a3f56afba34542f2b51900a09351c2d3
+signature:
+  inputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float64", "shape": [-1, 1]}}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float32", "shape": [-1,
+    1]}}]'
+  params: null
+utc_time_created: '2024-08-23 14:26:31.666614'

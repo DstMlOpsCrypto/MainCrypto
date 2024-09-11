@@ -1,0 +1,15 @@
+artifact_uri: file:///home/frederic/kDrive/Data/Code/DataScientest/MainCrypto/scripts/mlruns/675441083583889369/e2557722a190492e9af78179a3926295/artifacts
+end_time: 1724675850553
+entry_point_name: ''
+experiment_id: '675441083583889369'
+lifecycle_stage: active
+run_id: e2557722a190492e9af78179a3926295
+run_name: first_run
+run_uuid: e2557722a190492e9af78179a3926295
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1724675834995
+status: 3
+tags: []
+user_id: frederic

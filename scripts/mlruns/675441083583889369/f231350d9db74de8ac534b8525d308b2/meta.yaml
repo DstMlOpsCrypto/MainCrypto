@@ -1,0 +1,15 @@
+artifact_uri: file:///home/frederic/kDrive/Data/Code/DataScientest/MainCrypto/scripts/mlruns/675441083583889369/f231350d9db74de8ac534b8525d308b2/artifacts
+end_time: 1724224486947
+entry_point_name: ''
+experiment_id: '675441083583889369'
+lifecycle_stage: active
+run_id: f231350d9db74de8ac534b8525d308b2
+run_name: masked-mouse-246
+run_uuid: f231350d9db74de8ac534b8525d308b2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1724224481941
+status: 3
+tags: []
+user_id: frederic

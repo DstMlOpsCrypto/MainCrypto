@@ -1,0 +1,6 @@
+artifact_location: mlflow-artifacts:/841239922816474497
+creation_time: 1723992101596
+experiment_id: '841239922816474497'
+last_update_time: 1723992101596
+lifecycle_stage: active
+name: Bitcoin_price_prediction
