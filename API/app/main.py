@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 # Importe les routeurs 
 from app.auth.router import router as auth_router
 from app.ml.router import router as ml_router
+from app.crypto.router import router as crypto_router
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -24,3 +25,4 @@ async def home(request: Request):
 # Inclut les routeurs dans l'application
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(ml_router, prefix="/ml", tags=["ml"])
+app.include_router(crypto_router, prefix="/crypto", tags=["crypto"])
