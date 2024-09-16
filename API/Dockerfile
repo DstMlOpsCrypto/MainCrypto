@@ -5,7 +5,7 @@ FROM python:3.8-alpine
 RUN pip install --upgrade pip
 # Installing base packages
 RUN apk add --no-cache --virtual .build-deps gcc libc-dev make libffi-dev postgresql-dev \
-    && pip install --no-cache-dir uvicorn gunicorn fastapi python-jose[cryptography] passlib python-multipart pytest httpx email-validator slowapi psycopg2-binary \
+    && pip install --no-cache-dir uvicorn gunicorn fastapi python-jose[cryptography] passlib[argon2] python-multipart pytest httpx email-validator slowapi psycopg2-binary \
     && apk del .build-deps gcc libc-dev make libffi-dev postgresql-dev
 
 # Copy the start.sh script to the container

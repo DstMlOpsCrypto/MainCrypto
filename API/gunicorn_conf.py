@@ -54,3 +54,6 @@ log_data = {
 
 # Affichage des données de configuration au format JSON
 print(json.dumps(log_data))
+
+forwarded_allow_ips = '*'
+secure_scheme_headers = {'X-Forwarded-Proto': 'https'}
