@@ -135,7 +135,7 @@ venv.bak/
 .spyproject
 
 # Rope project settings
-.ropeproject
+.ropeproject #61 open
 
 # mkdocs documentation
 /site
@@ -166,3 +166,4 @@ scripts/mlruns
 
 # Crypto project
 data/
+airflow/logs/
