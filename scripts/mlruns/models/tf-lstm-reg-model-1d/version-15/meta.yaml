@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1724235839981
+current_stage: None
+description: null
+last_updated_timestamp: 1724235839981
+name: tf-lstm-reg-model-1d
+run_id: 6e1a9672fdf14ae18cdbdad470661998
+run_link: null
+source: file:///home/frederic/kDrive/Data/Code/DataScientest/MainCrypto/scripts/mlruns/675441083583889369/6e1a9672fdf14ae18cdbdad470661998/artifacts/scripts/mlruns/675441083583889369/f351e891ae42488186153016c8b5872c/artifacts/tf-lstm-reg-model-1d
+status: READY
+status_message: null
+storage_location: file:///home/frederic/kDrive/Data/Code/DataScientest/MainCrypto/scripts/mlruns/675441083583889369/6e1a9672fdf14ae18cdbdad470661998/artifacts/scripts/mlruns/675441083583889369/f351e891ae42488186153016c8b5872c/artifacts/tf-lstm-reg-model-1d
+user_id: null
+version: 15

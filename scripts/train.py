@@ -1,3 +1,5 @@
+## Entrainer et sauvergarder le modèle
+ 
 #mlflow
 import mlflow
 from mlflow import MlflowClient
@@ -38,8 +40,8 @@ args = parser.parse_args()
 
 # scripts variables
 exp_name = "Projet_Bitcoin_price_prediction"
-run_name = "first_run"  
-tracking_uri = "http://0.0.0.0:5000"
+run_name = "first_run"
+tracking_uri = "sqlite:///mydb.sqlite"
 
 # MLflow Tracking client
 client = MlflowClient(tracking_uri= tracking_uri)
@@ -47,15 +49,14 @@ client = MlflowClient(tracking_uri= tracking_uri)
 # Initialize MLFlow experiment
 experiment = init_mlflow_experiment(exp_name = exp_name)
 
-
 def pipeline():  
 
     # End any active run
     mlflow.end_run()
-    
+
     #initialize fixed params
     neurons = 350
-    
+
     #recupérer les arguments du script
     ticker = args.currency
     period= args.period
@@ -71,12 +72,12 @@ def pipeline():
 
     with mlflow.start_run(run_name=run_name):
         
-        for pas_temps in [1,2,3,5,10,14]:            
-                for batch_size in [5,10,15,20,40]:
+        for pas_temps in [1,2,3,5,10,14]:  #14          
+                for batch_size in [5,10,15,20]:
                                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, nested=True):
-                                                                                        
+
                         print(f"Début de l'entrainement du modèle suivant : pas_temps = {pas_temps},batch_size = {batch_size}, neurons = {neurons}, currency = {ticker}, period = {period}", end= "\n\n")
                         
                         #Building dataset for a pas_temps value
@@ -115,61 +116,58 @@ def pipeline():
                         )
                         print("mean_squarred_error_test", mse_test)
                         print("r2_test_score", r2_score_test)
-    
-    
-        #une fois les run terminés, détermination des meilleurs paramètres
-        best_model_info = get_best_model(exp_name=exp_name, metric_name="mean_squarred_error_test", ticker=ticker, period = period, tracking_uri = tracking_uri)    
-        
-        # best model re training
-        #fetching best params
-        if  best_model_info is not None:
-            pas_temps = int(best_model_info['params']['pas_temps'])
-            batch_size = int(best_model_info['params']['batch_size'])
-        else :
-            print("Le dictionnaire best_model_info est vide") 
 
-                
-        with mlflow.start_run(run_name=run_name, nested=True):
+        #une fois les run terminés, détermination des meilleurs paramètres
+        best_model_info = get_best_model(experiment=experiment, metric_name="mean_squarred_error_test", ticker=ticker, period = period, tracking_uri = tracking_uri)    
+
+    # best model re training
+    #fetching best params
+    if best_model_info is not None:
+        pas_temps = int(best_model_info['pas_temps'])
+        batch_size = int(best_model_info['batch_size'])
+        run_id = best_model_info['run_id']
             
+        with mlflow.start_run(run_name=run_name, nested=True):
             #Building dataset for a pas_temps value
             X_train, X_test, y_train, y_test= make_dataset(data = df_array, pas_temps=pas_temps, test_size=0.3)
 
             # Model instanciation
             model = LSTMModel(neurons=350)
-                            
+
             # Best model Training
             history, model, duration_seconds = train(X_train, y_train, X_test, y_test, model, batch_size)
-            
-            #load_tranform
-            X_test, _ , scaler = load_transform_data(period = period,ticker = ticker)              
+
+            # load_tranform
+            X_test, _ , scaler = load_transform_data(period = period,ticker = ticker) 
             test_predict = model.predict(X_test)
-            
+
             X_test =  X_test/scaler.scale_[0]
             test_predict = test_predict/scaler.scale_[0]
-            
+
             print(f"La valeur du Bitcoin était de {(X_test[-1])} {ticker} hier à la fermeture. Le modèle prédit une valeur de {test_predict[-1]} {ticker} ")
-                     
+
             # model_name
             model_name = f"tf-lstm-reg-model-{period}"
- 
+
             # Signature creation
             signature = infer_signature(X_test, model.predict(X_test))
-            
-        
+
             # Log the model
             try:
                 model_info = mlflow.tensorflow.log_model(model, artifact_path = model_name, signature=signature, registered_model_name = f"tf-lstm-reg-model-{period}")
-                   # Print the run_id of the logged model
+                # Print the run_id of the logged model
                 print(f"The run_id of the logged model is: {model_info.run_id}")
-           
+
             except Exception as e:
                 print(f"An error occurred while logging the model: {e}")
 
+    else:
+        print("Le dictionnaire best_model_info est vide")
 
 if __name__ == "__main__":
-    pipeline()
-        
-        
+    pipeline()  
+ 
+
 
 
         
