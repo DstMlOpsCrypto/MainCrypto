@@ -166,3 +166,8 @@ scripts/mlruns
 
 # Crypto project
 data/
+
+# folder created by airflow (folder are mapped !)
+dags/
+logs/
+plugins/

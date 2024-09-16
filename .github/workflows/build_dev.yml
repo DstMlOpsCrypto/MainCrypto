@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - ghaction
+  pull_request:
+    branches:
+      - ghaction
+
+jobs:
+  build:
+    runs-on: archlinux-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Docker
+      if: github.event.pull_request.base.ref == 'ghaction'
+      run: |
+        sudo pacman -Syu --noconfirm
+        sudo pacman -S --noconfirm docker
+        sudo systemctl start docker
+        sudo systemctl enable docker
+
+    - name: Install Docker Compose
+      if: github.event.pull_request.base.ref == 'ghaction'
+      run: |
+        sudo pacman -S --noconfirm docker docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        sudo usermod -aG docker $USER
+
+    - name: Install Python dependencies
+      run: |
+        sudo pacman -S --noconfirm python-pip
+        pip3 install -r requirements.txt
+
+    - name: Run Init Airflow
+      if: github.event.pull_request.base.ref == 'ghaction'
+      run: docker-compose up airflow-init
+
+    - name: Run Airflow
+      if: github.event.pull_request.base.ref == 'ghaction'
+      run: docker-compose up -d
+
+    - name: Run Pytest
+      if: github.event.pull_request.base.ref == 'ghaction'
+      run: |
+        echo "Running pytest"
+        pytest tests/
