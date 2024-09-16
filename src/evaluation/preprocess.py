@@ -17,7 +17,7 @@ def normalize_data(df, period):
     else :
         df =df.drop(columns=['Open','High','Low','Volume'], axis=1)    
     
-    # recup√©ration de l'index (√† voir ensuite si utile)
+    # recupération de l'index (à voir ensuite si utile)
     df_index = df.index
     
     #tf en tableau numpy

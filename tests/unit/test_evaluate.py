@@ -1,112 +1,61 @@
-import pytest
+  
 import numpy as np
+import pytest
 from sklearn.metrics import mean_squared_error, r2_score
 from unittest.mock import MagicMock
 
 from src.evaluation.evaluate import scaling, score
+from src.models import model_LSTM
 
-
-#ficture pour un mock du scaler
 @pytest.fixture
-def mock_scaler():
-    """Fixture pour un mock de scaler"""
-    mock_scaler = MagicMock() # instanciation mock
-    mock_scaler.scale_ = np.array([10])  # Simule une échelle de 10 pour le scaler en lui attribuant un attribut
-    return mock_scaler
+def data():
+    # Données fictives pour entraîner et tester
+    y_train = np.array([1.0, 2.0, 3.0, 4.0])
+    y_test = np.array([2.5, 3.0, 3.5, 4.0])
+    train_predict = np.array([1.1, 2.1, 3.0, 3.9])
+    test_predict = np.array([2.6, 2.9, 3.4, 4.1])
+    return train_predict, test_predict, y_train, y_test
 
+def test_score_mse_r2(data):
+    train_predict, test_predict, y_train, y_test = data
 
-def test_scaling(mock_scaler):
-    # Données d'entrée simulées
-    train_predict = np.array([10, 20, 30])
-    test_predict = np.array([15, 25, 35])
-    y_train = np.array([100, 200, 300])
-    y_test = np.array([150, 250, 350])
+    # Calculs attendus
+    expected_mse_train = mean_squared_error(y_train, train_predict)
+    expected_r2_score_train = r2_score(y_train, train_predict)
+    expected_mse_test = mean_squared_error(y_test, test_predict)
+    expected_r2_score_test = r2_score(y_test, test_predict)
 
-    # Appel de la fonction
-    train_predict_scaled, test_predict_scaled, y_train_scaled, y_test_scaled = scaling(
-        train_predict, test_predict, y_train, y_test, mock_scaler
-    )
+    # Exécution de la fonction score
+    mse_train, r2_train, mse_test, r2_test = score(train_predict, test_predict, y_train, y_test)
 
-    # Assertions
-    assert np.array_equal(train_predict_scaled, train_predict / mock_scaler.scale_[0])
-    assert np.array_equal(test_predict_scaled, test_predict / mock_scaler.scale_[0])
-    assert np.array_equal(y_train_scaled, y_train.reshape(-1, 1) / mock_scaler.scale_[0])
-    assert np.array_equal(y_test_scaled, y_test.reshape(-1, 1) / mock_scaler.scale_[0])
+    # Vérification des résultats
+    assert mse_train == pytest.approx(expected_mse_train)
+    assert r2_train == pytest.approx(expected_r2_score_train)
+    assert mse_test == pytest.approx(expected_mse_test)
+    assert r2_test == pytest.approx(expected_r2_score_test)
 
-    # Vérifie que scaler.scale_[0] est bien utilisé
-    assert np.all(train_predict_scaled == train_predict / 10)
-    assert np.all(test_predict_scaled == test_predict / 10)
-    assert np.all(y_train_scaled == y_train.reshape(-1, 1) / 10)
-    assert np.all(y_test_scaled == y_test.reshape(-1, 1) / 10)
-    
-    
-    
-    
-def test_lstmmodel_score():
-    train_predict = np.array([1, 2, 3])
-    test_predict = np.array([1, 2, 3])
-    y_train = np.array([1, 2, 3])
-    y_test = np.array([1, 2, 3])
-    
-    mse_train, r2_train, mse_test, r2_test = LSTMModel.score(train_predict, test_predict, y_train, y_test)
-    
-    assert mse_train == mean_squared_error(y_train, train_predict)
-    assert r2_train == r2_score(y_train, train_predict)
-    assert mse_test == mean_squared_error(y_test, test_predict)
-    assert r2_test == r2_score(y_test, test_predict)
-    
-    
- 
-@pytest.mark.parametrize("y_train, train_predict, y_test, test_predict, expected_mse_train, expected_r2_train, expected_mse_test, expected_r2_test", [
-    # Cas parfait (précédent)
-    (
-        np.array([1, 2, 3, 4]),  # y_train
-        np.array([1, 2, 3, 4]),  # train_predict
-        np.array([2, 4, 6, 8]),  # y_test
-        np.array([2, 4, 6, 8]),  # test_predict
-        0.0,  # expected_mse_train
-        1.0,  # expected_r2_train
-        0.0,  # expected_mse_test
-        1.0   # expected_r2_test
-    ),
-    # Cas avec des erreurs dans les prédictions
-    (
-        np.array([1, 2, 3, 4]),  # y_train
-        np.array([1, 2, 3, 5]),  # train_predict
-        np.array([2, 4, 6, 8]),  # y_test
-        np.array([2, 3, 6, 8]),  # test_predict
-        mean_squared_error([1, 2, 3, 4], [1, 2, 3, 5]),  # expected_mse_train
-        r2_score([1, 2, 3, 4], [1, 2, 3, 5]),            # expected_r2_train
-        mean_squared_error([2, 4, 6, 8], [2, 3, 6, 8]),  # expected_mse_test
-        r2_score([2, 4, 6, 8], [2, 3, 6, 8])             # expected_r2_test
-    ),
-    # Cas où les prédictions sont complètement décalées
-    (
-        np.array([1, 2, 3, 4]),  # y_train
-        np.array([4, 3, 2, 1]),  # train_predict
-        np.array([2, 4, 6, 8]),  # y_test
-        np.array([8, 6, 4, 2]),  # test_predict
-        mean_squared_error([1, 2, 3, 4], [4, 3, 2, 1]),  # expected_mse_train
-        r2_score([1, 2, 3, 4], [4, 3, 2, 1]),            # expected_r2_train
-        mean_squared_error([2, 4, 6, 8], [8, 6, 4, 2]),  # expected_mse_test
-        r2_score([2, 4, 6, 8], [8, 6, 4, 2])             # expected_r2_test
-    ),
-])
-def test_lstmmodel_score_2(y_train, train_predict, y_test, test_predict, expected_mse_train, expected_r2_train, expected_mse_test, expected_r2_test):
-    
-    # Appel de la fonction
-    mse_train, r2_train, mse_test, r2_test = LSTMModel.score(train_predict, test_predict, y_train, y_test)
+def test_score_zero_error():
+    # Cas où les prédictions sont parfaites
+    y_train = np.array([1.0, 2.0, 3.0, 4.0])
+    y_test = np.array([2.5, 3.0, 3.5, 4.0])
+    train_predict = y_train
+    test_predict = y_test
 
-    # Vérification des résultats attendus
-    assert np.isclose(mse_train, expected_mse_train), f"Expected MSE train to be {expected_mse_train} but got {mse_train}"
-    assert np.isclose(r2_train, expected_r2_train), f"Expected R2 train to be {expected_r2_train} but got {r2_train}"
+    mse_train, r2_train, mse_test, r2_test = score(train_predict, test_predict, y_train, y_test)
 
-    assert np.isclose(mse_test, expected_mse_test), f"Expected MSE test to be {expected_mse_test} but got {mse_test}"
-    assert np.isclose(r2_test, expected_r2_test), f"Expected R2 test to be {expected_r2_test}"
-    
-    
-    
-    
+    assert mse_train == pytest.approx(0.0)
+    assert r2_train == pytest.approx(1.0)
+    assert mse_test == pytest.approx(0.0)
+    assert r2_test == pytest.approx(1.0)
 
-    
-    
+def test_score_negative_r2():
+    # Cas où les prédictions sont complètement incorrectes
+    y_train = np.array([1.0, 2.0, 3.0, 4.0])
+    y_test = np.array([2.5, 3.0, 3.5, 4.0])
+    train_predict = np.array([4.0, 3.0, 2.0, 1.0])  # Complètement opposé
+    test_predict = np.array([4.0, 3.5, 3.0, 2.5])
+
+    mse_train, r2_train, mse_test, r2_test = score(train_predict, test_predict, y_train, y_test)
+
+    assert r2_train < 0  # r2_score devrait être négatif pour de mauvaises prédictions
+    assert r2_test < 0

@@ -5,10 +5,9 @@ FROM python:3.8-alpine
 RUN pip install --upgrade pip
 # Installing base packages
 RUN apk add --no-cache --virtual .build-deps gcc libc-dev make libffi-dev \
-
     && pip install --no-cache-dir uvicorn gunicorn fastapi python-jose[cryptography] passlib python-multipart pytest httpx email-validator slowapi\
-
-    && apk del .build-deps gcc libc-dev make libffi-dev
+    && apk del .build-deps gcc libc-dev make libffi-dev\
+    && pip install mlflow
 
 # Copy the start.sh script to the container
 COPY ./start.sh /start.sh
@@ -20,6 +19,12 @@ COPY ./gunicorn_conf.py /gunicorn_conf.py
 # Copy the start-reload.sh script to the container
 COPY ./start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
+
+
+# Copy the predict.py script to the container
+COPY ./scripts/predict.py app/scripts/predict.py
+COPY ./src app/src
+COPY ./mlflow app/mlflow
 
 # Copy the app directory to the container
 COPY ./app /app

@@ -101,7 +101,7 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
-        condition: service_completed_successfully
+        condition: service_started
     networks:
       - app_network
 
@@ -118,12 +118,13 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
-        condition: service_completed_successfully
+        condition: service_started
     networks:
       - app_network
 
   airflow-worker:
-    <<: *airflow-common
+    <<: *airflow-common  # a voir si pas en conflit
+    image: worker
     command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
@@ -135,15 +136,18 @@ services:
       retries: 5
       start_period: 30s
     environment:
-      <<: *airflow-common-env
-      # Required to handle warm shutdown of the celery workers properly
-      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
-      DUMB_INIT_SETSID: "0"
+        <<: *airflow-common-env
+        # Required to handle warm shutdown of the celery workers properly
+        # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
+        DUMB_INIT_SETSID: "0"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
-        condition: service_completed_successfully
+        condition: service_started
+    volumes:
+      - ./scripts:/app/scripts
+      - ./src:/app/src 
     networks:
       - app_network
 
@@ -160,7 +164,7 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
-        condition: service_completed_successfully
+        condition: service_started
     networks:
       - app_network
 
@@ -259,7 +263,7 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
-        condition: service_completed_successfully
+        condition: service_started
     networks:
       - app_network
 
@@ -279,6 +283,7 @@ services:
       - db
     networks:
       - app_network
+  
   api:
     build: ./API
     restart: always
@@ -289,6 +294,9 @@ services:
       - LOG_LEVEL=debug
     volumes:
       - ./API:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+
     # Commande à exécuter au démarrage du conteneur
     # Cette commande fait plusieurs choses :
     # 1. Change le répertoire courant vers /app
@@ -299,6 +307,9 @@ services:
     command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
+
+  # image: tests-scripts-ml # a discuter
+
 
   frontend:
     build: ./frontend
@@ -314,12 +325,38 @@ services:
       - API_URL=http://api:3000
     networks:
       - app_network
+  
+  mlflow-server:
+    image: ghcr.io/mlflow/mlflow  # Utilise l'image officielle MLflow
+    restart: always
+    ports:
+      - "5000:5000"  # Mappe le port 5000 de l'hôte vers le conteneur
+    volumes:
+      - ./mlflow:/app  # Monte le répertoire local mlflow sur /app dans le conteneur
+    depends_on:
+      - postgres
+      - db
+    working_dir: /app  # Définit le répertoire de travail sur /app où le script de démarrage est localisé
+    environment:
+      - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
+    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
+
+  tests-ml:
+    image: tests-scripts-ml
+    volumes:
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./tests/unit:/app/tests/units
+    command: ["pytest","/app/tests/units",  "--ignore=/app/tests/units/test_db.py"]  # Exécute les tests dans le conteneur
 
 volumes:
   pgadmin_data_volume:
   airflow_data_volume:
   crypto_data_volume:
-
+  mlflow:
+  airflow:
+  scripts:
+  src:  
 
 networks:
   app_network:

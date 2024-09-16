@@ -1,8 +1,8 @@
 import requests
-import pytest
 import os
 import sys
 import pandas as pd
+import pytest
 
 #Ajout du repertoire de base au Path
 # Récupérer le chemin d'accès du répertoire courant du dossier

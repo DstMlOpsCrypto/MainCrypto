@@ -1,39 +1,22 @@
-# Utilisez l'image Python 3.12.4 basée sur Ubuntu 22.04
-FROM python:3.12.4-slim-bullseye
+# Utiliser une image de base Airflow
+FROM apache/airflow:2.10.0
 
-# mISE À JOUR ET INSTALLATION pip
-RUN apt-get update && pip install --upgrade pip
+# Passer à l'utilisateur root pour les installations
+USER root
 
-# Install any needed packages specified in requirements.txt
-RUN pip install tensorflow && pip install mlflow && pip install yfinance && pip install --upgrade typing_extensions
+# Mettre à jour le système et installer Python, pip, et les dépendances nécessaires
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    git \
+    && pip3 install --upgrade pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+# Installer les packages Python nécessaires
+RUN pip3 install tensorflow mlflow yfinance --upgrade typing_extensions pytest
 
-# Create repos
-RUN mkdir -p /src /scripts /tests /mlruns
-
-# Copiez les dossiers dans l'image Docker depuis le répertoire parent
-COPY ../src /src
-COPY ../scripts /scripts
-COPY ../tests /tests
-
-# Set the working directory in the container
-WORKDIR /scripts
-
-VOLUME /scripts/mlruns
-
-#RUN pip install --no-cache-dir -r requirements.txt
-
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
-
-# Start mlflow tracking server, port 5000
-CMD ["python3", "start_mlflow_server.py"]
-
-#train model inside container
-#CMD ["python3", "train.py", "--currency=BTC-EUR","--period=1d"]
-
-#predict inside container
-#CMD ["python3", "predict.py", "--currency=BTC-EUR","--period=1d"]
-
-#construit avec : docker build -f scripts/Dockerfile -t model:latest . depuis le repo MainCrypto
-# lancé avec docker container run -it -p 5000:5000 -v /scripts/mlruns:/scripts/mlruns model
+# Revenir à l'utilisateur airflow
+USER airflow

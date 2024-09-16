@@ -17,7 +17,7 @@ case "$OS" in
     openSUSE)
         sudo zypper update -y
         ;;
-    ArchLinux|Manjaro)
+    ArchLinux|ManjaroLinux)
         sudo pacman -Syu --noconfirm
         ;;
     Alpine)
@@ -52,7 +52,7 @@ case "$OS" in
     openSUSE)
         sudo zypper install -y docker docker-compose
         ;;
-    ArchLinux|Manjaro)
+    ArchLinux|ManjaroLinux)
         sudo pacman -S --noconfirm docker docker-compose
         ;;
     Alpine)

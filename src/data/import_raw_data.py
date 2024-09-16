@@ -1,4 +1,3 @@
-
 import datetime
 import yfinance as yf
 from datetime import date
