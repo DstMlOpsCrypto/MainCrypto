@@ -36,24 +36,15 @@ jobs:
       id: get-ip
       run: echo "::set-output name=ip::$(echo ${{ github.event.inputs.target_ip }})"
 
-    - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          cp /pem/data_enginering_machine.pem ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa
-
-    - name: Connect to Remote VM
-        run: ssh -i "~/.ssh/id_rsa/data_enginering_machine.pem" ${{ github.event.inputs.ec2_user }}@${{ github.event.inputs.target_ip }}
-  
     - name: Connect to Remote VM and Clone Repo
         run: |
-          ssh -i "~/.ssh/id_rsa/data_enginering_machine.pem" ubuntu@${{ steps.get-ip.outputs.ip }} << 'EOF'
+          ssh -i "/pem/data_enginering_machine.pem" ubuntu@${{ steps.get-ip.outputs.ip }} << 'EOF'
             git clone git clone https://github.com/DstMlOpsCrypto/MainCrypto
           EOF     
 
     - name: Run Airflow-Init
         run: |
-          ssh -i "~/.ssh/id_rsa/data_enginering_machine.pem" ${{ github.event.inputs.ec2_user }}@${{ steps.get-ip.outputs.ip }} << 'EOF'
+          ssh -i "/pem/data_enginering_machine.pem" ${{ github.event.inputs.ec2_user }}@${{ steps.get-ip.outputs.ip }} << 'EOF'
             docker-compose up airflow-init
           EOF
 
@@ -62,7 +53,7 @@ jobs:
 
     - name: Run Airflow
         run: |
-          ssh -i "~/.ssh/id_rsa/data_enginering_machine.pem" ${{ github.event.inputs.ec2_user }}@${{ steps.get-ip.outputs.ip }} << 'EOF'
+          ssh -i "/pem/data_enginering_machine.pem" ${{ github.event.inputs.ec2_user }}@${{ steps.get-ip.outputs.ip }} << 'EOF'
             docker-compose up airflow-init
           EOF
 
