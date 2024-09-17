@@ -28,12 +28,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ github.event.inputs.ec2_key }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
     - name: Get EC2 User
       id: get-user
       run: echo "::set-output name=user::$(echo ${{ github.event.inputs.ec2_user }})"
