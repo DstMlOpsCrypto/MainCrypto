@@ -310,7 +310,6 @@ services:
 
   # image: tests-scripts-ml # a discuter
 
-
   frontend:
     build: ./frontend
     restart: always
