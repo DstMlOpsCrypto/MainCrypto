@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 from utils.api_client import API_URL
-from utils.auth import logout, is_admin
+from utils.auth import logout
 
 def show():
     st.title("Account Settings")
@@ -50,15 +50,25 @@ def show():
 
     # Bouton de suppression du compte
     st.subheader("Delete Account")
+    st.warning("This action is irreversible. All your data will be permanently deleted.")
+    
+    delete_confirmation = st.text_input("Type your username to confirm account deletion:")
+    
     if st.button("Delete My Account"):
-        if st.checkbox("I understand this action is irreversible"):
-            response = requests.delete(
-                f"{API_URL}/auth/users/{user_info['username']}",
-                headers={"Authorization": f"Bearer {token}"}
-            )
-            if response.status_code == 200:
-                st.success("Account deleted successfully.")
-                logout()
-                st.experimental_rerun()
-            else:
-                st.error(f"Failed to delete account: {response.text}")
+        if delete_confirmation == user_info['username']:
+            try:
+                response = requests.delete(
+                    f"{API_URL}/auth/users/{user_info['username']}",
+                    headers={"Authorization": f"Bearer {token}"}
+                )
+                if response.status_code == 200:
+                    st.success("Account deleted successfully.")
+                    logout()
+                    st.experimental_rerun()
+                else:
+                    st.error(f"Failed to delete account. Status code: {response.status_code}")
+                    st.error(f"Error message: {response.text}")
+            except requests.RequestException as e:
+                st.error(f"An error occurred: {str(e)}")
+        else:
+            st.error("Username confirmation does not match. Account not deleted.")
