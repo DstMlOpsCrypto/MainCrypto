@@ -135,7 +135,7 @@ venv.bak/
 .spyproject
 
 # Rope project settings
-.ropeproject
+.ropeproject #61 open
 
 # mkdocs documentation
 /site
@@ -168,3 +168,8 @@ scripts/mlruns
 data/
 old/
 notebooks/
+
+# folder created by airflow (folder are mapped !)
+dags/
+logs/
+plugins/
