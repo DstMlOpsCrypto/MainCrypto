@@ -1,22 +1,29 @@
 # Utiliser une image de base Airflow
 FROM apache/airflow:2.10.0
 
-# Passer à l'utilisateur root pour les installations
 USER root
 
-# Mettre à jour le système et installer Python, pip, et les dépendances nécessaires
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# RUN apt-get update --fix-missing --allow-releaseinfo-change-suite --yes --no-install-recommends
+
+RUN apt-get update
+
+RUN apt-get install -y --no-install-recommends --fix-missing\
     python3 \
     python3-pip \
     python3-venv \
-    git \
-    && pip3 install --upgrade pip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    git
 
-# Installer les packages Python nécessaires
-RUN pip3 install tensorflow mlflow yfinance --upgrade typing_extensions pytest
+USER airflow
 
-# Revenir à l'utilisateur airflow
+RUN pip3 install --upgrade pip \
+    && pip install tensorflow \
+    && pip install mlflow \
+    && pip install yfinance \
+    && pip install pytest \
+    && pip install --upgrade typing_extensions
+
+USER root
+
+RUN apt-get clean
+
 USER airflow

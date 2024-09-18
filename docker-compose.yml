@@ -123,7 +123,7 @@ services:
       - app_network
 
   airflow-worker:
-    <<: *airflow-common  # a voir si pas en conflit
+    <<: *airflow-common
     image: worker
     command: celery worker
     healthcheck:
@@ -136,10 +136,10 @@ services:
       retries: 5
       start_period: 30s
     environment:
-        <<: *airflow-common-env
-        # Required to handle warm shutdown of the celery workers properly
-        # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
-        DUMB_INIT_SETSID: "0"
+      <<: *airflow-common-env
+      # Required to handle warm shutdown of the celery workers properly
+      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
+      DUMB_INIT_SETSID: "0"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -328,6 +328,12 @@ services:
   mlflow-server:
     image: ghcr.io/mlflow/mlflow  # Utilise l'image officielle MLflow
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     ports:
       - "5000:5000"  # Mappe le port 5000 de l'hôte vers le conteneur
     volumes:
@@ -339,6 +345,8 @@ services:
     environment:
       - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
     command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
+    networks:
+      - app_network
 
   tests-ml:
     image: tests-scripts-ml
@@ -346,7 +354,9 @@ services:
       - ./scripts:/app/scripts
       - ./src:/app/src
       - ./tests/unit:/app/tests/units
-    command: ["pytest","/app/tests/units",  "--ignore=/app/tests/units/test_db.py"]  # Exécute les tests dans le conteneur
+    command: ["pytest","/app/tests/units"]  # Exécute les tests dans le conteneur
+    networks:
+      - app_network
 
 volumes:
   pgadmin_data_volume:

@@ -5,9 +5,8 @@ FROM python:3.8-alpine
 RUN pip install --upgrade pip
 # Installing base packages
 RUN apk add --no-cache --virtual .build-deps gcc g++ libc-dev make libffi-dev \
-    && pip install --no-cache-dir mlflow uvicorn gunicorn fastapi python-jose[cryptography] passlib python-multipart pytest httpx email-validator slowapi \
+    && pip install --no-cache-dir uvicorn gunicorn fastapi python-jose[cryptography] passlib python-multipart pytest httpx email-validator slowapi \
     && apk del .build-deps gcc g++ libc-dev make libffi-dev
-
     
 # Copy the start.sh script to the container
 COPY ./start.sh /start.sh

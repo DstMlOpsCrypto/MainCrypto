@@ -6,18 +6,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
     && pip install --upgrade pip \
+    && pip install tensorflow \
+    && pip install mlflow \
+    && pip install yfinance \
+    && pip install pytest \
+    && pip install --upgrade typing_extensions \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Install any needed packages
-RUN pip install tensorflow mlflow yfinance --upgrade typing_extensions pytest
-
-# # Créez les répertoires nécessaires
-# RUN mkdir -p /app /data
-
-# # Définir le répertoire de travail
-# WORKDIR /app/scripts
-
-# # # Copier les scripts d'entraînement et les autres fichiers dans l'image
-# COPY ./src /app/src
-# COPY ./scripts /app/scripts

@@ -28,8 +28,13 @@ parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selec
 args = parser.parse_args()
 
 #params
-tracking_uri= "sqlite:///mydb.sqlite"
+# tracking_uri= "sqlite:///mydb.sqlite"
+# client = MlflowClient(tracking_uri=tracking_uri)
+
+# Update the tracking URI to point to the MLflow server container
+tracking_uri = "http://mlflow-server:5000"   # to communicate with mlflow-sever
 client = MlflowClient(tracking_uri=tracking_uri)
+
 exp_name = "Projet_Bitcoin_price_prediction"
 
 # Initialize MLFlow experiment
