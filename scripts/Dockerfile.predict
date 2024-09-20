@@ -1,0 +1,29 @@
+# Utilisez l'image Python 3.12.4 basée sur Ubuntu 22.04
+FROM python:3.12.4-slim-bullseye
+
+# pip installation
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    && pip install --upgrade pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install any needed packages
+RUN pip install tensorflow mlflow yfinance --upgrade typing_extensions pytest
+
+# Créez les répertoires nécessaires
+RUN mkdir -p /app /data
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# # Copier les scripts d'entraînement et les autres fichiers dans l'image
+COPY src /app/src
+COPY scripts /app/scripts
+
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
+
+# Définir la commande par défaut pour exécuter le script d'entraînement avec des options par défaut
+CMD ["python3", "predict.py","--period", "1d", "--currency","BTC-EUR"]

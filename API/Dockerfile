@@ -4,6 +4,7 @@ FROM python:3.8-alpine
 
 RUN pip install --upgrade pip
 # Installing base packages
+
 RUN apk add --no-cache --virtual .build-deps gcc libc-dev make libffi-dev postgresql-dev \
     && pip install --no-cache-dir uvicorn gunicorn fastapi python-jose[cryptography] passlib[argon2] python-multipart pytest httpx email-validator slowapi psycopg2-binary \
     && apk del .build-deps gcc libc-dev make libffi-dev postgresql-dev
@@ -18,6 +19,10 @@ COPY ./gunicorn_conf.py /gunicorn_conf.py
 # Copy the start-reload.sh script to the container
 COPY ./start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
+
+# # Copy the predict.py script to the container, # not sure necessary here because of docker compose
+# COPY ../scripts app/scripts
+# COPY ./src app/src
 
 # Copy the app directory to the container
 COPY ./app /app
