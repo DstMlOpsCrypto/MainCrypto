@@ -33,8 +33,10 @@ def show():
                 headers={"Authorization": f"Bearer {token}"}
             )
 
-            if response.status_code == 200:
-                st.success(f"User {username} created successfully!")
+            if response.status_code == 200 or response.status_code == 201:
+                response_data = response.json()
+                st.success(response_data["message"])
+                st.json(response_data["user"])
             elif response.status_code == 403:
                 st.error("Only admins can create new accounts.")
             elif response.status_code == 400:

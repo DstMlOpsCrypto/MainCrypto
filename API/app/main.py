@@ -1,26 +1,40 @@
 import sys
+import logging
 from fastapi import FastAPI, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 # Importe les routeurs 
-from app.auth.router import router as auth_router
-from app.ml.router import router as ml_router
+from app.authentification.router import router as authentification_router
+from app.crypto import router as crypto_router
+
+logging.basicConfig(level=logging.DEBUG)
 
 limiter = Limiter(key_func=get_remote_address)
 
-app = FastAPI()
+app = FastAPI(
+    title="DstMlOpsCrypto API",
+    description="API for DstMlOpsCrypto project",
+    version="1.0.0",
+    openapi_tags=[{"name": "authentication", "description": "Authentication operations"}],
+)
+
+app.swagger_ui_init_oauth = {
+    "usePkceWithAuthorizationCodeGrant": True,
+    "clientId": "",
+    "clientSecret": ""
+}
+
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Route racine
 @app.get("/")
-
-@limiter.limit("5/minute")
-async def home(request: Request):
+async def root():
     return {"message": "Welcome to the API"}
 
-# Inclut les routeurs dans l'application
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(ml_router, prefix="/ml", tags=["ml"])
+app.include_router(authentification_router, prefix="/auth", tags=["authentication"])
+app.include_router(crypto_router.router, prefix="/crypto", tags=["crypto"])
+
+
