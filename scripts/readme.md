@@ -19,6 +19,7 @@ docker-compose up --no-deps tests-ml
 Install Python version 3.12.4
 Use gestionnaire de dépendance comme virtualenv
 
+# Dépendances
 apt-get update && \
     apt-get install -y --no-install-recommends \
     python3 \
@@ -28,6 +29,7 @@ apt-get update && \
     && pip3 install --upgrade pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+    
 
 # training
 Go into scripts repo :
@@ -36,9 +38,10 @@ Script are launched with avec two compulsory parameters :
 python3 train.py --currency= <currency> --period = <period>
 
 2 options for currency : 'BCT-EUR' or 'BTC-USD', represent the currenct : Euro or US dollar
-2 options for period : '1d' or '5d' : represents the period chosen for the prediction, 1 day or 5 days.
-exemple : python3 train.py --currency='BTC-EUR' --period='1d'
- 
+# 2 options for period : '1d' or '5d' : represents the period chosen for the prediction, 1 day or 5 days.   ## removed
+# exemple : python3 train.py --currency='BTC-EUR' --period='1d' # removed
+exemple : python3 train.py --currency='BTC-EUR'
+
 # Prediction
 cd scripts
 Script are launched with avec two compulsory parameters :
