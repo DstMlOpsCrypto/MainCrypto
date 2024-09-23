@@ -1,0 +1,16 @@
+# Utiliser une image officielle Python comme base
+FROM python:3.10-slim
+
+# Installer les dépendances nécessaires pour MLflow et PostgreSQL
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installer MLflow et psycopg2 pour la connexion à PostgreSQL
+RUN pip install mlflow psycopg2-binary boto3
+
+# Exposer le port MLflow
+EXPOSE 5000

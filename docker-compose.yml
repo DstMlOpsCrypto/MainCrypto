@@ -35,7 +35,6 @@ services:
       POSTGRES_USER: crypto
       POSTGRES_PASSWORD: crypto
       POSTGRES_DB: cryptoDb
-
     restart: always
     ports:
       - "5440:5432"
@@ -49,6 +48,7 @@ services:
       start_period: 5s
     networks:
       - app_network
+
   postgres:
     image: postgres:13
     container_name: airflow_db
@@ -60,7 +60,6 @@ services:
       - "5450:5432"
     volumes:
       - airflow_data_volume:/var/lib/postgresql/data
-
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 10s
@@ -309,9 +308,7 @@ services:
     #command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
-
-  # image: tests-scripts-ml # a discuter
-
+      
   frontend:
     build: ./frontend
     restart: always
@@ -327,31 +324,57 @@ services:
     networks:
       - app_network
   
+  mlflow_db:
+    build:
+      context: .
+      dockerfile: ./mlflow/Dockerfile
+    container_name: mlflow_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=mlflow
+      - POSTGRES_PASSWORD=mlflow
+      - POSTGRES_DB=mlflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "mlflow"]
+      interval: 10s       # Vérifie toutes les 10 secondes
+      timeout: 5s         # Attente maximale pour chaque vérification
+      retries: 5          # Nombre de vérifications avant de déclarer le conteneur "unhealthy"
+      start_period: 30s   # Temps d'attente initial avant de commencer les vérifications
+    volumes:
+      - mlflow:/var/lib/postgresql/data
+    networks:
+      - app_network
+
   mlflow-server:
-    image: ghcr.io/mlflow/mlflow  # Utilise l'image officielle MLflow
+    #image: ghcr.io/mlflow/mlflow  # image officielle MLflow
+    build:
+      context: .
+      dockerfile: ./mlflow/Dockerfile.server 
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 30s
+      retries: 3
+      start_period: 50s
     ports:
-      - "5000:5000"  # Mappe le port 5000 de l'hôte vers le conteneur
+      - "5000:5000"
     volumes:
-      - ./mlflow:/app  # Monte le répertoire local mlflow sur /app dans le conteneur
+      - ./mlflow:/app
     depends_on:
-      - postgres
-      - db
+      mlflow_db:
+        condition: service_healthy  # Assure que mlflow_db est healthy avant de démarrer
     working_dir: /app  # Définit le répertoire de travail sur /app où le script de démarrage est localisé
     environment:
-      - MLFLOW_TRACKING_URI=http://0.0.0.0:5000
+      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
     command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
     networks:
       - app_network
 
   tests-ml:
-    image: tests-scripts-ml
+    image: tests-scripts-ml  # création image tests-scripts-ml car beaucoup de dépendances à charger
     volumes:
       - ./scripts:/app/scripts
       - ./src:/app/src
@@ -367,7 +390,7 @@ volumes:
   mlflow:
   airflow:
   scripts:
-  src:  
+  src:
 
 networks:
   app_network:

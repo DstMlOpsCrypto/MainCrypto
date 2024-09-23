@@ -34,15 +34,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # CLI parameters
 parser = argparse.ArgumentParser(prog ='main.py',description="Pipeline d'exécution pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
-parser.add_argument('--period', choices= ['1d','5d','1wk'], required=True, help="Selectionne la période de prédiction")
+#parser.add_argument('--period', choices= ['1d','5d','1wk'], required=True, help="Selectionne la période de prédiction")
 args = parser.parse_args()
 
 
 # scripts variables
 exp_name = "Projet_Bitcoin_price_prediction"
 run_name = "first_run"
-tracking_uri = "sqlite:///mydb.sqlite"
-
+tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+neurons = 350
 # MLflow Tracking client
 client = MlflowClient(tracking_uri= tracking_uri)
 
@@ -54,13 +54,10 @@ def pipeline():
     # End any active run
     mlflow.end_run()
 
-    #initialize fixed params
-    neurons = 350
-
     #recupérer les arguments du script
     ticker = args.currency
-    period= args.period
-               
+    #period= args.period
+    period='1d'          
     # Data loading 
     df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
     print("Chargement des données effectué")
@@ -73,7 +70,7 @@ def pipeline():
     with mlflow.start_run(run_name=run_name):
         
         for pas_temps in [1,2,3,5,10,14]:  #14          
-                for batch_size in [5,10,15,20]:
+                for batch_size in [5]:#,10,15,20]:
                                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, nested=True):
@@ -108,17 +105,25 @@ def pipeline():
                         # log metrics
                         mlflow.log_metrics(
                             {
-                            "mean_squarred_error_train": mse_train,
+                            "mean_squared_error_train": mse_train,
                             "r2_train_score": r2_score_train,
-                            "mean_squarred_error_test" : mse_test,
+                            "mean_squared_error_test" : mse_test,
                             "r2_test_score" : r2_score_test
                             }
                         )
-                        print("mean_squarred_error_test", mse_test)
+                        print("mean_squared_error_test", mse_test)
                         print("r2_test_score", r2_score_test)
 
+        experiment = mlflow.get_experiment_by_name(exp_name)
+        if experiment is None:
+            experiment_id = mlflow.create_experiment(exp_name)
+        else:
+            experiment_id = experiment.experiment_id
+        
+        best_model_info = get_best_model(experiment_id=experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
+        
         #une fois les run terminés, détermination des meilleurs paramètres
-        best_model_info = get_best_model(experiment=experiment, metric_name="mean_squarred_error_test", ticker=ticker, period = period, tracking_uri = tracking_uri)    
+        #best_model_info = get_best_model(experiment=experiment, metric_name="mean_squarred_error_test", ticker=ticker, period = period, tracking_uri = tracking_uri)    
 
     # best model re training
     #fetching best params

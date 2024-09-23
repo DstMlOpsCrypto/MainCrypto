@@ -24,15 +24,12 @@ from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_m
 #Arguments du script
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
-parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selectionne la période de prédiction")
+#parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selectionne la période de prédiction")
 args = parser.parse_args()
 
-#params
-# tracking_uri= "sqlite:///mydb.sqlite"
-# client = MlflowClient(tracking_uri=tracking_uri)
 
 # Update the tracking URI to point to the MLflow server container
-tracking_uri = "http://mlflow-server:5000"   # to communicate with mlflow-sever
+tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
 client = MlflowClient(tracking_uri=tracking_uri)
 
 exp_name = "Projet_Bitcoin_price_prediction"
@@ -44,7 +41,8 @@ def pipeline():
            
     # recupérer les arguments du scripts
     ticker = args.currency
-    period = args.period
+    #period = args.period
+    period='1d'
     
     model_name = f"tf-lstm-reg-model-{period}"
     model_version = "latest"
