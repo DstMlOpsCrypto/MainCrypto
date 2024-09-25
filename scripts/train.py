@@ -41,13 +41,18 @@ args = parser.parse_args()
 # scripts variables
 exp_name = "Projet_Bitcoin_price_prediction"
 run_name = "first_run"
+
 tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+mlflow.set_tracking_uri(tracking_uri)
+
 neurons = 350
 # MLflow Tracking client
 client = MlflowClient(tracking_uri= tracking_uri)
 
 # Initialize MLFlow experiment
-experiment = init_mlflow_experiment(exp_name = exp_name)
+experiment_id = init_mlflow_experiment(exp_name)
+
+# Start the MLflow run
 
 def pipeline():  
 
@@ -57,23 +62,25 @@ def pipeline():
     #recupérer les arguments du script
     ticker = args.currency
     #period= args.period
-    period='1d'          
+    period='1d'
+             
     # Data loading 
     df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
     print("Chargement des données effectué")
             
     # Data Normalization
     df_array, df.index, scaler = normalize_data(df= df, period=period)
-    print("Normalisation des données effectuée")    
+    print("Normalisation des données effectuée")   
 
 
-    with mlflow.start_run(run_name=run_name):
+    with mlflow.start_run (run_name=run_name, experiment_id=experiment_id):           
+        print("MLflow run started")
         
         for pas_temps in [1,2,3,5,10,14]:  #14          
                 for batch_size in [5]:#,10,15,20]:
                                    
                     # Initializing run                
-                    with mlflow.start_run(run_name=run_name, nested=True):
+                    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):
 
                         print(f"Début de l'entrainement du modèle suivant : pas_temps = {pas_temps},batch_size = {batch_size}, neurons = {neurons}, currency = {ticker}, period = {period}", end= "\n\n")
                         
@@ -113,13 +120,7 @@ def pipeline():
                         )
                         print("mean_squared_error_test", mse_test)
                         print("r2_test_score", r2_score_test)
-
-        experiment = mlflow.get_experiment_by_name(exp_name)
-        if experiment is None:
-            experiment_id = mlflow.create_experiment(exp_name)
-        else:
-            experiment_id = experiment.experiment_id
-        
+          
         best_model_info = get_best_model(experiment_id=experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
         
         #une fois les run terminés, détermination des meilleurs paramètres
@@ -128,8 +129,9 @@ def pipeline():
     # best model re training
     #fetching best params
     if best_model_info is not None:
-        pas_temps = int(best_model_info['pas_temps'])
-        batch_size = int(best_model_info['batch_size'])
+        print(best_model_info)
+        pas_temps = int(best_model_info['params']['pas_temps'])
+        batch_size = int(best_model_info['params']['batch_size'])
         run_id = best_model_info['run_id']
             
         with mlflow.start_run(run_name=run_name, nested=True):
@@ -149,7 +151,7 @@ def pipeline():
             X_test =  X_test/scaler.scale_[0]
             test_predict = test_predict/scaler.scale_[0]
 
-            print(f"La valeur du Bitcoin était de {(X_test[-1])} {ticker} hier à la fermeture. Le modèle prédit une valeur de {test_predict[-1]} {ticker} ")
+            print(f"La valeur du Bitcoin était de {(int(X_test[-1]))} {ticker} hier à la fermeture. Le modèle prédit une valeur de {test_predict[-1]} {ticker} ")
 
             # model_name
             model_name = f"tf-lstm-reg-model-{period}"

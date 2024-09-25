@@ -30,12 +30,13 @@ args = parser.parse_args()
 
 # Update the tracking URI to point to the MLflow server container
 tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+mlflow.set_tracking_uri(tracking_uri)
 client = MlflowClient(tracking_uri=tracking_uri)
 
 exp_name = "Projet_Bitcoin_price_prediction"
 
-# Initialize MLFlow experiment
-experiment = init_mlflow_experiment(exp_name = exp_name)
+# get MLFlow experiment_id
+experiment_id = init_mlflow_experiment(exp_name = exp_name)
 
 def pipeline():
            
@@ -51,8 +52,8 @@ def pipeline():
     X_test, df_index, scaler = load_transform_data(period = period,ticker = ticker)
     
     #load best_model
-    best_model = load_best_model(period = period, experiment=experiment, model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
-    
+    best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
+        
     #prediction
     test_predict = best_model.predict(X_test)
     
