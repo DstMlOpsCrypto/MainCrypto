@@ -10,16 +10,24 @@ import sys
 import os
 
 #PATH
-# Récupérer le chemin d'accès du répertoire courant du dossier
-current_dir = os.getcwd()
-# Accéder au répertoire parent en utilisant os.pardir
-parent_current_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
-#ajout du chemin dans sys
-sys.path.append(parent_current_dir)
+# Récupérer le chemin du répertoire courant
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Naviguer vers le répertoire parent de 
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+# Construire le chemin vers le répertoire `src`
+src_dir = os.path.join(parent_dir, 'src')
 
-from src.data.import_raw_data import load_data, load_transform_data
+#ajout du chemin
+sys.path.append(current_dir)
+sys.path.append(src_dir)
+sys.path.append(parent_dir)
+
+from src.data.import_raw_data import load_data, load_transform_data, load_transform_data2
 from src.features.preprocess import normalize_data
 from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_mlflow_experiment
+
+#supprimer warnings GPU tensorflow
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 #Arguments du script
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
@@ -49,7 +57,7 @@ def pipeline():
     model_version = "latest"
     
     #load_tranform
-    X_test, df_index, scaler = load_transform_data(period = period,ticker = ticker)
+    X_test, df_index, scaler = load_transform_data2(table='ohlc',period=period)          
     
     #load best_model
     best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
