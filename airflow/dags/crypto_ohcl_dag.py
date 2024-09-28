@@ -39,6 +39,7 @@ def get_conn():
         "schema": connection.schema
         }
 
+
 def get_non_duplicate_assets():
     """Function to get non-duplicate assets from PostgreSQL
     Arguments:

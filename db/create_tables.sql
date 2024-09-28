@@ -38,5 +38,5 @@ VALUES
 -- Insert records into the "users" table
 INSERT INTO members (id, username, email, hashed_password, role)
 VALUES
-    (1, 'john Doe', 'john.doe@example.com', 'password123', 'admin'),
-    (2, 'jane Smith', 'jane.smith@example.net', 'password456', 'user');
+    (1, 'admin', 'admin@admin.com', '$argon2id$v=19$m=65536,t=3,p=4$U2qt1XoPYSxFyPn/fy8FgA$2xQ08S6Nq2dez3i0b9en6tAO55aHTe4y6jvg3RqPUr4', 'admin'),
+    (2, 'user', 'user@user.com', '$argon2id$v=19$m=65536,t=3,p=4$DGEs5ZyTsnZuDcH4X+v9Xw$hXkcx5V+RA8IlZ3TBMK2Yz/kO9mbGljBQqKRvK8CaOQ', 'user');
