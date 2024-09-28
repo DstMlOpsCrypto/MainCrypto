@@ -72,7 +72,3 @@ sudo usermod -aG docker $USER
 echo "...done"
 
 
-#  echo "=== Launch docker-compose.yml ==="
-# Launch docker-compose.yml
-# docker-compose up airflow-init
-# docker-compose up -d
