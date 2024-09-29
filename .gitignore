@@ -174,3 +174,4 @@ dags/
 logs/
 plugins/
 airflow/logs/
+airflow/logs/scheduler/latest
