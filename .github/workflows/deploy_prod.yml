@@ -1,0 +1,30 @@
+name: Deploy to Production
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+      
+      - name: Build and Deploy
+        run: |
+          docker-compose up -d --build
+      
+      - name: Run Tests
+        run: |
+          docker-compose exec -T app pytest
+      
+      - name: Cleanup
+        run: |
+          docker-compose down

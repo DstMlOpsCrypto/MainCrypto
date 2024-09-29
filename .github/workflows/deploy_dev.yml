@@ -1,0 +1,22 @@
+name: Deploy to Dev
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  test_group1:
+    name: Test Group 1 (DB + Container)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+      - name: Launch Group 1 and Run Tests
+        run: |
+          docker-compose -f docker-compose-group1.yml up -d --build
+          docker-compose -f docker-compose-group1.yml exec -T container pytest
+          docker-compose -f docker-compose-group1.yml down
