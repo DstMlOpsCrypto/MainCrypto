@@ -7,6 +7,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import httpx
 
+
 # Création d'un routeur FastAPI
 router = APIRouter()
 
@@ -79,6 +80,23 @@ async def create_asset(asset: AssetCreate, current_user: User = Depends(get_curr
             query = "INSERT INTO assets (asset, symbol, exchange) VALUES (%s, %s, %s) RETURNING id, asset, symbol, exchange"
             db.execute(query, (asset.asset, asset.symbol, asset.exchange))
             new_asset = db.fetchone()
+            db.connection.commit()
+            
+            # Trigger the Airflow DAG using the API
+            airflow_api_url = "http://airflow-webserver:8080/api/v1/dags/fetch_historical_ohlc/dagRuns"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Basic YWlyZmxvdzphaXJmbG93"  # Base64 encoded "airflow:airflow"
+            }
+            payload = {
+                "conf": {"asset": asset.asset},
+                "dag_run_id": f"manual__{datetime.now().isoformat()}"
+            }
+            
+            response = requests.post(airflow_api_url, json=payload, headers=headers)
+            if response.status_code != 200:
+                raise HTTPException(status_code=500, detail=f"Failed to trigger Airflow DAG: {response.text}")
+            
             return Asset(**new_asset)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
@@ -89,13 +107,20 @@ async def delete_asset(asset_id: int, current_user: User = Depends(get_current_u
         try:
             query = "DELETE FROM assets WHERE id = %s"
             db.execute(query, (asset_id,))
+            db.connection.commit()
             if db.rowcount == 0:
                 raise HTTPException(status_code=404, detail="Asset not found")
             return None
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-
+class KrakenAsset(BaseModel):
+    asset: str
+    symbol: str
+    exchange: str = "kraken"
+    base: str
+    quote: str
+    status: str
 
 #Kraken API Assets
 @router.get("/kraken_assets", response_model=List[KrakenAsset])
