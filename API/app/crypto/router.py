@@ -3,9 +3,9 @@ from psycopg2.extras import RealDictCursor
 from ..database import get_db
 from ..authentification.security import get_current_user, User
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
-
+import httpx
 
 # Création d'un routeur FastAPI
 router = APIRouter()
@@ -94,3 +94,38 @@ async def delete_asset(asset_id: int, current_user: User = Depends(get_current_u
             return None
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+
+#Kraken API Assets
+@router.get("/kraken_assets", response_model=List[KrakenAsset])
+async def get_kraken_assets(current_user: User = Depends(get_current_user)):
+    url = "https://api.kraken.com/0/public/AssetPairs"
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Failed to fetch data from Kraken API")
+    
+    data = response.json()
+    
+    if "result" not in data:
+        raise HTTPException(status_code=500, detail="Unexpected response format from Kraken API")
+    
+    assets = []
+    for key, value in data["result"].items():
+        asset = KrakenAsset(
+            asset=key,
+            symbol=value["altname"],
+            exchange="kraken",
+            base=value["base"],
+            quote=value["quote"],
+            status=value["status"]
+        )
+        assets.append(asset)
+    
+    return assets
+
+
+
