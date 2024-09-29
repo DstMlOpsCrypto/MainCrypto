@@ -173,3 +173,4 @@ notebooks/
 dags/
 logs/
 plugins/
+airflow/logs/
