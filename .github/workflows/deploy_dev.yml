@@ -22,5 +22,5 @@ jobs:
           docker-compose -f docker-compose-group1.yml up -d --build
       - name: Run Tests  
         run: |
-          # docker-compose -f docker-compose-group1.yml exec -T container pytest /
+          docker-compose -f docker-compose-group1.yml exec -T container pytest /db/test/test_db.py
           docker-compose -f docker-compose-group1.yml down
