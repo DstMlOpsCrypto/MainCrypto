@@ -14,7 +14,7 @@ jobs:
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose python3 pytest
+          sudo apt-get install -y docker-compose python3
           sudo apt-get install python3-pip
           sudo apt-get install python3-pytest
       - name: Launch Group 1
