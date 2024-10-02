@@ -21,7 +21,14 @@ jobs:
       - name: Launch Group 1
         run: |
           docker-compose -f docker-compose-group1.yml up -d --build
-      - name: Run Tests  
+      - name: Wait for DB to be ready
         run: |
-          docker-compose -f docker-compose-group1.yml exec -T container pytest .db/test/test_db.py
+          docker-compose -f docker-compose-group1.yml exec -T db \
+          sh -c 'while ! pg_isready; do sleep 1; done'
+      - name: Run Tests on DB Container
+        run: |
+          docker-compose -f docker-compose-group1.yml exec -T db \
+          sh -c 'cd /app && pytest test/test_db.py  -v' 
+      - name: Tear down containers 
+        run: |
           docker-compose -f docker-compose-group1.yml down
