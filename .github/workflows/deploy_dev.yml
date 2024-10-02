@@ -16,7 +16,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose python3
           sudo apt-get install python3-pip
-          sudo apt-get install python3-pytest
+          sudo apt-get install psycopg2
+          sudo pip3 install pytest
+          sudo pip3 install pytest-cov
       - name: Launch Group 1
         run: |
           docker-compose -f docker-compose-group1.yml up -d --build
