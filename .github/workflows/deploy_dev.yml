@@ -21,6 +21,7 @@ jobs:
       - name: Launch Group 1
         run: |
           docker-compose -f docker-compose-group1.yml up -d --build
+      - name: Waiting Services to be up
         run: |
           while ! docker-compose -f docker-compose-group1.yml exec -T db pg_isready; do
             echo "Waiting for database..."
