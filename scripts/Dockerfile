@@ -20,6 +20,8 @@ RUN pip3 install --upgrade pip \
     && pip install mlflow \
     && pip install yfinance \
     && pip install pytest \
+    && pip install psycopg2-binary \
+    && pip install SQLAlchemy \
     && pip install --upgrade typing_extensions
 
 USER root
