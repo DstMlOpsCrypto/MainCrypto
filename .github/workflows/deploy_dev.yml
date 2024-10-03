@@ -31,14 +31,14 @@ jobs:
             sleep 5
           done
       - name: Run DB tests
-          run: |
-            pytest tests/crypto/
-          env:
-            CRYPTO_DB_HOST: localhost
-            CRYPTO_DB_PORT: 5440
-            CRYPTO_DB_NAME: cryptoDb
-            CRYPTO_DB_USER: crypto
-            CRYPTO_DB_PASSWORD: crypto
+        run: |
+          pytest tests/crypto/
+        env:
+          CRYPTO_DB_HOST: localhost
+          CRYPTO_DB_PORT: 5440
+          CRYPTO_DB_NAME: cryptoDb
+          CRYPTO_DB_USER: crypto
+          CRYPTO_DB_PASSWORD: crypto
       - name: Run Airflow tests
         run: |
           pytest tests/airflow/
