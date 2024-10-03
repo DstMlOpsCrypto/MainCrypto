@@ -23,7 +23,7 @@ jobs:
           docker-compose -f docker-compose-group1.yml up -d --build
       - name: Run DB tests
         run: |
-          pytest tests/crypto/
+          python -m pytest tests/crypto/
         env:
           CRYPTO_DB_HOST: localhost
           CRYPTO_DB_PORT: 5440
@@ -32,7 +32,7 @@ jobs:
           CRYPTO_DB_PASSWORD: crypto
       - name: Run Airflow tests
         run: |
-          pytest tests/airflow/
+          python -m pytest tests/airflow/
         env:
           AIRFLOW_DB_HOST: localhost
           AIRFLOW_DB_PORT: 5450
