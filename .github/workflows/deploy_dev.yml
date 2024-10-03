@@ -21,14 +21,31 @@ jobs:
       - name: Launch Group 1
         run: |
           docker-compose -f docker-compose-group1.yml up -d --build
-      - name: Wait for DB to be ready
         run: |
-          docker-compose -f docker-compose-group1.yml exec -T db \
-          sh -c 'while ! pg_isready; do sleep 1; done'
-      - name: Run Tests on DB Container
-        run: |
-          docker-compose -f docker-compose-group1.yml exec -T db \
-          sh -c 'cd /app && pytest test/test_db.py  -v' 
+          while ! docker-compose -f docker-compose-group1.yml exec -T db pg_isready; do
+            echo "Waiting for database..."
+            sleep 2
+          done
+          while ! docker-compose -f docker-compose-group1.yml exec -T airflow pg_isready; do
+            echo "Waiting for Airflow..."
+            sleep 5
+          done
+      - name: Run DB tests
+          run: pytest tests/crypto/
+          env:
+            CRYPTO_DB_HOST: localhost
+            CRYPTO_DB_PORT: 5440
+            CRYPTO_DB_NAME: cryptoDb
+            CRYPTO_DB_USER: crypto
+            CRYPTO_DB_PASSWORD: crypto
+      - name: Run Airflow tests
+        run: pytest tests/airflow/
+        env:
+          AIRFLOW_DB_HOST: localhost
+          AIRFLOW_DB_PORT: 5450
+          AIRFLOW_DB_NAME: airflow
+          AIRFLOW_DB_USER: airflow
+          AIRFLOW_DB_PASSWORD: airflow
       - name: Tear down containers 
         run: |
           docker-compose -f docker-compose-group1.yml down

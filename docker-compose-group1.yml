@@ -42,7 +42,8 @@ services:
       - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "crypto" ]
-      interval: 10s
+      interval: 5s
+      timeout: 5s
       retries: 5
       start_period: 5s
     networks:
@@ -62,6 +63,7 @@ services:
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 10s
+      timeout: 10s
       retries: 5
       start_period: 5s
     restart: always
