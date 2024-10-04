@@ -31,8 +31,7 @@ jobs:
           CRYPTO_DB_PASSWORD: crypto
       - name: Tear down containers 
         run: |
-          docker-compose -f docker-compose-group1.yml down
-        
+          docker-compose -f docker-compose-group1.yml down        
   test_group2:
     name: Test Group 2 (DB + API)
     if: always()
@@ -63,8 +62,7 @@ jobs:
       - name: Tear down containers
         run: |
           docker-compose -f docker-compose-group2.yml down
-
- test_group3:
+  test_group3:
     name: Test Group 3 (DB + MLFLOW)
     if: always()
     needs: [test_group1, test_group2]
@@ -94,4 +92,3 @@ jobs:
       - name: Tear down containers
         run: |
           docker-compose -f docker-compose-group3.yml down
-
