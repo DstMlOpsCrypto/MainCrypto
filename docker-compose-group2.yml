@@ -1,0 +1,54 @@
+version: '3'
+services:
+  db:
+    image: postgres:13
+    container_name: db
+    environment:
+      POSTGRES_USER: crypto
+      POSTGRES_PASSWORD: crypto
+      POSTGRES_DB: cryptoDb
+    restart: always
+    ports:
+      - "5440:5432"
+    volumes:
+      - crypto_data_volume:/var/lib/postgresql/data
+      - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "crypto" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - app_network
+  api:
+    build: ./API
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug
+    volumes:
+      - ./API:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+
+    # Commande à exécuter au démarrage du conteneur
+    # Cette commande fait plusieurs choses :
+    # 1. Change le répertoire courant vers /app
+    # 2. Définit PYTHONPATH pour inclure /app
+    # 3. Exécute les tests avec pytest
+    # 4. Lance l'application avec Gunicorn et Uvicorn
+
+    command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    #command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    networks:
+      - app_network
+volumes:
+  crypto_data_volume:
+  airflow:
+  src:
+networks:
+  app_network:
+    driver: bridge
