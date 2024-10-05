@@ -94,6 +94,13 @@ async def create_asset(asset: AssetCreate, current_user: User = Depends(get_curr
         raise HTTPException(status_code=400, detail="Invalid asset pair name for Kraken API")
     async with get_db() as db:
         try:
+            # Check if the asset already exists
+            db.execute("SELECT id FROM assets WHERE asset = %s", (asset.asset,))
+            existing_asset = db.fetchone()
+            if existing_asset:
+                raise HTTPException(status_code=400, detail="Asset already exists in the database")
+
+            # If the asset doesn't exist, proceed with insertion
             query = "INSERT INTO assets (asset, symbol, exchange) VALUES (%s, %s, %s) RETURNING id, asset, symbol, exchange"
             db.execute(query, (asset.asset, asset.symbol, asset.exchange))
             new_asset = db.fetchone()
@@ -115,6 +122,8 @@ async def create_asset(asset: AssetCreate, current_user: User = Depends(get_curr
                 raise HTTPException(status_code=500, detail=f"Failed to trigger Airflow DAG: {response.text}")
             
             return Asset(**new_asset)
+        except HTTPException as he:
+            raise he
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 

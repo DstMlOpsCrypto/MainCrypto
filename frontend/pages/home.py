@@ -26,9 +26,16 @@ def show():
 
         # Add delete functionality
         if not existing_assets.empty:
-            asset_to_delete = st.selectbox("Select an asset to delete", existing_assets['asset'])
+            # Create a mapping from asset names to IDs
+            asset_names = existing_assets['asset'].tolist()
+            asset_id_mapping = dict(zip(existing_assets['asset'], existing_assets['id']))
+
+            # Let the user select an asset by name
+            asset_to_delete = st.selectbox("Select an asset to delete", asset_names)
             if st.button("Delete Selected Asset"):
-                delete_asset(token, asset_to_delete)
+                # Get the corresponding asset ID
+                asset_id = asset_id_mapping[asset_to_delete]
+                delete_asset(token, asset_id)
                 st.experimental_rerun()
 
     # Add new asset functionality
