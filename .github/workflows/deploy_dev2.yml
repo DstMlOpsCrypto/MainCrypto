@@ -31,4 +31,4 @@ jobs:
           CRYPTO_DB_PASSWORD: crypto
       - name: Tear down containers
         run: |
-          docker-compose -f docker-compose-group0.yml down        
+          docker-compose -f docker-compose0.yml down        
