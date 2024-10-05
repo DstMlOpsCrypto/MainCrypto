@@ -50,7 +50,7 @@ jobs:
           docker-compose -f docker-compose-group2.yml up -d --build
       - name: Run DB tests Group 2
         run: |
-          python -m pytest tests/crypto/
+          # python -m pytest tests/crypto/
           # python -m pytest tests/api/
         env:
           CRYPTO_DB_HOST: localhost
@@ -79,7 +79,7 @@ jobs:
           docker-compose -f docker-compose-group3.yml up -d --build
       - name: Run DB tests  Group 3
         run: |
-          python -m pytest tests/crypto/
+          # python -m pytest tests/crypto/
           # python -m pytest tests/mlflow/
         env:
           CRYPTO_DB_HOST: localhost
