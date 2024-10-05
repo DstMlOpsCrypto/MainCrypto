@@ -12,6 +12,13 @@ def test_postgres_cryptodb_connection():
             user=os.environ.get('CRYPTO_DB_USER'),
             password=os.environ.get('CRYPTO_DB_PASSWORD')
         )
+        print(
+            os.environ.get('CRYPTO_DB_HOST'),
+            os.environ.get('CRYPTO_DB_PORT'),
+            os.environ.get('CRYPTO_DB_NAME'),
+            os.environ.get('CRYPTO_DB_USER'),
+            os.environ.get('CRYPTO_DB_PASSWORD')
+        )
         cur = conn.cursor()
         cur.execute("SELECT asset FROM public.assets")
         records = cur.fetchall()

@@ -35,7 +35,6 @@ jobs:
   test_group2:
     name: Test Group 2 (DB + API)
     if: always()
-    needs: test_group1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -65,7 +64,6 @@ jobs:
   test_group3:
     name: Test Group 3 (DB + MLFLOW)
     if: always()
-    needs: [test_group1, test_group2]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
