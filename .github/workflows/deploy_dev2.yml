@@ -19,7 +19,7 @@ jobs:
           sudo apt-get install python3-pytest
       - name: Launch Container
         run: |
-          docker-compose -f docker-compose-group0.yml up -d --build
+          docker-compose -f docker-compose0.yml up -d --build
       - name: Run Pytest
         run: |
           python -m pytest tests/crypto/
