@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - dev
-
 jobs:
   test_group1:
     name: Test Group 1 (DB + Container)
@@ -21,7 +20,7 @@ jobs:
       - name: Launch Group 1
         run: |
           docker-compose -f docker-compose-group1.yml up -d --build
-      - name: Run DB tests
+      - name: Run DB tests Group1
         run: |
           python -m pytest tests/crypto/
         env:
@@ -30,6 +29,64 @@ jobs:
           CRYPTO_DB_NAME: cryptoDb
           CRYPTO_DB_USER: crypto
           CRYPTO_DB_PASSWORD: crypto
-      - name: Tear down containers 
+      - name: Tear down containers  Group 1
         run: |
-          docker-compose -f docker-compose-group1.yml down
+          docker-compose -f docker-compose-group1.yml down        
+  test_group2:
+    name: Test Group 2 (DB + API)
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose python3
+          sudo apt-get install python3-pip
+          sudo apt-get install python3-psycopg2
+          sudo apt-get install python3-pytest
+      - name: Launch Group 2
+        run: |
+          docker-compose -f docker-compose-group2.yml up -d --build
+      - name: Run DB tests Group 2
+        run: |
+          python -m pytest tests/crypto/
+          # python -m pytest tests/api/
+        env:
+          CRYPTO_DB_HOST: localhost
+          CRYPTO_DB_PORT: 5440
+          CRYPTO_DB_NAME: cryptoDb
+          CRYPTO_DB_USER: crypto
+          CRYPTO_DB_PASSWORD: crypto
+      - name: Tear down containers  Group 2
+        run: |
+          docker-compose -f docker-compose-group2.yml down
+  test_group3:
+    name: Test Group 3 (DB + MLFLOW)
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose python3
+          sudo apt-get install python3-pip
+          sudo apt-get install python3-psycopg2
+          sudo apt-get install python3-pytest
+      - name: Launch Group 3
+        run: |
+          docker-compose -f docker-compose-group3.yml up -d --build
+      - name: Run DB tests  Group 3
+        run: |
+          python -m pytest tests/crypto/
+          # python -m pytest tests/mlflow/
+        env:
+          CRYPTO_DB_HOST: localhost
+          CRYPTO_DB_PORT: 5440
+          CRYPTO_DB_NAME: cryptoDb
+          CRYPTO_DB_USER: crypto
+          CRYPTO_DB_PASSWORD: crypto
+      - name: Tear down containers  Group 3
+        run: |
+          docker-compose -f docker-compose-group3.yml down
