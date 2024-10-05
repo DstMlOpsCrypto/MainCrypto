@@ -47,7 +47,7 @@ services:
       - app_network
 volumes:
   crypto_data_volume:
-  airflow:
+  script:
   src:
 networks:
   app_network:
