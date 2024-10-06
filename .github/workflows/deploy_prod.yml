@@ -10,38 +10,46 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Connect to EC2 and delete app folder
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USER }}
           EC2_SSH_KEY: ${{ secrets.PRIVATE_KEY }}
-          run: |
-            echo "$EC2_SSH_KEY" > private_key.pem
-            chmod 600 private_key.pem
-            ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USERNAME@$EC2_HOST 'rm -rf ~/app'
+        run: |
+          echo "$EC2_SSH_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USERNAME@$EC2_HOST 'rm -rf ~/app'
+      
       - name: Push repository to EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
           scp -o StrictHostKeyChecking=no -i private_key.pem -r ./* $EC2_USERNAME@$EC2_HOST:~/app/
+      
       - name: Run script on EC2
-      env:
-        EC2_HOST: ${{ secrets.EC2_HOST }}
-        EC2_USERNAME: ${{ secrets.EC2_USER }}
-      run: |
-        ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USERNAME@$EC2_HOST 'cd ~/app && ./your_script.sh'
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USERNAME: ${{ secrets.EC2_USER }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USERNAME@$EC2_HOST 'cd ~/app && ./your_script.sh'
+      
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
+
       - name: Clean up
         run: rm -f private_key.pem
+
       - name: Build and Deploy
         run: |
           docker-compose up airflow-init
           docker-compose up -d --build   
+          
       - name: Cleanup
         run: |
           docker-compose down
