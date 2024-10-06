@@ -2,20 +2,14 @@
 
 on:
   pull_request:
-      types:
-      - opened
-      - synchronize
     branches:
-      - main
-
+      - dev
 jobs:
-  deploy:
-    name: Deploy to Production
+  production:
+    name: Testing containers
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v2
       - name: Connect to EC2 and delete app folder
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
