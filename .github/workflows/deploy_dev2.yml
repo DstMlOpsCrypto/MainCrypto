@@ -1,0 +1,34 @@
+name: Deploy to Dev
+
+on:
+  pull_request:
+    branches:
+      - dev
+jobs:
+  test_group1:
+    name: Test Group 1 (DB + Container -)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose python3
+          sudo apt-get install python3-pip
+          sudo apt-get install python3-psycopg2
+          sudo apt-get install python3-pytest
+      - name: Launch Container
+        run: |
+          docker-compose -f docker-compose0.yml up -d --build
+      - name: Run Pytest
+        run: |
+          python -m pytest tests/crypto/
+        env:
+          CRYPTO_DB_HOST: localhost
+          CRYPTO_DB_PORT: 5440
+          CRYPTO_DB_NAME: cryptoDb
+          CRYPTO_DB_USER: crypto
+          CRYPTO_DB_PASSWORD: crypto
+      - name: Tear down containers
+        run: |
+          docker-compose -f docker-compose0.yml down        
