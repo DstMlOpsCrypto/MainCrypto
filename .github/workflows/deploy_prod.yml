@@ -2,6 +2,9 @@
 
 on:
   pull_request:
+      types:
+      - opened
+      - synchronize
     branches:
       - main
 
@@ -49,7 +52,7 @@ jobs:
         run: |
           docker-compose up airflow-init
           docker-compose up -d --build   
-          
+
       - name: Cleanup
         run: |
           docker-compose down
