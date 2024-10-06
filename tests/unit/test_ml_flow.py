@@ -88,15 +88,84 @@ def test_get_check_experiment_found(mock_client, capsys):
 
 # Fonction get_best_model
 
+# @patch('evaluation.ml_flow.MlflowClient')
+# @patch('evaluation.ml_flow.get_check_experiment')
+# def test_get_best_model(mock_get_check_experiment, MockMlflowClient):
+#     # Préparer le mock pour get_check_experiment
+#     mock_experiment = MagicMock()
+#     mock_experiment.experiment_id = '1'
+#     mock_get_check_experiment.return_value = mock_experiment
+    
+#     # Préparer le mock pour MlflowClient
+#     mock_client = MockMlflowClient.return_value
+#     mock_run = MagicMock()
+#     mock_run.info.run_id = 'run_123'
+#     mock_run.data.params = {'param1': 'value1'}
+#     mock_run.data.metrics = {'metric1': 0.95}
+#     mock_run.info.artifact_uri = 'http://path/to/model'
+#     mock_client.search_runs.return_value = [mock_run]
+    
+#     # Appeler la fonction avec des valeurs de test
+#     result = get_best_model(
+#         exp_name='test_exp',
+#         metric_name='metric1',
+#         ticker='USD',
+#         period='1 day',
+#         tracking_uri='http://localhost:5000'
+#     )
+    
+#     # Vérifier les résultats
+#     assert result is not None
+#     assert result['run_id'] == 'run_123'
+#     assert result['params'] == {'param1': 'value1'}
+#     assert result['metrics'] == {'metric1': 0.95}
+#     assert result['model_path'] == 'http://path/to/model/model'
+    
+#     # Vérifier les appels aux mocks
+#     mock_get_check_experiment.assert_called_once_with('test_exp', 'http://localhost:5000')
+#     MockMlflowClient.assert_called_once_with(tracking_uri='http://localhost:5000')
+#     mock_client.search_runs.assert_called_once_with('1', order_by=['metrics.metric1 ASC'])
+
+# @patch('evaluation.ml_flow.MlflowClient')
+# @patch('evaluation.ml_flow.get_check_experiment')
+# def test_get_best_model_no_runs(mock_get_check_experiment, MockMlflowClient):
+#     # Préparer le mock pour get_check_experiment
+#     mock_experiment = MagicMock()
+#     mock_experiment.experiment_id = '1'
+#     mock_get_check_experiment.return_value = mock_experiment
+    
+#     # Préparer le mock pour MlflowClient
+#     mock_client = MockMlflowClient.return_value
+#     mock_client.search_runs.return_value = []  # Aucun run trouvé
+    
+#     # Appeler la fonction avec des valeurs de test
+#     result = get_best_model(
+#         exp_name='test_exp',
+#         metric_name='metric1',
+#         ticker='USD',
+#         period='1 day',
+#         tracking_uri='http://localhost:5000'
+#     )
+    
+#     # Vérifier les résultats
+#     assert result is None  # Aucune information sur le modèle ne doit être retournée
+    
+#     # Vérifier les appels aux mocks
+#     mock_get_check_experiment.assert_called_once_with('test_exp', 'http://localhost:5000')
+#     MockMlflowClient.assert_called_once_with(tracking_uri='http://localhost:5000')
+#     mock_client.search_runs.assert_called_once_with('1', order_by=['metrics.metric1 ASC'])
+ 
+ 
+
 @patch('evaluation.ml_flow.MlflowClient')
 @patch('evaluation.ml_flow.get_check_experiment')
 def test_get_best_model(mock_get_check_experiment, MockMlflowClient):
-    # Préparer le mock pour get_check_experiment
+    # Mock get_check_experiment to return a mocked experiment
     mock_experiment = MagicMock()
     mock_experiment.experiment_id = '1'
     mock_get_check_experiment.return_value = mock_experiment
     
-    # Préparer le mock pour MlflowClient
+    # Mock MlflowClient and its search_runs method
     mock_client = MockMlflowClient.return_value
     mock_run = MagicMock()
     mock_run.info.run_id = 'run_123'
@@ -105,58 +174,57 @@ def test_get_best_model(mock_get_check_experiment, MockMlflowClient):
     mock_run.info.artifact_uri = 'http://path/to/model'
     mock_client.search_runs.return_value = [mock_run]
     
-    # Appeler la fonction avec des valeurs de test
+    # Call the function with test inputs
     result = get_best_model(
-        exp_name='test_exp',
+        experiment=mock_experiment,
         metric_name='metric1',
         ticker='USD',
         period='1 day',
         tracking_uri='http://localhost:5000'
     )
     
-    # Vérifier les résultats
+    # Assertions
     assert result is not None
     assert result['run_id'] == 'run_123'
     assert result['params'] == {'param1': 'value1'}
     assert result['metrics'] == {'metric1': 0.95}
     assert result['model_path'] == 'http://path/to/model/model'
     
-    # Vérifier les appels aux mocks
+    # Ensure the mocked methods were called as expected
     mock_get_check_experiment.assert_called_once_with('test_exp', 'http://localhost:5000')
     MockMlflowClient.assert_called_once_with(tracking_uri='http://localhost:5000')
     mock_client.search_runs.assert_called_once_with('1', order_by=['metrics.metric1 ASC'])
 
+
 @patch('evaluation.ml_flow.MlflowClient')
 @patch('evaluation.ml_flow.get_check_experiment')
 def test_get_best_model_no_runs(mock_get_check_experiment, MockMlflowClient):
-    # Préparer le mock pour get_check_experiment
+    # Mock get_check_experiment to return a mocked experiment
     mock_experiment = MagicMock()
     mock_experiment.experiment_id = '1'
     mock_get_check_experiment.return_value = mock_experiment
     
-    # Préparer le mock pour MlflowClient
+    # Mock MlflowClient to return no runs
     mock_client = MockMlflowClient.return_value
-    mock_client.search_runs.return_value = []  # Aucun run trouvé
+    mock_client.search_runs.return_value = []  # No runs found
     
-    # Appeler la fonction avec des valeurs de test
+    # Call the function with test inputs
     result = get_best_model(
-        exp_name='test_exp',
+        experiment=mock_experiment,
         metric_name='metric1',
         ticker='USD',
         period='1 day',
         tracking_uri='http://localhost:5000'
     )
     
-    # Vérifier les résultats
-    assert result is None  # Aucune information sur le modèle ne doit être retournée
+    # Assert the result is None
+    assert result is None
     
-    # Vérifier les appels aux mocks
+    # Ensure the mocked methods were called as expected
     mock_get_check_experiment.assert_called_once_with('test_exp', 'http://localhost:5000')
     MockMlflowClient.assert_called_once_with(tracking_uri='http://localhost:5000')
     mock_client.search_runs.assert_called_once_with('1', order_by=['metrics.metric1 ASC'])
- 
- 
- 
+
  
    
 # test load best_model

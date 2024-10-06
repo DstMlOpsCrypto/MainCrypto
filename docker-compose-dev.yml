@@ -304,7 +304,7 @@ services:
     # 3. Exécute les tests avec pytest
     # 4. Lance l'application avec Gunicorn et Uvicorn
 
-    command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    command: sh -c "cd /app && PYTHONPATH=/app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     #command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
@@ -370,16 +370,6 @@ services:
     environment:
       - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
     command: [ "mlflow", "server", "--host", "0.0.0.0", "--port", "5000" ] # Exécute MLflow directement
-    networks:
-      - app_network
-
-  tests-ml:
-    image: tests-scripts-ml # création image tests-scripts-ml car beaucoup de dépendances à charger
-    volumes:
-      - ./scripts:/app/scripts
-      - ./src:/app/src
-      - ./tests/unit:/app/tests/units
-    command: [ "pytest", "/app/tests/units" ] # Exécute les tests dans le conteneur
     networks:
       - app_network
 

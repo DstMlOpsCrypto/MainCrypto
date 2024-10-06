@@ -2,6 +2,7 @@ import mlflow
 from mlflow import MlflowClient
 import time
 
+
 def init_mlflow_experiment(exp_name):
     """
     Args :
@@ -10,14 +11,23 @@ def init_mlflow_experiment(exp_name):
     Returns:
     ID of the existing or newly created MLflow experiment (str).
     """                
-    # Link experiment and run
-    experiment = mlflow.set_experiment(exp_name)    
-        
-    # Print the Experiment Name and Creation Date
-    print("Experiment name: {}".format(exp_name))
-    print("Timestamp creation: {}".format(experiment.creation_time), end= "\n\n")
+    # Try to get the experiment by name
+    experiment = mlflow.get_experiment_by_name(exp_name)
     
-    return experiment
+    if experiment is None:        
+        # If the experiment does not exist, create it
+        experiment_id = mlflow.create_experiment(exp_name)
+        experiment = mlflow.get_experiment(experiment_id)
+        print(f"Created a new experiment: {exp_name}")
+         # Print the Experiment Name and Creation Date
+        print(f"Experiment name: {experiment.name}")
+        print(f"Timestamp creation: {experiment.creation_time}\n")        
+        return experiment_id    
+    
+    else:
+        print(f"Using existing experiment: {exp_name}")
+        experiment_id = experiment.experiment_id
+        return experiment_id
 
 
 def get_check_experiment(exp_name, tracking_uri):
@@ -40,7 +50,7 @@ def get_check_experiment(exp_name, tracking_uri):
     
     
     
-def get_best_model(exp_name, metric_name, ticker, period, tracking_uri, order='ASC'):
+def get_best_model(experiment_id, metric_name, ticker, period, tracking_uri, order='ASC'):
     """
     Fetch the best model from MLflow server based on a specific metric.
 
@@ -58,19 +68,18 @@ def get_best_model(exp_name, metric_name, ticker, period, tracking_uri, order='A
     client = MlflowClient(tracking_uri = tracking_uri)
     
     try:
-        # Obtain the experiment
-        experiment = get_check_experiment(exp_name, tracking_uri)
+             
 
-        # Obtain experiment ID
-        experiment_id = experiment.experiment_id
-
-        # Search for the best run in the experiment
-        runs = client.search_runs(experiment_id, order_by=[f"metrics.{metric_name} {order}"])
         
-        if runs:
+        # Rechercher les runs dans l'expérience donnée en fonction de la métrique
+        runs = client.search_runs(
+            experiment_ids=[experiment_id], 
+            order_by=[f"metrics.{metric_name} {order}"]
+        )
+
+        if runs:            
             
-            print("runs :", len(runs))
-            
+            print(f"Found {len(runs)} runs.")
             # Get the best model according to the metric
             best_run = runs[0]
 
@@ -99,28 +108,26 @@ def get_best_model(exp_name, metric_name, ticker, period, tracking_uri, order='A
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        print("je suis là")
         return None
     
 
-def load_best_model(exp_name, model_name, model_version, period, tracking_uri, metric_name = "mean_squarred_error_test", order='ASC'):
+def load_best_model(experiment_id, model_name, model_version, tracking_uri, metric_name = "mean_squarred_error_test", order='ASC'):
+    
     #client
     client = MlflowClient(tracking_uri = tracking_uri)
              
     # Check and obtain experiment
-    experiment = get_check_experiment(exp_name, tracking_uri)
-            
-    # Get experiment ID
-    experiment_id = experiment.experiment_id
+    #experiment = get_check_experiment(exp_name, tracking_uri)            
     
-    # Search for all runs
-    runs = client.search_runs(experiment_id, order_by=[f"metrics.{metric_name} {order}"])
+    # # Search for all runs
+    # runs = client.search_runs(experiment_id, order_by=[f"metrics.{metric_name} {order}"])
         
     model_uri = f"models:/{model_name}/{model_version}"
     #model_uri = f"mlruns/{experiment_id}/{run_id}/artifacts/tf-lstm-reg-model-{period}"
         
     try:
-        best_model = mlflow.tensorflow.load_model(model_uri =model_uri)        
+        best_model = mlflow.tensorflow.load_model(model_uri =model_uri)
+           
     except mlflow.exceptions.MlflowException as e: 
         print(f"aucun modèle enregistré n'a été trouvé dans model_uri : {model_uri}. Erreur: {e}")
         best_model = None  # Retourner None ou une valeur par défaut en cas d'erreur

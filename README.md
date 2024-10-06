@@ -4,23 +4,35 @@ Cryptocurrency markets are highly volatile, making price prediction a challengin
 
 ## Index
 
-- [Introduction](#Introduction)
+- [Introduction](#introduction)
+  - [Index](#index)
 - [Purpose](#purpose)
-- [Project-structure](#project-structure)
+- [Project-Structure](#project-structure)
 - [Pre-Requisites](#pre-requisites)
 - [Installation](#installation)
   - [Development-Environment](#development-environment)
-    - [Data-Processing](#data-processing)
-    - [fastAPI](#fastapi)
-    - [MLFlow](#mlflow)  
-  - [Build](#build)  
-- [Deployment](#deployment)
+    - [install Docker and Docker compose on your linux machine.](#install-docker-and-docker-compose-on-your-linux-machine)
+    - [Install environnement](#install-environnement)
+    - [Airflow](#airflow)
+      - [Launch Airflow](#launch-airflow)
+      - [Setting connection](#setting-connection)
+      - [Run DAG](#run-dag)
+    - [Pgadmin](#pgadmin)
+      - [Launch pgadmin](#launch-pgadmin)
+      - [Connect to Servers (containers)](#connect-to-servers-containers)
+    - [Remove Docker, Docker compose and containers cache](#remove-docker-docker-compose-and-containers-cache)
+    - [Usefull Commands](#usefull-commands)
+  - [fastAPI](#fastapi)
+  - [MLFlow](#mlflow)
+  - [Build](#build)
+  - [Deployment](#deployment)
 - [Usage](#usage)
 - [Contribution](#contribution)
-- [Resources](#resources)
-- [Gallery](#gallery)
-- [Credit/Acknowledgment](#creditacknowledgment)
-- [License](#license)
+  - [Resources](#resources)
+  - [Gallery](#gallery)
+  - [Credit/Acknowledgment](#creditacknowledgment)
+  - [License](#license)
+- [airflow https://www.youtube.com/watch?v=In7zwp0FDX4](#airflow-httpswwwyoutubecomwatchvin7zwp0fdx4)
 
 
 # Purpose 
@@ -71,6 +83,7 @@ The script follow these steps:
 - install docker-compose
 
 ### Install environnement
+
 
 ```bash
 docker-compose up airflow-init
@@ -126,6 +139,10 @@ By default the DAG is on standby. Just toggle it and wait
   - user: airflow
   - pw: airflow
 - **Data server**
+  - host(service): db
+  - user: crypto
+  - pw: crypto
+  **Mflow server**
   - host(service): db
   - user: crypto
   - pw: crypto
@@ -186,7 +203,6 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 
 ## Build
 Write the build Instruction here.
-
 
 
 ## Deployment
