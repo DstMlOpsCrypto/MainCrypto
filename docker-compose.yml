@@ -31,7 +31,7 @@ services:
 
   db:
     image: postgres:13
-    container_name: db
+    container_name: data_db
     environment:
       POSTGRES_USER: crypto
       POSTGRES_PASSWORD: crypto
@@ -91,6 +91,7 @@ services:
     command: webserver
     ports:
       - "8080:8080"
+      - "8793:8793" #ajout pour les logs
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
       interval: 30s
@@ -331,7 +332,7 @@ services:
     container_name: mlflow_db
     restart: always
     ports:
-      - "5432:5432"
+      - "5434:5434"
     environment:
       - POSTGRES_USER=mlflow
       - POSTGRES_PASSWORD=mlflow
@@ -368,7 +369,7 @@ services:
         condition: service_healthy  # Assure que mlflow_db est healthy avant de démarrer
     working_dir: /app  # Définit le répertoire de travail sur /app où le script de démarrage est localisé
     environment:
-      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
+      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5434/mlflow
     command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
     networks:
       - app_network

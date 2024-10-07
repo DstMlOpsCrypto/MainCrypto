@@ -21,8 +21,6 @@ docker-compose up -d
 # # launch training
 # bash scripts/launch_training.sh
 
-#bash init-db.sh pas nécessaier
-
 # Attendre ....
 # wait 500
 
