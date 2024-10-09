@@ -34,3 +34,20 @@ if is_docker_installed; then
 else
     echo "Docker is not installed. What are you waiting to use docker ;-)"
 fi
+
+folder_airflow_plugins="./plugins"
+folder_airflow_dags="./dags"
+
+if [ -d "$folder_airflow_plugins" ]; then
+    rm -rf "$folder_airflow_plugins"
+    echo "Folder $folder_airflow_plugins has been removed."
+else
+    echo "Folder $folder_airflow_plugins does not exist."
+fi
+
+if [ -d "$folder_airflow_dags" ]; then
+    rm -rf "$folder_airflow_dags"
+    echo "Folder $folder_airflow_dags has been removed."
+else
+    echo "Folder $folder_airflow_dags does not exist."
+fi

@@ -1,13 +1,27 @@
-FROM python:3.8-alpine
-# python:3.8-alpine is an image of a light version of python based on Alpine Linux
-# Based on tiangolo/uvicorn-gunicorn-fastapi:python3.7
+FROM python:3.8-slim
 
-RUN pip install --upgrade pip
-# Installing base packages
-
-RUN apk add --no-cache --virtual .build-deps gcc libc-dev make libffi-dev postgresql-dev \
-    && pip install --no-cache-dir uvicorn gunicorn fastapi python-jose[cryptography] passlib[argon2] python-multipart pytest httpx email-validator slowapi psycopg2-binary \
-    && apk del .build-deps gcc libc-dev make libffi-dev postgresql-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        libffi-dev \
+        libpq-dev \
+        gcc \
+        g++ \
+    && pip install --no-cache-dir \
+        uvicorn \
+        gunicorn \
+        fastapi \
+        python-jose[cryptography] \
+        passlib[argon2] \
+        python-multipart \
+        pytest \
+        httpx \
+        email-validator \
+        slowapi \
+        psycopg2-binary \
+        apache-airflow \
+        requests \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy the start.sh script to the container
 COPY ./start.sh /start.sh

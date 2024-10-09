@@ -190,4 +190,3 @@ predictions = model(X_test)
 Code généré par l'IA. Examinez et utilisez soigneusement. Plus d'informations sur la FAQ.
 Each of these models has its strengths and can be chosen based on the specific requirements of your prediction task. Would you like to explore any of these models in more detail?
 ```
-
