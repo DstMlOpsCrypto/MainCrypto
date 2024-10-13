@@ -16,13 +16,13 @@ docker-compose up -d
 #docker-compose up --no-deps tests-ml
 
 # Attendre ....
-# wait 600
+wait 600
 
 # # launch training
-# bash scripts/launch_training.sh
+bash scripts/launch_training.sh
 
-# Attendre ....
+# # Attendre ....
 # wait 500
 
-# #lauch prediction
+# # #lauch prediction
 # bash scripts/launch_prediction.sh
