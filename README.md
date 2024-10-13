@@ -143,9 +143,9 @@ By default the DAG is on standby. Just toggle it and wait
   - user: crypto
   - pw: crypto
   **Mflow server**
-  - host(service): db
-  - user: crypto
-  - pw: crypto
+  - host(service): mlflow_db
+  - user: mlflow
+  - pw: mlflow
 
 Goto Public to see shemas
 
@@ -203,7 +203,6 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 
 ## Build
 Write the build Instruction here.
-
 
 ## Deployment
 Write the deployment instruction here.

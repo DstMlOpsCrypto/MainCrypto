@@ -1,7 +1,6 @@
 
 
 # Construction des images Dockerfile
-
 ## Worker
 Créer une image nommée "worker" :
 docker build -f scripts/Dockerfile -t worker:latest .
@@ -10,14 +9,11 @@ docker build -f scripts/Dockerfile -t worker:latest .
 Créer une image nommée "tests-scripts-ml" :
 docker build -f scripts/Dockerfile.tests -t tests-scripts-ml:latest .
 
-## Lancement des tests du scripts d'entrainement et de prédiction
+## Lancement seul des tests du scripts d'entrainement et de prédiction
 docker-compose up --no-deps tests-ml
-### attention test-db exlcus des tests en attendant sa finalisation
-
 
 # procedure en local
-Install Python version 3.12.4
-Use gestionnaire de dépendance comme virtualenv
+Install Python version 3.12.4, virtualenv
 
 # Dépendances
 apt-get update && \
@@ -29,7 +25,6 @@ apt-get update && \
     && pip3 install --upgrade pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-    
 
 # training
 Go into scripts repo :
