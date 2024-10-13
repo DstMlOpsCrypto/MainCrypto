@@ -25,7 +25,7 @@ sys.path.append(parent_dir)
 
 # Import des modules
 from src.data.make_dataset import make_dataset, prepare_sequential_data 
-from src.data.import_raw_data import load_data, load_transform_data,load_data_2
+from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
 from src.features.preprocess import normalize_data,normalize_data2
 from src.evaluation.ml_flow import get_best_model, init_mlflow_experiment
 from src.evaluation.evaluate import scaling, score
@@ -66,29 +66,37 @@ def pipeline():
     ticker = args.currency
     #period= args.period
     period='1d'
-             
-    # Data loading 
-    # df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
-    # print("Chargement des données effectué")
-    
-    try:
-        df = load_data_2(table='ohlc')
-    except Exception as e:
-        print(f"Error loading data: {e}")              
-    
-    # # Data Normalization
-    # df_array, df.index, scaler = normalize_data(df= df, period=period)
-    # print("Normalisation des données effectuée")   
 
-    # # Data Normalization 2
-    df_array, df.index, scaler = normalize_data2(df= df, period=period)
-    print("Normalisation des données effectuée")
+    #old_way       
+    # Data loading 
+    try:
+        # Data loading 
+        df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
+        print("Chargement des données yfinance effectué")
+        # Data Normalization
+        df_array, df.index, scaler = normalize_data(df= df, period=period)
+        print("Normalisation des données effectuée") 
+    
+    except Error as e:
+        print(e)
+        print("Le chargement des données yfinance a échoué")
+
+    #New_way
+    # Data loading 
+    # try:
+    #     df = load_data_2(table='ohlc')
+    # except Exception as e:
+    #     print(f"Error loading data: {e}")              
+    
+    # # # Data Normalization 2
+    # df_array, df.index, scaler = normalize_data2(df= df, period=period)
+    # print("Normalisation des données effectuée")
 
     with mlflow.start_run (run_name=run_name, experiment_id=experiment_id):           
         print("MLflow run started")
         
         for pas_temps in [1,2,3,5,10,14]:  #14          
-                for batch_size in [5]:#,10,15,20]:
+                for batch_size in [5,10]:#15,20]:
                                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):

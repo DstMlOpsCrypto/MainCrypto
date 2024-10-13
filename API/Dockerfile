@@ -1,4 +1,5 @@
-FROM python:3.8-slim
+#FROM python:3.8-slim
+FROM python:3.12.4-slim-bullseye
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -6,22 +7,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev \
         gcc \
         g++ \
-    && pip install --no-cache-dir \
-        uvicorn \
-        gunicorn \
-        fastapi \
-        python-jose[cryptography] \
-        passlib[argon2] \
-        python-multipart \
-        pytest \
-        httpx \
-        email-validator \
-        slowapi \
-        psycopg2-binary \
-        apache-airflow \
-        requests \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+        python3 \
+        python3-pip \
+        python3-venv \
+        git
+    
+ RUN pip3 install --upgrade pip
+
+ RUN pip install --no-cache-dir \
+ tensorflow \
+ mlflow \
+ yfinance \
+ uvicorn \
+ gunicorn \
+ fastapi \
+ python-jose[cryptography] \
+ passlib[argon2] \
+ python-multipart \
+ pytest \
+ httpx \
+ email-validator \
+ slowapi \
+ psycopg2-binary \
+ apache-airflow \
+ requests
+
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
+
 
 # Copy the start.sh script to the container
 COPY ./start.sh /start.sh

@@ -288,6 +288,7 @@ services:
   api:
     build: ./API
     restart: always
+    container_name: api
     ports:
       - "3000:3000"
     environment:
@@ -297,7 +298,7 @@ services:
       - ./API:/app
       - ./scripts:/app/scripts
       - ./src:/app/src
-
+   
     # Commande à exécuter au démarrage du conteneur
     # Cette commande fait plusieurs choses :
     # 1. Change le répertoire courant vers /app

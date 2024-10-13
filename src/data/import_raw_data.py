@@ -51,6 +51,7 @@ def load_data_2(table):
         print(f"Error loading data: {e}")
         return None
 
+#old way
 def load_transform_data(period,ticker): 
        
     df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
@@ -62,17 +63,7 @@ def load_transform_data(period,ticker):
     
     return df_array, df.index, scaler
 
-# def load_transform_data2(): 
-       
-#     df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
-#     print("Chargement des données effectué")
-    
-#     # Data Normalization
-#     df_array, df_index, scaler = normalize_data(df= df, period=period)
-#     print("Normalisation des données effectuée")
-    
-#     return df_array, df.index, scaler
-
+#new_way
 def load_data_2(table):
     """
     Récupère les données d'une table spécifique et retourne un DataFrame Pandas.
