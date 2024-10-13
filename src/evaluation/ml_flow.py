@@ -67,10 +67,7 @@ def get_best_model(experiment_id, metric_name, ticker, period, tracking_uri, ord
     """
     client = MlflowClient(tracking_uri = tracking_uri)
     
-    try:
-             
-
-        
+    try:                 
         # Rechercher les runs dans l'expérience donnée en fonction de la métrique
         runs = client.search_runs(
             experiment_ids=[experiment_id], 
