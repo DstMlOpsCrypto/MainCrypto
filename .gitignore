@@ -170,7 +170,6 @@ old/
 notebooks/
 
 # folder created by airflow (folder are mapped !)
-dags/
 logs/
 plugins/
 airflow/logs/
