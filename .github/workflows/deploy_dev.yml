@@ -2,8 +2,9 @@ name: Deploy to Dev
 
 on:
   pull_request:
-    branches:
-      - dev
+    branches: ["dev"]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 jobs:
   test_group1:
     name: Testing containers

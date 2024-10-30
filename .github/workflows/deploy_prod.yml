@@ -1,53 +1,36 @@
- name: Deploy to Production
+name: Deploy to Prod
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: ["main"]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 jobs:
-  production:
+  test_group1:
     name: Testing containers
     runs-on: ubuntu-latest
     if: github.head_ref == 'dev'
     steps:
       - uses: actions/checkout@v2
-      - name: Connect to EC2 and delete app folder
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USERNAME: ${{ secrets.EC2_USER }}
-          EC2_SSH_KEY: ${{ secrets.PRIVATE_KEY }}
-        run: |
-          echo "$EC2_SSH_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USERNAME@$EC2_HOST 'rm -rf ~/app'
-      
-      - name: Push repository to EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
-        run: |
-          scp -o StrictHostKeyChecking=no -i private_key.pem -r ./* $EC2_USERNAME@$EC2_HOST:~/app/
-      
-      - name: Run script on EC2
-        env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USERNAME: ${{ secrets.EC2_USER }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USERNAME@$EC2_HOST 'cd ~/app && ./your_script.sh'
-      
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - name: Clean up
-        run: rm -f private_key.pem
-
-      - name: Build and Deploy
+          sudo apt-get install -y docker-compose python3
+          sudo apt-get install python3-pip
+          sudo apt-get install python3-psycopg2
+          sudo apt-get install python3-pytest
+      - name: Launch Container
         run: |
-          docker-compose up airflow-init
-          docker-compose up -d --build   
-
-      - name: Cleanup
+          docker-compose -f docker-compose-dev.yml up -d --build
+      - name: Run Pytest
         run: |
-          docker-compose down
+          python -m pytest tests/crypto/
+        env:
+          CRYPTO_DB_HOST: localhost
+          CRYPTO_DB_PORT: 5440
+          CRYPTO_DB_NAME: cryptoDb
+          CRYPTO_DB_USER: crypto
+          CRYPTO_DB_PASSWORD: crypto
+      - name: Tear down containers
+        run: |
+          docker-compose -f docker-compose-dev.yml down        
