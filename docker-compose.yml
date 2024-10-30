@@ -8,13 +8,16 @@ x-airflow-common: &airflow-common
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
+    AIRFLOW__CELERY__WORKER_PREFETCH_MULTIPLIER: 1
+    AIRFLOW__CELERY__TASK_TRACK_STARTED: 'true'
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    AIRFLOW__WEBSERVER__BASE_UR: http://localhost:8080 #ajout pour les logs
+    AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080 #ajout pour les logs
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -102,6 +105,11 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_started
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
     networks:
       - app_network
 
@@ -146,6 +154,10 @@ services:
       airflow-init:
         condition: service_started
     volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
       - ./scripts:/app/scripts
       - ./src:/app/src
     networks:
@@ -278,7 +290,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     volumes:
       - pgadmin_data_volume:/var/lib/pgadmin
-      - ./pgadmin_servers.json:/pgadmin4/servers.json
+      - ./db/pgadmin_servers.json:/pgadmin4/servers.json
     depends_on:
       - postgres
       - db
@@ -288,6 +300,7 @@ services:
   api:
     build: ./API
     restart: always
+    container_name: api
     ports:
       - "3000:3000"
     environment:
@@ -297,7 +310,7 @@ services:
       - ./API:/app
       - ./scripts:/app/scripts
       - ./src:/app/src
-
+   
     # Commande à exécuter au démarrage du conteneur
     # Cette commande fait plusieurs choses :
     # 1. Change le répertoire courant vers /app
@@ -374,15 +387,15 @@ services:
     networks:
       - app_network
 
-  tests-ml:
-    image: tests-scripts-ml # création image tests-scripts-ml car beaucoup de dépendances à charger
-    volumes:
-      - ./scripts:/app/scripts
-      - ./src:/app/src
-      - ./tests/unit:/app/tests/units
-    command: [ "pytest", "/app/tests/units" ] # Exécute les tests dans le conteneur
-    networks:
-      - app_network
+  #tests-ml:
+  #  image: tests-scripts-ml # création image tests-scripts-ml car beaucoup de dépendances à charger
+  #  volumes:
+  #    - ./scripts:/app/scripts
+  #    - ./src:/app/src
+  #    - ./tests/unit:/app/tests/units
+  #  command: [ "pytest", "/app/tests/units" ] # Exécute les tests dans le conteneur
+  #  networks:
+  #    - app_network
 
 volumes:
   pgadmin_data_volume:

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import httpx
-
+import requests
 
 # Création d'un routeur FastAPI
 router = APIRouter()
@@ -16,6 +16,19 @@ class Asset(BaseModel):
     asset: str
     symbol: str
     exchange: str
+
+async def get_kraken_asset_pairs():
+    url = "https://api.kraken.com/0/public/AssetPairs"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+    if response.status_code == 200:
+        data = response.json()['result']
+        return list(data.keys())
+    else:
+        raise Exception("Failed to fetch asset pairs from Kraken")
+
+
+
 
 @router.get("/assets", response_model=List[Asset])
 async def get_all_assets(current_user: User = Depends(get_current_user)):
@@ -75,8 +88,19 @@ class AssetCreate(BaseModel):
 
 @router.post("/assets", response_model=Asset, status_code=status.HTTP_201_CREATED)
 async def create_asset(asset: AssetCreate, current_user: User = Depends(get_current_user)):
+    # Validate or map asset name here
+    kraken_assets = await get_kraken_asset_pairs()
+    if asset.asset not in kraken_assets:
+        raise HTTPException(status_code=400, detail="Invalid asset pair name for Kraken API")
     async with get_db() as db:
         try:
+            # Check if the asset already exists
+            db.execute("SELECT id FROM assets WHERE asset = %s", (asset.asset,))
+            existing_asset = db.fetchone()
+            if existing_asset:
+                raise HTTPException(status_code=400, detail="Asset already exists in the database")
+
+            # If the asset doesn't exist, proceed with insertion
             query = "INSERT INTO assets (asset, symbol, exchange) VALUES (%s, %s, %s) RETURNING id, asset, symbol, exchange"
             db.execute(query, (asset.asset, asset.symbol, asset.exchange))
             new_asset = db.fetchone()
@@ -98,6 +122,8 @@ async def create_asset(asset: AssetCreate, current_user: User = Depends(get_curr
                 raise HTTPException(status_code=500, detail=f"Failed to trigger Airflow DAG: {response.text}")
             
             return Asset(**new_asset)
+        except HTTPException as he:
+            raise he
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
