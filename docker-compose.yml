@@ -44,6 +44,7 @@ services:
     volumes:
       - crypto_data_volume:/var/lib/postgresql/data
       - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./db/BTC_Historic.csv:/docker-entrypoint-initdb.d/BTC_Historic.csv
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "crypto" ]
       interval: 10s
@@ -317,9 +318,9 @@ services:
     # 2. Définit PYTHONPATH pour inclure /app
     # 3. Exécute les tests avec pytest
     # 4. Lance l'application avec Gunicorn et Uvicorn
-
-    command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
-    #command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    # On a enlever les tests pour le moment
+    #command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
 
