@@ -323,12 +323,14 @@ services:
     command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
+      - public_app
 
   frontend:
     build: ./frontend
     restart: always
     ports:
       - "8501:8501"
+      - "80:80"
     volumes:
       - ./frontend:/app
     depends_on:
@@ -337,7 +339,7 @@ services:
     environment:
       - API_URL=http://api:3000
     networks:
-      - app_network
+      - public_app
 
   mlflow_db:
     build:
@@ -398,6 +400,30 @@ services:
   #  networks:
   #    - app_network
 
+  prediction-api:
+    build: ./PredictionAPI
+    restart: always
+    container_name: prediction-api
+    ports:
+      - "3001:3001"
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug
+      - MAIN_API_URL=http://api:3000
+    volumes:
+      - ./PredictionAPI:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./mlflow:/mlflow
+    depends_on:
+      - api
+      - mlflow-server
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    networks:
+      - app_network
+    expose:
+      - "3001"
+
 volumes:
   pgadmin_data_volume:
   airflow_data_volume:
@@ -411,3 +437,7 @@ volumes:
 networks:
   app_network:
     driver: bridge
+    internal: False # true  # Ce réseau n'est pas accessible depuis l'extérieur
+  public_app:
+    driver: bridge
+    internal: false  # Ce réseau est accessible depuis l'extérieur
