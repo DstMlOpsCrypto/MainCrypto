@@ -11,26 +11,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-pip \
         python3-venv \
         git
-    
- RUN pip3 install --upgrade pip
+ 
+# Install any needed packages specified in requirements.txt
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
- RUN pip install --no-cache-dir \
- tensorflow \
- mlflow \
- yfinance \
- uvicorn \
- gunicorn \
- fastapi \
- python-jose[cryptography] \
- passlib[argon2] \
- python-multipart \
- pytest \
- httpx \
- email-validator \
- slowapi \
- psycopg2-binary \
- apache-airflow \
- requests
+# Install any needed packages specified in requirements.txt
+# RUN pip3 install --upgrade pip
+# RUN pip install --no-cache-dir \
+#  tensorflow \
+#  mlflow \
+#  yfinance \
+#  uvicorn \
+#  gunicorn \
+#  fastapi \
+#  python-jose[cryptography] \
+#  passlib[argon2] \
+#  python-multipart \
+#  pytest \
+#  httpx \
+#  email-validator \
+#  slowapi \
+#  psycopg2-binary \
+#  apache-airflow \
+#  requests
 
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
@@ -58,8 +63,8 @@ WORKDIR /app/
 # Set the PYTHONPATH environment variable to the root directory and app directory
 ENV PYTHONPATH=/app
 
-# Expose the port 3000
-EXPOSE 3000
+# Expose the port 3001
+EXPOSE 3001
 
 # Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
 # And then will start Gunicorn with Uvicorn

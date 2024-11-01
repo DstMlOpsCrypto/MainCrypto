@@ -410,12 +410,14 @@ services:
       - WORKERS_PER_CORE=2
       - LOG_LEVEL=debug
       - MAIN_API_URL=http://api:3000
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
     volumes:
       - ./PredictionAPI:/app
       - ./scripts:/app/scripts
       - ./src:/app/src
       - ./mlflow:/mlflow
     depends_on:
+      - db
       - api
       - mlflow-server
     command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"

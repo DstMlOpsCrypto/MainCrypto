@@ -9,3 +9,9 @@ requests
 httpx
 slowapi
 python-multipart
+tensorflow
+yfinance
+pytest
+psycopg2-binary
+SQLAlchemy
+typing_extensions
