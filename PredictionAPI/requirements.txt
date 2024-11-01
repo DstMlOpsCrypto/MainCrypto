@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+gunicorn
+pydantic
+mlflow
+numpy
+pandas
+requests
+httpx
+slowapi
+python-multipart
