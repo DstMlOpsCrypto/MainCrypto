@@ -45,14 +45,18 @@ jobs:
         ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo systemctl status docker.service"
     - name: Install python3
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install python3"
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo dnf install python3.11 -y && python3.11 --version"
+    # Install git and clone repo
+    - name: Install pip
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo dnf install python3.11-pip -y && python3.11 -m pip --version"
     # Install git and clone repo
     - name: Install git
       run: |
         ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install git"
     - name: Install psycopg2
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install gcc python3-devel postgresql-devel && sudo yum -y groupinstall "Development Tools" && pip install psycopg2"  
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install gcc python3-devel postgresql-devel && python3.11 -m pip install psycopg2"  
     - name: Clone repo
       run: |
         ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "git clone --single-branch --branch dev https://github.com/DstMlOpsCrypto/MainCrypto.git"
