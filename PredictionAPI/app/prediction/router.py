@@ -14,6 +14,9 @@ import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
+import joblib
+import json
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 @contextmanager
 def get_db():
@@ -45,6 +48,33 @@ class TrainResponse(BaseModel):
     duration_seconds: float
     metrics: dict
     message: str
+
+
+
+
+class PredictionRequest(BaseModel):
+    asset: str
+
+class PredictionResponse(BaseModel):
+    asset: str
+    prediction_date: datetime
+    predicted_price: float
+    message: str
+
+
+
+
+class EvaluationRequest(BaseModel):
+    asset: str
+    metrics: list = ['mean_squared_error']
+
+class EvaluationResponse(BaseModel):
+    asset: str
+    evaluation_date: datetime
+    metrics: dict
+    message: str
+
+
 
 def load_data_from_db(asset: str):
     """
@@ -166,11 +196,47 @@ async def train_model(request: TrainRequest):
                 "val_loss": val_loss
             })
 
+            # Save the scaler
+            scaler_path = "scaler.pkl"
+            joblib.dump(scaler, scaler_path)
+            mlflow.log_artifact(scaler_path)
+
+            # Save pas_temps
+            params = {'pas_temps': pas_temps}
+            params_path = "params.json"
+            with open(params_path, 'w') as f:
+                json.dump(params, f)
+            mlflow.log_artifact(params_path)
+
             # Log and register the model
-            mlflow.tensorflow.log_model(
+            mlflow.keras.log_model(
                 model=model, 
                 artifact_path="model", 
-                registered_model_name="Bitcoin_LSTM_Model"
+                registered_model_name=f"{asset}_LSTM_Model"
+            )
+
+
+            # Get the run ID
+            run_id = run.info.run_id
+
+            # Transition the model to 'Production'
+            client = MlflowClient()
+            model_name = f"{asset}_LSTM_Model"
+            # Find the model version corresponding to the current run
+            model_versions = client.search_model_versions(f"name='{model_name}'")
+            model_version = None
+            for mv in model_versions:
+                if mv.run_id == run_id:
+                    model_version = mv.version
+                    break
+
+            if model_version is None:
+                raise Exception("Model version not found.")
+
+            client.transition_model_version_stage(
+                name=model_name,
+                version=model_version,
+                stage="Production"
             )
 
             duration_seconds = time.time() - start_time
@@ -188,4 +254,166 @@ async def train_model(request: TrainRequest):
                 message=message
             )
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# Exemple de requête pour predict
+# curl -X POST "http://localhost:3001/predict" \
+#  -H "Content-Type: application/json" \
+#  -d '{
+#      "asset": "XXBTZUSD"
+#  }'
+
+@router.post("/predict", response_model=PredictionResponse)
+async def predict_price(request: PredictionRequest):
+    try:
+        asset = request.asset.upper()
+        mlflow.set_tracking_uri("http://mlflow-server:5000")
+        client = MlflowClient()
+
+        # Load the latest production model for the asset
+        model_name = f"{asset}_LSTM_Model"
+        latest_versions = client.get_latest_versions(name=model_name, stages=['Production'])
+        if not latest_versions:
+            raise HTTPException(status_code=404, detail=f"No production model found for asset {asset}")
+
+        model_version_details = latest_versions[0]
+        run_id = model_version_details.run_id
+
+        # Load the model
+        model_uri = f"models:/{model_name}/Production"
+        model = mlflow.keras.load_model(model_uri)
+
+        # Download artifacts
+        scaler_path = client.download_artifacts(run_id=run_id, path="scaler.pkl")
+        params_path = client.download_artifacts(run_id=run_id, path="params.json")
+
+        # Load the scaler
+        scaler = joblib.load(scaler_path)
+
+        # Load pas_temps
+        with open(params_path, 'r') as f:
+            params = json.load(f)
+        pas_temps = params['pas_temps']
+
+        # Load latest pas_temps data points for the asset
+        df = load_data_from_db(asset)
+        if len(df) < pas_temps:
+            raise HTTPException(status_code=400, detail=f"Not enough data to make prediction. Required: {pas_temps}, Available: {len(df)}")
+
+        # Get the last pas_temps data points
+        df_recent = df.iloc[-pas_temps:]
+        # Preprocess the data
+        data = df_recent['close'].values.reshape(-1, 1)
+        scaled_data = scaler.transform(data)
+
+        # Create input sequence
+        X_input = np.reshape(scaled_data, (1, pas_temps, 1))
+
+        # Make prediction
+        prediction_scaled = model.predict(X_input)
+
+        # Inverse transform the prediction
+        prediction = scaler.inverse_transform(prediction_scaled)
+
+        predicted_price = float(prediction[0][0])
+        prediction_date = datetime.now()
+
+        message = f"Prediction for {asset} on {prediction_date}: {predicted_price}"
+
+        return PredictionResponse(
+            asset=asset,
+            prediction_date=prediction_date,
+            predicted_price=predicted_price,
+            message=message
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# Exemple de requête pour evaluate
+# curl -X POST "http://localhost:3001/evaluate" \
+#  -H "Content-Type: application/json" \
+#  -d '{
+#      "asset": "XXBTZUSD",
+#      "metrics": ["mean_squared_error", "mean_absolute_error"]
+#  }'
+
+@router.post("/evaluate", response_model=EvaluationResponse)
+async def evaluate_model(request: EvaluationRequest):
+    try:
+        asset = request.asset.upper()
+        mlflow.set_tracking_uri("http://mlflow-server:5000")
+        client = MlflowClient()
+
+        # Load the latest production model for the asset
+        model_name = f"{asset}_LSTM_Model"
+        latest_versions = client.get_latest_versions(name=model_name, stages=['Production'])
+        if not latest_versions:
+            raise HTTPException(status_code=404, detail=f"No production model found for asset {asset}")
+
+        model_version_details = latest_versions[0]
+        run_id = model_version_details.run_id
+
+        # Load the model
+        model_uri = f"models:/{model_name}/Production"
+        model = mlflow.keras.load_model(model_uri)
+
+        # Download artifacts
+        scaler_path = client.download_artifacts(run_id=run_id, path="scaler.pkl")
+        params_path = client.download_artifacts(run_id=run_id, path="params.json")
+
+        # Load the scaler
+        scaler = joblib.load(scaler_path)
+
+        # Load pas_temps
+        with open(params_path, 'r') as f:
+            params = json.load(f)
+        pas_temps = params['pas_temps']
+
+        # Load data
+        df = load_data_from_db(asset)
+        scaled_data, _ = preprocess_data(df)
+
+        # Create dataset
+        X, y = create_dataset(scaled_data, pas_temps)
+
+        # Split into training and testing sets
+        split = int(0.8 * len(X))
+        X_train, X_test = X[:split], X[split:]
+        y_train, y_test = y[:split], y[split:]
+
+        # Make predictions on test set
+        y_pred_scaled = model.predict(X_test)
+
+        # Inverse transform predictions and actual values
+        y_pred = scaler.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten()
+        y_true = scaler.inverse_transform(y_test.reshape(-1, 1)).flatten()
+
+        # Compute metrics
+        metrics = {}
+        if 'mean_squared_error' in request.metrics:
+            mse = mean_squared_error(y_true, y_pred)
+            metrics['mean_squared_error'] = mse
+        if 'mean_absolute_error' in request.metrics:
+            mae = mean_absolute_error(y_true, y_pred)
+            metrics['mean_absolute_error'] = mae
+
+        evaluation_date = datetime.now()
+        message = f"Evaluation completed for {asset}"
+
+        return EvaluationResponse(
+            asset=asset,
+            evaluation_date=evaluation_date,
+            metrics=metrics,
+            message=message
+        )
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

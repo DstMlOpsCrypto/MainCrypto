@@ -15,3 +15,5 @@ pytest
 psycopg2-binary
 SQLAlchemy
 typing_extensions
+joblib
+scikit-learn
