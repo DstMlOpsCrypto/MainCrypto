@@ -5,7 +5,7 @@ bash local_docker_clean.sh
 
 ### build images
 docker build -f scripts/Dockerfile -t worker:latest .
-docker build -f scripts/Dockerfile.tests -t tests-scripts-ml:latest .
+#docker build -f scripts/Dockerfile.tests -t tests-scripts-ml:latest .
 
 
 ### Install environnement
