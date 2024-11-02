@@ -2,15 +2,83 @@ name: Deploy to Prod
 
 on:
   pull_request:
+    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      EC2_SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      EC2_URL: ${{ secrets.EC2_HOST }}
+      EC2_USERNAME: ${{ secrets.EC2_USER }}
+      GIT_PAT: ${{ secrets.GIT_PAT }}
+    if: github.head_ref == 'dev'
+    steps:
+    - name: Setup SSH for EC2
+      uses: omarhosny206/setup-ssh-for-ec2@v1.0.0
+      with:
+          EC2_SSH_PRIVATE_KEY: $EC2_SSH_PRIVATE_KEY
+          EC2_URL: $EC2_URL
+    # then you can run commands/scripts directly on the EC2 instance e.g.:a
+    - name: Remove app folder"
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "rm -rf ~/MainCrypto"
+    # Install docker & docker compose
+    - name: Install docker
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum update && sudo yum -y install docker"
+    - name: Add group membership for the default ec2-user
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo usermod -a -G docker ec2-user && id ec2-user && newgrp docker"
+    - name: Install docker-compose
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "wget https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) && sudo mv docker-compose-$(uname -s)-$(uname -m) /usr/local/bin/docker-compose && sudo chmod -v +x /usr/local/bin/docker-compose"
+    - name: Enable docker service at AMI boot time
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo systemctl enable docker.service && sudo systemctl start docker.service"
+    
+    - name: check Docker install
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo systemctl status docker.service"
+    - name: Install python3
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install python3"
+    # Install git and clone repo
+    - name: Install git
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install git"
+    - name: Install psycopg2
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install gcc python3-devel postgresql-devel && pip install psycopg2-binary"  
+    - name: Clone repo
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "git clone --single-branch --branch dev https://github.com/DstMlOpsCrypto/MainCrypto.git"
+    - name: Launch app
+      run: |
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "cd ~/MainCrypto && bash setup.sh"
+# ------------
+
+
+
+name: Deploy to Prod
+
+on:
+  pull_request:
     branches: ["main"]
     types: [opened, synchronize, reopened]
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
   test_group1:
     name: Testing containers
+    # The type of runner
     runs-on: ubuntu-latest
     if: github.head_ref == 'dev'
     steps:
+    # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       - uses: actions/checkout@v4
       - name: Set up Docker Compose
         run: |
