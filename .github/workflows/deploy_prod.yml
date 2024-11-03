@@ -25,7 +25,7 @@ jobs:
     # then you can run commands/scripts directly on the EC2 instance e.g.:a
     - name: Remove app folder"
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "rm -rf ~/MainCrypto"
+        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo rm -rf ~/MainCrypto"
     # Install docker & docker compose
     - name: Install docker
       run: |
