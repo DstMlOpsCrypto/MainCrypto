@@ -19,7 +19,7 @@ echo "Conteneur trouvé : $CONTAINER_ID. Connexion et lancement de l'entrainemen
 docker exec -i $CONTAINER_ID /bin/bash -c "
     cd /app/scripts && \
     echo 'Dossier de scripts atteint, lancement de l entrainement...' && \
-    python3 train.py --currency='BTC-EUR'
+    python3 train.py --currency='BTC-USD'
 "
 
 # Vérification du succès de la commande

@@ -6,6 +6,7 @@ import numpy as np
 import sys
 import os
 from psycopg2.extras import RealDictCursor
+from sklearn.preprocessing import MinMaxScaler
 
 # Add the src directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -15,7 +16,18 @@ from src.data.database import get_db
 
 def load_data(ticker, start = "2014-07-01", end = "2024-08-01", interval = "1d", start_new_data = "2024-08-01"):
     """
-    
+    Load historical and new data for a given ticker symbol from Yahoo Finance using the yfinance library.
+    Args:
+        ticker (str): The ticker symbol for the financial instrument.
+        start (str, optional): The start date for the historical data in the format "YYYY-MM-DD". Defaults to "2014-07-01".
+        end (str, optional): The end date for the historical data in the format "YYYY-MM-DD". Defaults to "2024-08-01".
+        interval (str, optional): The interval for the historical data. Defaults to "1d".
+        start_new_data (str, optional): The start date for the new data in the format "YYYY-MM-DD". Defaults to "2024-08-01".
+    Returns:
+        pandas.DataFrame: A DataFrame containing the concatenated historical and new data.
+
+    Raises:
+        Exception: If there is an error loading the data.
     """
     try:       
         #Teléchargement via l'API yfinance
@@ -35,7 +47,6 @@ def load_data(ticker, start = "2014-07-01", end = "2024-08-01", interval = "1d",
     except Exception as e:
         print(f"Error loading data: {e}")
         return pd.DataFrame()   # df concaténé
-    
 
 def load_data_2(table):
     """
@@ -52,16 +63,32 @@ def load_data_2(table):
         return None
 
 #old way
-def load_transform_data(period,ticker): 
-       
-    df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
+def load_transform_data(period, ticker): 
+    """
+    """
+    # Loading
+    df = load_data (ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
     print("Chargement des données effectué")
+
+    print(df)
+
+    #Transformation
+    # removal of useless columns 
+    if period == '1d':
+        df = df.drop(columns= ['Open','High','Low','Dividends','Stock Splits','Volume'], axis=1)
+    else :
+        df = df.drop(columns=['Open','High','Low','Volume'], axis=1) 
+    
+    # tf en tableau numpy
+    df_array = np.array(df)
     
     # Data Normalization
     df_array, df_index, scaler = normalize_data(df= df, period=period)
+    print(df_array)
     print("Normalisation des données effectuée")
     
     return df_array, df.index, scaler
+
 
 #new_way
 def load_data_2(table):
