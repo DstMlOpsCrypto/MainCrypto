@@ -48,29 +48,13 @@ def load_data(ticker, start = "2014-07-01", end = "2024-08-01", interval = "1d",
         print(f"Error loading data: {e}")
         return pd.DataFrame()   # df concaténé
 
-def load_data_2(table):
-    """
-    """
-    try:
-        conn = get_db()
-        with get_db() as conn:
-            cursor = conn.cursor(cursor_factory=RealDictCursor)
-            query = f"SELECT * FROM {table}"
-            df = pd.read_sql_query(query, conn)
-        return df
-    except Exception as e:
-        print(f"Error loading data: {e}")
-        return None
 
-#old way
 def load_transform_data(period, ticker): 
     """
     """
     # Loading
     df = load_data (ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
     print("Chargement des données effectué")
-
-    print(df)
 
     #Transformation
     # removal of useless columns 
@@ -89,6 +73,25 @@ def load_transform_data(period, ticker):
     
     return df_array, df.index, scaler
 
+def load_transform_data2(table,period):
+    """
+    Récupère les données d'une table spécifique, retourne un DataFrame Pandas après l'avoir normalisé.
+    """
+    conn = get_db()  # Obtenir la connexion
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            query = f"SELECT * FROM {table}"  # Construire la requête SQL
+            df = pd.read_sql_query(query, conn)  # Charger les données dans un DataFrame Pandas   
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        return None
+    finally:
+        conn.close()  # Toujours fermer la connexion à la base de données
+    
+    df_array, df_index, scaler = normalize_data2(df= df, period=period)
+    print("Normalisation des données effectuée")  
+
+    return df_array, df_index, scaler # Retourner le DataFrame
 
 #new_way
 def load_data_2(table):
@@ -106,22 +109,5 @@ def load_data_2(table):
         return None
     finally:
         conn.close()  # Toujours fermer la connexion à la base de données
-    
-def load_transform_data2(table,period):
-    """
-    Récupère les données d'une table spécifique, retourne un DataFrame Pandas après l'avoir normalisé.
-    """
-    conn = get_db()  # Obtenir la connexion
-    try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            query = f"SELECT * FROM {table}"  # Construire la requête SQL
-            df = pd.read_sql_query(query, conn)  # Charger les données dans un DataFrame Pandas
-            df_array, df_index, scaler = normalize_data2(df= df, period=period)
-            print("Normalisation des données effectuée")            
-        return df_array, df.index, scaler # Retourner le DataFrame
-    except Exception as e:
-        print(f"Error loading data: {e}")
-        return None
-    finally:
-        conn.close()  # Toujours fermer la connexion à la base de données
         
+

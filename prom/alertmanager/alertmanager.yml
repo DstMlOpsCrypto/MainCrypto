@@ -1,0 +1,16 @@
+global:
+  smtp_from: 'test.prometheus.datascientest@gmail.com'
+  smtp_smarthost: 'smtp.gmail.com:465'
+  smtp_auth_username: 'test.prometheus.datascientest@gmail.com'
+  smtp_auth_password: 'test_prometheus_datascientest'
+  smtp_require_tls: true
+
+
+receivers:
+- name: 'default-receiver'
+  email_configs:
+    - to: 'test.prometheus.d4tascientest@gmail.com'
+    - to: 'fl@belette73.fr' # change this if you want
+- name: 'admin'
+  email_configs:
+  - to: 'test.prometheus.datascientest@gmail.com'
