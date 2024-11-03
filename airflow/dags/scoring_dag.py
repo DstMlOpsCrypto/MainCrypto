@@ -34,7 +34,7 @@ with DAG(
     #         dag=my_dag)
 
     train_model = BashOperator(
-        bash_command= " cd ../../app/scripts && python3 evaluate_model.py --currency='BTC-USD'",
+        bash_command= " cd ../../app/scripts && python3 evaluate_model2.py --currency='BTC-USD'",
         task_id="training_model",
         dag=my_dag
     )

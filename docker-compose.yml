@@ -494,9 +494,9 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     expose:
-      - 3001
+      - 3002
     ports:
-      - "3001:3001"
+      - "3002:3002"
     networks:
       - app_network      
 

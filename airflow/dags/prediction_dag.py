@@ -32,7 +32,7 @@ with DAG(
     #         dag=my_dag)
 
     train_model = BashOperator(
-        bash_command= " cd ../../app/scripts && python3 predict.py --currency='BTC-USD'",
+        bash_command= " cd ../../app/scripts && python3 predict2.py --currency='BTC-USD'",
         task_id="prediction_model",
         dag=my_dag)
 

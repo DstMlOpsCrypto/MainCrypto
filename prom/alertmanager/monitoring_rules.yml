@@ -1,0 +1,21 @@
+groups:
+  - name: monitoring_group
+    rules:
+      - alert: AirflowDown
+        expr: up{job="airflow"} == 0
+        labels:
+          severity: operation
+        annotations:
+          summary: 'Airflow is down'
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        labels:
+          severity: operation
+        annotations:
+          summary: 'Our Prometheus Server is down'
+      - alert: Server_monitorDown
+        expr: up{job="server_monitor"} == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Node exporter is Down'

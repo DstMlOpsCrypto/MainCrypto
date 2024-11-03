@@ -39,7 +39,7 @@ def normalize_data2(df, period):
     
     # removal of useless columns 
     try:
-        df =df.drop(columns= ['asset','dtutc','open','high','low','volume','trades'], axis=1)   
+        df.drop(columns= ['asset','dtutc','open','high','low','volume','trades'], axis=1, inplace =True)   
 
         # recuperation de l'index
         df_index = df.index
