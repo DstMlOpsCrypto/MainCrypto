@@ -8,12 +8,16 @@ x-airflow-common: &airflow-common
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
+    AIRFLOW__CELERY__WORKER_PREFETCH_MULTIPLIER: 1
+    AIRFLOW__CELERY__TASK_TRACK_STARTED: 'true'
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080 #ajout pour les logs
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -40,6 +44,7 @@ services:
     volumes:
       - crypto_data_volume:/var/lib/postgresql/data
       - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./db/BTC_Historic.csv:/docker-entrypoint-initdb.d/BTC_Historic.csv
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "crypto" ]
       interval: 10s
@@ -105,6 +110,11 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_started
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
     networks:
       - app_network
 
@@ -160,6 +170,10 @@ services:
       airflow-init:
         condition: service_started
     volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
       - ./scripts:/app/scripts
       - ./src:/app/src
       - ./airflow/dags:/opt/airflow/dags
@@ -296,7 +310,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     volumes:
       - pgadmin_data_volume:/var/lib/pgadmin
-      - ./pgadmin_servers.json:/pgadmin4/servers.json
+      - ./db/pgadmin_servers.json:/pgadmin4/servers.json
     depends_on:
       - postgres
       - db
@@ -324,16 +338,19 @@ services:
     # 2. Définit PYTHONPATH pour inclure /app
     # 3. Exécute les tests avec pytest
     # 4. Lance l'application avec Gunicorn et Uvicorn
-    command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
-    #command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    # On a enlever les tests pour le moment
+    #command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
+      - public_app
 
   frontend:
     build: ./frontend
     restart: always
     ports:
       - "8501:8501"
+      - "80:80"
     volumes:
       - ./frontend:/app
     depends_on:
@@ -342,7 +359,7 @@ services:
     environment:
       - API_URL=http://api:3000
     networks:
-      - app_network
+      - public_app
 
   mlflow_db:
     # build:
@@ -483,6 +500,32 @@ services:
     networks:
       - app_network      
 
+  prediction-api:
+    build: ./PredictionAPI
+    restart: always
+    container_name: prediction-api
+    ports:
+      - "3001:3001"
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug
+      - MAIN_API_URL=http://api:3000
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+    volumes:
+      - ./PredictionAPI:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./mlflow:/mlflow
+    depends_on:
+      - db
+      - api
+      - mlflow-server
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    networks:
+      - app_network
+    expose:
+      - "3001"
+
 volumes:
   pgadmin_data_volume:
   airflow_data_volume:
@@ -497,3 +540,7 @@ volumes:
 networks:
   app_network:
     driver: bridge
+    internal: False # true  # Ce réseau n'est pas accessible depuis l'extérieur
+  public_app:
+    driver: bridge
+    internal: false  # Ce réseau est accessible depuis l'extérieur
