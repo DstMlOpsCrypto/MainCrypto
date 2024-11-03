@@ -1,22 +1,22 @@
 
+import datetime
+from datetime import date
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
-def normalize_data(df, period):
+def normalize_data(df, period, duration=1000):
     """
     Standardise numerical features of a DataFrame and remove some columns
     :param df: pd.DataFrame
     :columns: list of non used columns for the price prediction, which are removed
     :return: np.Array with standardized values
     """ 
-    
-    # removal of useless columns 
-    if period == '1d':
-        df =df.drop(columns= ['Open','High','Low','Dividends','Stock Splits','Volume'], axis=1)
-    else :
-        df =df.drop(columns=['Open','High','Low','Volume'], axis=1)    
-    
+    #aRécupérer la valeur de la veille
+    today = date.today()
+    today_date = today.isoformat() # on va récupérer les données jusqu'à celle d'hier
+    start_date = today - datetime.timedelta(days=duration)
+
     # recup√©ration de l'index (√† voir ensuite si utile)
     df_index = df.index
     
