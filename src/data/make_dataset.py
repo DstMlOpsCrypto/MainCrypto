@@ -34,9 +34,9 @@ def split(data, test_size):
     
     return train_data, test_data 
     
-def make_dataset(data,pas_temps,test_size=0.3):
+def make_dataset(data, pas_temps, test_size=0.3):
     """
-    Create sequecial data for LSTM model, with parameter pas_temps.
+    Create sequencial data for training LSTM model, with parameter pas_temps.
     :param data: np.array
     :param test_size: fraction size of the test data
     :param pas_temps: number of previous days to incorporate in the training sequence
@@ -55,3 +55,26 @@ def make_dataset(data,pas_temps,test_size=0.3):
     
     return X_train, X_test, y_train, y_test
 
+def make_dataset_for_testing(data, pas_temps):
+    """
+    Create sequencial data for testing LSTM model, with parameter pas_temps.
+    :param data: np.array
+    :param test_size: fraction size of the test data
+    :param pas_temps: number of previous days to incorporate in the training sequence
+    :return: np.Array with standardized values
+    """
+    
+    # Empty X list creation
+    X = []  
+    
+    #filling X
+    a = data[-pas_temps:-1, 0]   
+    X.append(a)                             
+    
+    X = np.array(X)
+         
+    #mise en forme des données pour le réseau LSTM
+    X = X.reshape(X.shape[0],X.shape[1],1)
+
+    return X
+    

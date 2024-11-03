@@ -7,7 +7,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
     AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
     AIRFLOW__CELERY__WORKER_PREFETCH_MULTIPLIER: 1
     AIRFLOW__CELERY__TASK_TRACK_STARTED: 'true'
@@ -92,9 +92,13 @@ services:
   airflow-webserver:
     <<: *airflow-common
     command: webserver
+    #environment:  
+      #AIRFLOW__METRICS__EXPOSE: 'True'  # Activer l'exportation des métriques
+      #AIRFLOW__CORE__STATSD_ON: 'True'  # Autoriser StatsD
+      #AIRFLOW__LOGGING__LOGGING_LEVEL: DEBUG
     ports:
       - "8080:8080"
-      - "8793:8793" #ajout pour les logs
+      #- "8793:8793" #ajout pour les logs
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
       interval: 30s
@@ -117,6 +121,13 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    #environment:
+    #- AIRFLOW__SCHEDULER__STATSD_ON: 'true'
+    #   - AIRFLOW__SCHEDULER__STATSD_HOST=statsd-exporter # Hostname of your StatsD container
+    #   - AIRFLOW__SCHEDULER__STATSD_PORT=8125
+    #   - AIRFLOW__SCHEDULER__STATSD_PREFIX=airflow
+    #   - AIRFLOW__SCHEDULER__STATSD_ALLOW_LIST=""
+    #   - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
       interval: 30s
@@ -133,9 +144,11 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    image: worker
+    image: beletteu73docker666/worker_airflow_projetmlops
+    #pull_policy: never
+    #build: ./scripts/Dockerfile
     command: celery worker
-    healthcheck:
+    healthcheck: 
       # yamllint disable rule:line-length
       test:
         - "CMD-SHELL"
@@ -149,6 +162,8 @@ services:
       # Required to handle warm shutdown of the celery workers properly
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
+      CUDA_VISIBLE_DEVICES: ""
+      AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -161,6 +176,10 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./scripts:/app/scripts
       - ./src:/app/src
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
     networks:
       - app_network
 
@@ -299,7 +318,9 @@ services:
       - app_network
 
   api:
-    build: ./API
+    image: beletteu73docker666/api_projet_mlops
+    #build: ./API
+    #pull_policy: never
     restart: always
     container_name: api
     ports:
@@ -310,8 +331,7 @@ services:
     volumes:
       - ./API:/app
       - ./scripts:/app/scripts
-      - ./src:/app/src
-   
+      - ./src:/app/src   
     # Commande à exécuter au démarrage du conteneur
     # Cette commande fait plusieurs choses :
     # 1. Change le répertoire courant vers /app
@@ -342,9 +362,10 @@ services:
       - public_app
 
   mlflow_db:
-    build:
-      context: .
-      dockerfile: ./mlflow/Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: ./mlflow/Dockerfile
+    image: beletteu73docker666/mflow_db_projet_mlops  
     container_name: mlflow_db
     restart: always
     ports:
@@ -365,11 +386,12 @@ services:
       - app_network
 
   mlflow-server:
-    #image: ghcr.io/mlflow/mlflow  # image officielle MLflow
-    build:
-      context: .
-      dockerfile: ./mlflow/Dockerfile.server
+    image: beletteu73docker666/mflow_server_projet_mlops
+    # build:
+    #   context: .
+    #   dockerfile: ./mlflow/Dockerfile.server
     restart: always
+    container_name: mlflow-server
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:5000/" ]
       interval: 30s
@@ -390,15 +412,93 @@ services:
     networks:
       - app_network
 
-  #tests-ml:
-  #  image: tests-scripts-ml # création image tests-scripts-ml car beaucoup de dépendances à charger
-  #  volumes:
-  #    - ./scripts:/app/scripts
-  #    - ./src:/app/src
-  #    - ./tests/unit:/app/tests/units
-  #  command: [ "pytest", "/app/tests/units" ] # Exécute les tests dans le conteneur
-  #  networks:
-  #    - app_network
+  # tests-ml:   # desactived
+  #   image: beletteu73docker666/tests-ml_projetmlops
+  #   volumes:
+  #     - ./scripts:/app/scripts
+  #     - ./src:/app/src
+  #     - ./tests/unit:/app/tests/units
+  #   command: [ "pytest", "/app/tests/model" ] # Exécute les tests dans le conteneur
+  #   networks:
+  #     - app_network
+    
+  prometheus:
+    image: prom/prometheus:latest
+    expose:
+    - 9090
+    ports:
+    - "9090:9090"
+    container_name: prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    # volumes:
+    #   - ./prom:/etc/prometheus
+    volumes:
+      - ./prom:/etc/prometheus    # Use /data instead of /etc/prometheus
+      - prometheus-data:/prometheus
+      - "./prom/alertmanager/monitoring_rules.yml:/etc/prometheus/alermanager/monitoring_rules.yml"
+    command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=etc/prometheus'
+        - '--web.console.libraries=/etc/prometheus/console_libraries'
+        - '--web.console.templates=/etc/prometheus/consoles'
+        - '--storage.tsdb.retention=200h'
+    # entrypoint: ["/bin/prometheus", "--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/etc/prometheus"]
+    networks:
+      - app_network 
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9100/metrics"] # trying to retrieve the metrics endpoint
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    ports:
+    - 9100:9100
+    command:
+    - '--path.rootfs=/host'
+    networks:
+    - app_network
+  
+  statsd-exporter:
+    image: prom/statsd-exporter
+    container_name: statsd-exporter
+    command: "--statsd.mapping-config=/tmp/statsd_mapping.yml"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - './prom/statsd/statsd.conf:/tmp/statsd_mapping.yml'
+    networks:
+    - app_network
+
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - "./prom/alertmanager/alertmanager.yml:/alertmanager/alermanager.yml"
+    ports:
+      - "9093:9093"    
+    networks:
+    - app_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    expose:
+      - 3001
+    ports:
+      - "3001:3001"
+    networks:
+      - app_network      
 
   prediction-api:
     build: ./PredictionAPI
@@ -434,7 +534,8 @@ volumes:
   airflow:
   scripts:
   src:
-
+  prometheus-data: {}
+  grafana-data: {}
 
 networks:
   app_network:
