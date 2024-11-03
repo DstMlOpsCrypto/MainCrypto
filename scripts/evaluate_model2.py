@@ -1,4 +1,3 @@
-#mlflow
 import mlflow
 from mlflow.tracking.client import MlflowClient
 
@@ -33,9 +32,7 @@ parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True,
 
 #parser.add_argument('--bitcoin', choices= ['BTC'], required=True, help="Selectionne le bitcoin")
 #parser.add_argument('--currency', choices= ['-USD','-EUR'], required=True, help="Selectionne la devise")
-
 #parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selectionne la période de prédiction") # on garde une prédiction à un jour
-
 args = parser.parse_args()
 
 # Update the tracking URI to point to the MLflow server container
@@ -49,6 +46,14 @@ experiment_id = init_mlflow_experiment(exp_name = exp_name)
 
 model_version = "latest"
 
+# recupérer les arguments du scripts
+ticker = args.currency   
+period='1d'
+pas_temps=3
+
+# bitcoin = args.bitcoin
+    # currency = args.currency    
+    # ticker = bitcoin + currency
 def pipeline():
     """
     Fonction which evaluate production model and send back score
@@ -56,40 +61,24 @@ def pipeline():
 
     print("je suis entré dans le pipeline")
 
-    # recupérer les arguments du scripts
-    ticker = args.currency
-    period='1d'
-
-    
-    # bitcoin = args.bitcoin
-    # currency = args.currency    
-    # ticker = bitcoin + currency
-
     model_name = f"tf-lstm-reg-model-{period}"
-    # model_name = f"tf-lstm-reg-model-{ticker}-{period}"
-
+    #model_name = f"tf-lstm-reg-model-{ticker}-{period}"
     model_version = "latest"
 
-    #old_way       
-    # Data loading 
     try:
         # Data loading 
-        df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
-        print("Chargement des données yfinance effectué")
+        df = load_data_2(table='ohlc')
+        print("Chargement des données KRAKEN effectué")
         # Data Normalization
-        df_array, df.index, scaler = normalize_data(df= df, period=period)
-        print("Normalisation des données effectuée") 
-    
+        df_array, df.index, scaler = normalize_data2(df= df, period=period)
+        print("Normalisation des données effectuée")
+      
     except Exception as e:
-        print(e)
-        print("Le chargement des données yfinance a échoué")
+        print(f"Error loading data: {e}") 
+        print("Le chargement ou la normalisation des données Kraken a échoué")
 
-     # new_way
-    #load_tranform data 2
-    #X_test, df_index, scaler = load_transform_data2(table='ohlc',period=period)
 
     # Building dataset for computing score
-    pas_temps = 5
     X_train, X_test, y_train, y_test= make_dataset(data = df_array, pas_temps=pas_temps, test_size=0.3)
     
     #load best_model
@@ -112,4 +101,4 @@ def pipeline():
     return {"mse_test": mse_test, "r2_score_test": r2_score_test} 
 
 if __name__ == "__main__":
-    score = pipeline()
+        pipeline()

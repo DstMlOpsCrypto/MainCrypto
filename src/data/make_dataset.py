@@ -63,18 +63,32 @@ def make_dataset_for_testing(data, pas_temps):
     :param pas_temps: number of previous days to incorporate in the training sequence
     :return: np.Array with standardized values
     """
-    
-    # Empty X list creation
-    X = []  
-    
-    #filling X
-    a = data[-pas_temps:-1, 0]   
-    X.append(a)                             
-    
-    X = np.array(X)
-         
-    #mise en forme des données pour le réseau LSTM
-    X = X.reshape(X.shape[0],X.shape[1],1)
+    try: 
 
-    return X
+        print(data.shape)
+
+        # Reshape data if necessary
+        if len(data.shape) == 1:
+            data = data.reshape(-1, 1)
+
+        # Empty X list creation
+        X = []
+           
+        #filling X
+        a = data[:pas_temps, 0]
+   
+        X.append(a)
+        X = np.array(X)
+    
+        #mise en forme des données pour le réseau LSTM
+        X = X.reshape(X.shape[0],X.shape[1],1)
+      
+        return X
+    
+    except Exception as e:
+        print(e)
+        print ("La création du dataset a échoué")
+        return None
+
+
     
