@@ -19,7 +19,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="training_dag_2",
+    dag_id="training_dag",
     default_args=default_args,
     description="Un DAG pour lancer l'entrainement du modèle",
     schedule_interval=None,
@@ -34,6 +34,6 @@ with DAG(
     #         dag=my_dag)
 
     train_model = BashOperator(
-        bash_command= " cd ../../app/scripts && python3 train.py --currency='BTC-USD'",
+        bash_command= " cd ../../app/scripts && python3 train2.py --currency='BTC-USD'",
         task_id="training_model",
         dag=my_dag)

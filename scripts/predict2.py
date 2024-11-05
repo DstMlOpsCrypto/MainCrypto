@@ -1,5 +1,7 @@
 #mlflow
 import mlflow
+print("MLflow version:", mlflow.__version__, end = "/n")
+
 from mlflow.tracking.client import MlflowClient
 
 #other packages
@@ -21,8 +23,9 @@ sys.path.append(src_dir)
 sys.path.append(parent_dir)
 
 #import des modules
-from src.data.import_raw_data import load_data, load_transform_data, load_transform_data2
-from src.features.preprocess import normalize_data
+from src.data.make_dataset import make_dataset_for_testing
+from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
+from src.features.preprocess import normalize_data, normalize_data2
 from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_mlflow_experiment
 
 #supprimer warnings GPU tensorflow
@@ -50,23 +53,45 @@ experiment_id = init_mlflow_experiment(exp_name = exp_name)
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
+pas_temps=3
 
+# Mise en place des nouveaux arguments
 # bitcoin = args.bitcoin
 # currency = args.currency
 # ticker = bitcoin + currency
 
 def pipeline_predict():
-
+    """
+    pipeline de commandes pour la prédiction de la valeur du lendemain d'un asset (paramètres ticker)
+    """
     model_name = f"tf-lstm-reg-model-{period}"
     #model_name = f"tf-lstm-reg-model-{ticker}-{period}"
     model_version = "latest"
 
     #new_way
-    #load_tranform
-    #X_test, df_index, scaler = load_transform_data2(table='ohlc',period=period)
+    # #load_tranform
+    #data, df_index, scaler = load_transform_data2(table='ohlc',period=period)
 
-    # old way         
-    X_test, df_index, scaler = load_transform_data(ticker=ticker, period=period)
+    try:
+        # Data loading 
+        df = load_data_2(table='ohlc')
+        print("Chargement des données KRAKEN effectué")
+        # Data Normalization
+        df_array, df.index, scaler = normalize_data2(df= df, period=period)
+        print("Normalisation des données effectuée")
+      
+    except Exception as e:
+        print(f"Error loading data: {e}") 
+        print("Le chargement ou la normalisation des données Kraken a échoué")
+
+    try:
+        #Création du dataset de test
+        X_test = make_dataset_for_testing(data = df_array, pas_temps = pas_temps)
+        #print("X_test: ", X_test/scaler.scale_[0])
+        print("Le chargement des données de test a réussi")
+    except Exception as e:
+        print(e)
+        print ("Le chargement des données de test a échoué")
     
     #modif old way
     #df_array = load_transform_data(ticker=ticker, period=period)
@@ -81,22 +106,14 @@ def pipeline_predict():
     test_predict = test_predict/scaler.scale_[0]
     X_test = X_test/scaler.scale_[0]    
 
-    prediction = int(test_predict[-1,0])
-    
-    print(X_test)
-    print(test_predict)
+    print("test_predict :", test_predict)
     print("test_predict shape", test_predict.shape)
 
-    print(f"La valeur du Bitcoin était de {int(X_test[-1,0])} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction} {ticker} pour aujourd'hui")
+    prediction = int(X_test[-1, 0].item())
+    
+    print(f"La valeur du Bitcoin était de {int(X_test[-1, 0].item())} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction} {ticker} pour aujourd'hui")
 
     return {"prediction": prediction}
 
 if __name__ == "__main__":
     prediction = pipeline_predict()
-
-
-
-
-
-
-

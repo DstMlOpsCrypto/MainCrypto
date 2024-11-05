@@ -1,10 +1,7 @@
-#mlflow
 import mlflow
-print("MLflow version:", mlflow.__version__, end = "/n")
-
 from mlflow.tracking.client import MlflowClient
 
-#other packages
+#packages
 import argparse
 import sys
 import os
@@ -22,48 +19,48 @@ sys.path.append(current_dir)
 sys.path.append(src_dir)
 sys.path.append(parent_dir)
 
-#import des modules
-from src.data.make_dataset import make_dataset_for_testing
-from src.data.import_raw_data import load_data_2
-from src.features.preprocess import normalize_data2
-from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_mlflow_experiment
-
-#supprimer warnings GPU tensorflow
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+from src.evaluation.ml_flow import init_mlflow_experiment, load_best_model
+from src.data.import_raw_data import load_transform_data, load_transform_data2
+from src.features.preprocess import normalize_data,normalize_data2
+from src.data.make_dataset import make_dataset
+from src.data.import_raw_data import load_data, load_data_2
+from src.evaluation.evaluate import scaling, score
 
 #Arguments du script
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
+
 #parser.add_argument('--bitcoin', choices= ['BTC'], required=True, help="Selectionne le bitcoin")
 #parser.add_argument('--currency', choices= ['-USD','-EUR'], required=True, help="Selectionne la devise")
 #parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selectionne la période de prédiction") # on garde une prédiction à un jour
 args = parser.parse_args()
-
 
 # Update the tracking URI to point to the MLflow server container
 tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
 mlflow.set_tracking_uri(tracking_uri)
 client = MlflowClient(tracking_uri=tracking_uri)
 
-exp_name = "Projet_Bitcoin_price_prediction"
-
 # get MLFlow experiment_id
+exp_name = "Projet_Bitcoin_price_prediction"
 experiment_id = init_mlflow_experiment(exp_name = exp_name)
+
+model_version = "latest"
 
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
 pas_temps=3
 
-# Mise en place des nouveaux arguments
 # bitcoin = args.bitcoin
-# currency = args.currency
-# ticker = bitcoin + currency
+    # currency = args.currency    
+    # ticker = bitcoin + currency
+def pipeline():
+    """
+    Fonction which evaluate production model and send back score
+    """
 
-def pipeline_predict():
-    """
-    pipeline de commandes pour la prédiction de la valeur du lendemain d'un asset (paramètres ticker)
-    """
+    print("je suis entré dans le pipeline")
+
     model_name = f"tf-lstm-reg-model-{period}"
     #model_name = f"tf-lstm-reg-model-{ticker}-{period}"
     model_version = "latest"
@@ -80,33 +77,28 @@ def pipeline_predict():
         print(f"Error loading data: {e}") 
         print("Le chargement ou la normalisation des données Kraken a échoué")
 
-    try:
-        #Création du dataset de test
-        X_test = make_dataset_for_testing(data = df_array, pas_temps = pas_temps)
-        #print("X_test: ", X_test/scaler.scale_[0])
-        print("Le chargement des données de test a réussi")
-    except Exception as e:
-        print(e)
-        print ("Le chargement des données de test a échoué")
+
+    # Building dataset for computing score
+    X_train, X_test, y_train, y_test= make_dataset(data = df_array, pas_temps=pas_temps, test_size=0.3)
     
     #load best_model
     best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
-        
-    #prediction
+  
+    # Prediction
+    train_predict = best_model.predict(X_train)
     test_predict = best_model.predict(X_test)
-    
-    #scaling
-    test_predict = test_predict/scaler.scale_[0]
-    X_test = X_test/scaler.scale_[0]    
 
-    print("test_predict :", test_predict)
-    print("test_predict shape", test_predict.shape)
+    # Scaling
+    train_predict, test_predict, y_train, y_test = scaling(train_predict, test_predict, y_train, y_test, scaler)
+                        
+    #scores mse et r2
+    mse_train, r2_score_train, mse_test, r2_score_test = score(train_predict = train_predict, test_predict= test_predict, y_train = y_train, y_test = y_test)
+    # on se base au final sur la métrique mean_squared_error_test calculé sur l'éch. de test (mse_test)     
 
-    prediction = int(X_test[-1, 0].item())
-    
-    print(f"La valeur du Bitcoin était de {int(X_test[-1, 0].item())} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction} {ticker} pour aujourd'hui")
+    print("mse_test",mse_test)
+    print("r2_score_test :", r2_score_test)
 
-    return {"prediction": prediction}
+    return {"mse_test": mse_test, "r2_score_test": r2_score_test} 
 
 if __name__ == "__main__":
-    prediction = pipeline_predict()
+        pipeline()
