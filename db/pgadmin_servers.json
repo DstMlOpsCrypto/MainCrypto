@@ -1,0 +1,24 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "cryptoDb",
+            "Group": "MainCrypto",
+            "Host": "db",
+            "Port": 5432,
+            "MaintenanceDB": "cryptoDb",
+            "Username": "crypto",
+            "Password": "crypto",
+            "SSLMode": "disable"
+        },
+        "2": {
+            "Name": "AirflowDb",
+            "Group": "MainCrypto",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "airflow",
+            "Username": "airflow",
+            "Password": "airflow",
+            "SSLMode": "disable"
+        }
+    }
+}

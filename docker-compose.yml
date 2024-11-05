@@ -1,0 +1,546 @@
+# https://www.youtube.com/watch?v=S1eapG6gjLU
+
+x-airflow-common: &airflow-common
+  build: .
+  environment: &airflow-common-env
+    AIRFLOW_PROJ_DIR: ./airflow
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
+    AIRFLOW__CELERY__WORKER_PREFETCH_MULTIPLIER: 1
+    AIRFLOW__CELERY__TASK_TRACK_STARTED: 'true'
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080 #ajout pour les logs
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/config:/opt/airflow/config
+    - ./airflow/plugins:/opt/airflow/plugins
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on: &airflow-common-depends-on
+    redis:
+      condition: service_healthy
+    postgres:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:13
+    container_name: data_db
+    environment:
+      POSTGRES_USER: crypto
+      POSTGRES_PASSWORD: crypto
+      POSTGRES_DB: cryptoDb
+    restart: always
+    ports:
+      - "5440:5432"
+    volumes:
+      - crypto_data_volume:/var/lib/postgresql/data
+      - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./db/BTC_Historic.csv:/docker-entrypoint-initdb.d/BTC_Historic.csv
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "crypto" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:13
+    container_name: airflow_db
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5450:5432"
+    volumes:
+      - airflow_data_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+    networks:
+      - app_network
+
+  redis:
+    # Redis is limited to 7.2-bookworm due to licencing change
+    # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
+    image: redis:7.2-bookworm
+    expose:
+      - 6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    restart: always
+    networks:
+      - app_network
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    #environment:  
+      #AIRFLOW__METRICS__EXPOSE: 'True'  # Activer l'exportation des métriques
+      #AIRFLOW__CORE__STATSD_ON: 'True'  # Autoriser StatsD
+      #AIRFLOW__LOGGING__LOGGING_LEVEL: DEBUG
+    ports:
+      - "8080:8080"
+      #- "8793:8793" #ajout pour les logs
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_started
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
+    networks:
+      - app_network
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    #environment:
+    #- AIRFLOW__SCHEDULER__STATSD_ON: 'true'
+    #   - AIRFLOW__SCHEDULER__STATSD_HOST=statsd-exporter # Hostname of your StatsD container
+    #   - AIRFLOW__SCHEDULER__STATSD_PORT=8125
+    #   - AIRFLOW__SCHEDULER__STATSD_PREFIX=airflow
+    #   - AIRFLOW__SCHEDULER__STATSD_ALLOW_LIST=""
+    #   - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_started
+    networks:
+      - app_network
+
+  airflow-worker:
+    <<: *airflow-common
+    image: beletteu73docker666/worker_airflow_projetmlops
+    #pull_policy: never
+    #build: ./scripts/Dockerfile
+    command: celery worker
+    healthcheck: 
+      # yamllint disable rule:line-length
+      test:
+        - "CMD-SHELL"
+        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    environment:
+      <<: *airflow-common-env
+      # Required to handle warm shutdown of the celery workers properly
+      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
+      DUMB_INIT_SETSID: "0"
+      CUDA_VISIBLE_DEVICES: ""
+      AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_started
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/config:/opt/airflow/config
+      - ./airflow/plugins:/opt/airflow/plugins
+    networks:
+      - app_network
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    healthcheck:
+      test: [ "CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_started
+    networks:
+      - app_network
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        mkdir -p /sources/logs /sources/dags /sources/plugins
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        exec /entrypoint airflow version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _PIP_ADDITIONAL_REQUIREMENTS: ''
+
+    user: "0:0"
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+    networks:
+      - app_network
+
+  airflow-cli:
+    <<: *airflow-common
+    profiles:
+      - debug
+    environment:
+      <<: *airflow-common-env
+      CONNECTION_CHECK_MAX_COUNT: "0"
+    command:
+      - bash
+      - -c
+      - airflow
+    networks:
+      - app_network
+  flower:
+    <<: *airflow-common
+    command: celery flower
+    profiles:
+      - flower
+    ports:
+      - "5555:5555"
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:5555/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_started
+    networks:
+      - app_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin_data_volume:/var/lib/pgadmin
+      - ./db/pgadmin_servers.json:/pgadmin4/servers.json
+    depends_on:
+      - postgres
+      - db
+    networks:
+      - app_network
+
+  api:
+    image: beletteu73docker666/api_projet_mlops
+    #build: ./API
+    #pull_policy: never
+    restart: always
+    container_name: api
+    ports:
+      - "3000:3000"
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug
+    volumes:
+      - ./API:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src   
+    # Commande à exécuter au démarrage du conteneur
+    # Cette commande fait plusieurs choses :
+    # 1. Change le répertoire courant vers /app
+    # 2. Définit PYTHONPATH pour inclure /app
+    # 3. Exécute les tests avec pytest
+    # 4. Lance l'application avec Gunicorn et Uvicorn
+    # On a enlever les tests pour le moment
+    #command: sh -c "cd /app && PYTHONPATH=/app pytest tests && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    networks:
+      - app_network
+      - public_app
+
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "8501:8501"
+      - "80:80"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - api
+      - postgres
+    environment:
+      - API_URL=http://api:3000
+    networks:
+      - public_app
+
+  mlflow_db:
+    # build:
+    #   context: .
+    #   dockerfile: ./mlflow/Dockerfile
+    image: beletteu73docker666/mflow_db_projet_mlops  
+    container_name: mlflow_db
+    restart: always
+    ports:
+      - "5434:5434"
+    environment:
+      - POSTGRES_USER=mlflow
+      - POSTGRES_PASSWORD=mlflow
+      - POSTGRES_DB=mlflow
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "mlflow" ]
+      interval: 10s # Vérifie toutes les 10 secondes
+      timeout: 5s # Attente maximale pour chaque vérification
+      retries: 5 # Nombre de vérifications avant de déclarer le conteneur "unhealthy"
+      start_period: 30s # Temps d'attente initial avant de commencer les vérifications
+    volumes:
+      - mlflow:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  mlflow-server:
+    image: beletteu73docker666/mflow_server_projet_mlops
+    # build:
+    #   context: .
+    #   dockerfile: ./mlflow/Dockerfile.server
+    restart: always
+    container_name: mlflow-server
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5000/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 50s
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow:/app
+    depends_on:
+      mlflow_db:
+        condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
+    working_dir: /app # Définit le répertoire de travail sur /app où le script de démarrage est localisé
+    environment:
+      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5434/mlflow
+    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
+    networks:
+      - app_network
+
+  # tests-ml:   # desactived
+  #   image: beletteu73docker666/tests-ml_projetmlops
+  #   volumes:
+  #     - ./scripts:/app/scripts
+  #     - ./src:/app/src
+  #     - ./tests/unit:/app/tests/units
+  #   command: [ "pytest", "/app/tests/model" ] # Exécute les tests dans le conteneur
+  #   networks:
+  #     - app_network
+    
+  prometheus:
+    image: prom/prometheus:latest
+    expose:
+    - 9090
+    ports:
+    - "9090:9090"
+    container_name: prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    # volumes:
+    #   - ./prom:/etc/prometheus
+    volumes:
+      - ./prom:/etc/prometheus    # Use /data instead of /etc/prometheus
+      - prometheus-data:/prometheus
+      - "./prom/alertmanager/monitoring_rules.yml:/etc/prometheus/alermanager/monitoring_rules.yml"
+    command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=etc/prometheus'
+        - '--web.console.libraries=/etc/prometheus/console_libraries'
+        - '--web.console.templates=/etc/prometheus/consoles'
+        - '--storage.tsdb.retention=200h'
+    # entrypoint: ["/bin/prometheus", "--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/etc/prometheus"]
+    networks:
+      - app_network 
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9100/metrics"] # trying to retrieve the metrics endpoint
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    ports:
+    - 9100:9100
+    command:
+    - '--path.rootfs=/host'
+    networks:
+    - app_network
+  
+  statsd-exporter:
+    image: prom/statsd-exporter
+    container_name: statsd-exporter
+    command: "--statsd.mapping-config=/tmp/statsd_mapping.yml"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - './prom/statsd/statsd.conf:/tmp/statsd_mapping.yml'
+    networks:
+    - app_network
+
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - "./prom/alertmanager/alertmanager.yml:/alertmanager/alermanager.yml"
+    ports:
+      - "9093:9093"    
+    networks:
+    - app_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    expose:
+      - 3001
+    ports:
+      - "3001:3001"
+    networks:
+      - app_network      
+
+  prediction-api:
+    build: ./PredictionAPI
+    restart: always
+    container_name: prediction-api
+    ports:
+      - "3001:3001"
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug
+      - MAIN_API_URL=http://api:3000
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+    volumes:
+      - ./PredictionAPI:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./mlflow:/mlflow
+    depends_on:
+      - db
+      - api
+      - mlflow-server
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    networks:
+      - app_network
+    expose:
+      - "3001"
+
+volumes:
+  pgadmin_data_volume:
+  airflow_data_volume:
+  crypto_data_volume:
+  mlflow:
+  airflow:
+  scripts:
+  src:
+  prometheus-data: {}
+  grafana-data: {}
+
+networks:
+  app_network:
+    driver: bridge
+    internal: False # true  # Ce réseau n'est pas accessible depuis l'extérieur
+  public_app:
+    driver: bridge
+    internal: false  # Ce réseau est accessible depuis l'extérieur
