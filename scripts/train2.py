@@ -25,8 +25,8 @@ sys.path.append(parent_dir)
 
 # Import des modules
 from src.data.make_dataset import make_dataset
-from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
-from src.features.preprocess import normalize_data,normalize_data2
+from src.data.import_raw_data import load_data_2
+from src.features.preprocess import normalize_data2
 from src.evaluation.ml_flow import get_best_model, init_mlflow_experiment
 from src.evaluation.evaluate import scaling, score
 from src.models.model_LSTM import LSTMModel
@@ -91,7 +91,7 @@ def pipeline_train():
     with mlflow.start_run (run_name=run_name, experiment_id=experiment_id):           
         print("MLflow run started")
         
-        for pas_temps in [3]:  #[1,2,3,5,8,10,12,14,16,20] # paramater finally chosen to 14        
+        for pas_temps in [14]:  #[1,2,3,5,8,10,12,14,16,20] # paramater finally chosen to 14        
                 for batch_size in [1,2,5,10,20,30]:#15,20]:
                                    
                     # Initializing run                
