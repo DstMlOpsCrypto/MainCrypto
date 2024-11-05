@@ -505,6 +505,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
       - prometheus
+
     networks:
       - app_network      
 

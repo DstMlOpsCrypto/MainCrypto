@@ -9,7 +9,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.features.preprocess import normalize_data2
 from src.data.database import get_db
 
-#new_way
 def load_data_2(table):
     """
     Récupère les données d'une table spécifique et retourne un DataFrame Pandas.
@@ -25,5 +24,5 @@ def load_data_2(table):
         return None
     finally:
         conn.close()  # Toujours fermer la connexion à la base de données
-        
+
 
