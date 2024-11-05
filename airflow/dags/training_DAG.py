@@ -19,7 +19,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="training_dag_2",
+    dag_id="training_dag",
     default_args=default_args,
     description="Un DAG pour lancer l'entrainement du modèle",
     schedule_interval=None,

@@ -443,11 +443,13 @@ services:
       - "./prom/alertmanager/monitoring_rules.yml:/etc/prometheus/alermanager/monitoring_rules.yml"
     command:
         - '--config.file=/etc/prometheus/prometheus.yml'
-        - '--storage.tsdb.path=etc/prometheus'
+        - '--storage.tsdb.path=/prometheus'
         - '--web.console.libraries=/etc/prometheus/console_libraries'
         - '--web.console.templates=/etc/prometheus/consoles'
         - '--storage.tsdb.retention=200h'
     # entrypoint: ["/bin/prometheus", "--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/etc/prometheus"]
+    depends_on:
+      - airflow-webserver
     networks:
       - app_network 
 
@@ -462,29 +464,27 @@ services:
     restart: always
     ports:
     - 9100:9100
+    volumes:
+      - ./prom/node-exporter/proc:/app/proc:ro,rshared
+      - ./prom/node-exporter/sys:/app/sys:ro,rshared
+      - /:/rootfs:ro,rshared
     command:
-    - '--path.rootfs=/host'
+      - '--path.rootfs=/app/proc'
+      - '--path.sysfs=/app/sys'
+      - '--collector.filesystem.ignored-mount-points'
+      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
     networks:
     - app_network
   
-  statsd-exporter:
-    image: prom/statsd-exporter
-    container_name: statsd-exporter
-    command: "--statsd.mapping-config=/tmp/statsd_mapping.yml"
-    ports:
-      - "9102:9102"
-      - "9125:9125/udp"
-    volumes:
-      - './prom/statsd/statsd.conf:/tmp/statsd_mapping.yml'
-    networks:
-    - app_network
-
   alert-manager:
     image: prom/alertmanager
     volumes:
       - "./prom/alertmanager/alertmanager.yml:/alertmanager/alermanager.yml"
     ports:
-      - "9093:9093"    
+      - "9093:9093"
+    depends_on:
+      - prometheus
+    restart: always 
     networks:
     - app_network
 
@@ -493,10 +493,19 @@ services:
     container_name: grafana
     volumes:
       - grafana-data:/var/lib/grafana
-    expose:
-      - 3002
+      - ./prom/grafana/provisioning:/etc/grafana/provisioning/dashboard
     ports:
-      - "3002:3002"
+      - "3002:3000"
+    env_file:
+      - ./prom/grafana/config.monitoring
+        # contains environment variables that are used to configure the Grafana container. 
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_SECURITY_ADMIN_USER=grafana
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+
     networks:
       - app_network      
 
