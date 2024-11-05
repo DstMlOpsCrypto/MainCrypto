@@ -1,8 +1,0 @@
-pytest
-fastapi
-uvicorn
-gunicorn
-passlib
-pydantic
-cryptography==3.4.7
-

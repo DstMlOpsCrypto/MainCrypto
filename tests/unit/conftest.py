@@ -1,3 +1,0 @@
-# conftest.py
-import pytest
-
