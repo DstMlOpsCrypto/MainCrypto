@@ -24,8 +24,8 @@ sys.path.append(parent_dir)
 
 #import des modules
 from src.data.make_dataset import make_dataset_for_testing
-from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
-from src.features.preprocess import normalize_data, normalize_data2
+from src.data.import_raw_data import load_data_2
+from src.features.preprocess import normalize_data2
 from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_mlflow_experiment
 
 #supprimer warnings GPU tensorflow
@@ -53,7 +53,7 @@ experiment_id = init_mlflow_experiment(exp_name = exp_name)
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
-pas_temps=3
+pas_temps=14
 
 # Mise en place des nouveaux arguments
 # bitcoin = args.bitcoin

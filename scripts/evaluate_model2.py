@@ -20,10 +20,9 @@ sys.path.append(src_dir)
 sys.path.append(parent_dir)
 
 from src.evaluation.ml_flow import init_mlflow_experiment, load_best_model
-from src.data.import_raw_data import load_transform_data, load_transform_data2
-from src.features.preprocess import normalize_data,normalize_data2
+from src.features.preprocess import normalize_data2
 from src.data.make_dataset import make_dataset
-from src.data.import_raw_data import load_data, load_data_2
+from src.data.import_raw_data import load_data_2
 from src.evaluation.evaluate import scaling, score
 
 #Arguments du script
@@ -49,7 +48,7 @@ model_version = "latest"
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
-pas_temps=3
+pas_temps=14
 
 # bitcoin = args.bitcoin
     # currency = args.currency    
