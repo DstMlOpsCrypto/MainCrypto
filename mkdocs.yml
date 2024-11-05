@@ -1,0 +1,18 @@
+site_name: My Docs
+site_url: https://dstmlopscrypto.github.io/MainCrypto/
+theme:
+  name: material
+  favicon: images/favicon.ico
+  palette:
+    - scheme: slate
+      primary: teal
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: teal
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
