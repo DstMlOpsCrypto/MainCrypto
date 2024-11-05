@@ -1,19 +1,39 @@
-# Welcome to MkDocs
+# Welcome to CryptoPredict
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+This project represent the final project of DataScientest MLOps exam.
 
-## Commands
+!!! note Project Objective
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+    * Develop an MLOps pipeline to predict Bitcoin prices using an LSTM model. 
+    * The pipeline will leverage Airflow, MLflow, PostgreSQL, FastAPI, Prometheus, Kibana, and Streamlit for data collection, model training, monitoring, logging, and visualization.
+
+## Project Plan
+
+This project has been developp since June 2024 until November 2024 by :
+
+* Frederic
+* Tristant
+* Yann
+
+Readmore [[project-plan]]
 
 ## Project layout
 
-    mkdocs.yml    # The configuration file.
-    docs/
+    README.md    # How to 
+    API/
         index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+    PredictionAPI/
+    airflow/
+    db/
+    frontend/
+    mlflow/
+    notebooks/
+    prom/
+    scripts/
+    src/
+    tests/
+        api/
+        crypto/
+        model/
 
-We like to drink :beers:
+
