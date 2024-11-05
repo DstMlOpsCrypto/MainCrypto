@@ -173,7 +173,7 @@ notebooks/
 logs/
 plugins/
 airflow/logs/
-airflow/logs/scheduler/latest
+airflow/logs/scheduler/latest/
 
 # pem 
 .pem
