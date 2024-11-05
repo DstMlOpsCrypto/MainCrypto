@@ -2,7 +2,14 @@ site_name: My Docs
 site_url: https://dstmlopscrypto.github.io/MainCrypto/
 theme:
   name: material
+  features:
+    - navigation.footer
+  font:
+    text: Merriweather Sans
+    code: Red Hat Mono
   favicon: images/favicon.ico
+  icon:
+    logo: fontawesome/solid/seedling
   palette:
     - scheme: slate
       primary: teal
@@ -16,3 +23,32 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
+markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.keys
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+copyright: Copyright &copy; 2024 CryptoMen ;-)
