@@ -25,8 +25,8 @@ sys.path.append(parent_dir)
 
 # Import des modules
 from src.data.make_dataset import make_dataset
-from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
-from src.features.preprocess import normalize_data,normalize_data2
+from src.data.import_raw_data import load_data_2
+from src.features.preprocess import normalize_data2
 from src.evaluation.ml_flow import get_best_model, init_mlflow_experiment
 from src.evaluation.evaluate import scaling, score
 from src.models.model_LSTM import LSTMModel
@@ -75,42 +75,29 @@ def pipeline_train():
 
     # End any active run
     mlflow.end_run()
-    
-    #old_way       
+
     # Data loading 
     try:
         # Data loading 
-        df = load_data(ticker=ticker, start = "2014-07-01", end = "2024-08-01", interval = period, start_new_data = "2024-08-01")
-        print("Chargement des données yfinance effectué")
+        df = load_data_2(table='ohlc')
+        print("Chargement des données KRAKEN effectué")
         # Data Normalization
-        df_array, df.index, scaler = normalize_data(df= df, period=period)
-        print("Normalisation des données effectuée") 
-    
+        df_array, df.index, scaler = normalize_data2(df= df, period=period)
+        print("Normalisation des données effectuée")
     except Exception as e:
-        print(e)
-        print("Le chargement ou la normalisation des données yfinance a échoué")
-
-    #New_way
-    # Data loading 
-    # try:
-    #     df = load_data_2(table='ohlc')
-    # except Exception as e:
-    #     print(f"Error loading data: {e}")              
-    
-    # # # Data Normalization 2
-    # df_array, df.index, scaler = normalize_data2(df= df, period=period)
-    # print("Normalisation des données effectuée")
+        print(f"Error loading data: {e}") 
+        print("Le chargement ou la normalisation des données Kraken a échoué")
 
     with mlflow.start_run (run_name=run_name, experiment_id=experiment_id):           
         print("MLflow run started")
         
         for pas_temps in [3]:  #[1,2,3,5,8,10,12,14,16,20] # paramater finally chosen to 14        
-                for batch_size in [1,2,5,10,20]:#15,20]:
+                for batch_size in [1,2,5,10,20,30]:#15,20]:
                                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):
 
-                        print(f"Début de l'entrainement du modèle suivant : pas_temps = {pas_temps},batch_size = {batch_size}, neurons = {neurons}, currency = {ticker}, period = {period}", end= "\n\n")
+                        print(f"Début de l'entrainement du modèle suivant : pas_temps = {pas_temps}, batch_size = {batch_size}, neurons = {neurons}, currency = {ticker}, period = {period}", end= "\n\n")
                         
                         #Building dataset for a pas_temps value
                         X_train, X_test, y_train, y_test= make_dataset(data = df_array, pas_temps=pas_temps, test_size=0.3)
@@ -149,8 +136,8 @@ def pipeline_train():
                         print("mean_squared_error_test", mse_test)
                         print("r2_test_score", r2_score_test)
           
-        best_model_info = get_best_model(experiment_id = experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
-        # autre option : best_model_info = get_best_model(experiment_id = experiment_id, metric_name="r2_test_score", ticker=ticker, period=period, tracking_uri=tracking_uri)
+        #best_model_info = get_best_model(experiment_id = experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
+        best_model_info = get_best_model(experiment_id = experiment_id, metric_name="r2_test_score", ticker=ticker, period=period, tracking_uri=tracking_uri)
      
 
     # training with best params
