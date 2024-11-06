@@ -35,7 +35,8 @@ parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True,
 args = parser.parse_args()
 
 # Update the tracking URI to point to the MLflow server container
-tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+#tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+tracking_uri = "http://mlflow-server:5000"
 mlflow.set_tracking_uri(tracking_uri)
 client = MlflowClient(tracking_uri=tracking_uri)
 

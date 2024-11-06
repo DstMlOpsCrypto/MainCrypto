@@ -177,6 +177,7 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./scripts:/app/scripts
       - ./src:/app/src
+      - ./mlflow-artifacts:/mlflow-artifacts
     networks:
       - app_network
 
@@ -398,8 +399,11 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow:/app/mlruns
-      #- ./mlflow:/app
+      - ./mlflow-artifacts:/mlflow-artifacts
+    #volumes:
+    #  - ./mlruns:/app/mlruns
+    #  #-./mlflow:/app/mlruns
+    #  #- ./mlflow:/app
     depends_on:
       mlflow_db:
         condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
@@ -417,7 +421,7 @@ services:
         "--backend-store-uri",
         "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow",
         "--default-artifact-root",
-        "/app/mlruns",
+        "file:///mlflow-artifacts"
       ]
       #["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
     networks:
