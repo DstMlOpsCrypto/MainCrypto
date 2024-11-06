@@ -164,6 +164,7 @@ services:
       DUMB_INIT_SETSID: "0"
       CUDA_VISIBLE_DEVICES: ""
       AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
+      MLFLOW_TRACKING_URI: "http://mlflow-server:5000"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -176,10 +177,6 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./scripts:/app/scripts
       - ./src:/app/src
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/config:/opt/airflow/config
-      - ./airflow/plugins:/opt/airflow/plugins
     networks:
       - app_network
 
@@ -401,14 +398,28 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow:/app
+      - ./mlflow:/app/mlruns
+      #- ./mlflow:/app
     depends_on:
       mlflow_db:
         condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
     working_dir: /app # Définit le répertoire de travail sur /app où le script de démarrage est localisé
     environment:
       - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5434/mlflow
-    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
+    command: 
+      [
+        "mlflow",
+        "server",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5000",
+        "--backend-store-uri",
+        "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow",
+        "--default-artifact-root",
+        "/app/mlruns",
+      ]
+      #["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
     networks:
       - app_network
 
