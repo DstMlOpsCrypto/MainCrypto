@@ -23,6 +23,8 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
+extra_css:
+  - css/custom.css
 markdown_extensions:
   - attr_list
   - pymdownx.emoji:

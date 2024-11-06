@@ -1,0 +1,37 @@
+h1 {
+    color: #007bff;
+    /* Blue */
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+h2 {
+    color: #28a745;
+    /* Green */
+}
+
+h3 {
+    color: #dc3545;
+    /* Red */
+}
+
+h4 {
+    color: #ffc107;
+    /* Yellow */
+}
+
+/* New style for italic text */
+em {
+    color: #e267e2;
+    /* Purple */
+    font-style: italic;
+}
+
+/* Styles for tab titles */
+.md-typeset .tabbed-labels>label>a:hover {
+    background-color: #b4bbb6;
+}
+
+.md-typeset .tabbed-labels>label {
+    color: #28a745 !important;
+}
