@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.auth import is_authenticated, login, logout, is_admin
-from pages import home, data_analysis, predictions, create_user, account, administration
+from pages import home, data_analysis, predictions, create_user, account, administration, model
 
 st.set_page_config(page_title="DstMlOpsCrypto", page_icon="📈", layout="wide")
 
@@ -58,7 +58,7 @@ if st.session_state["page"] == "login":
             st.error("Invalid username or password")
 else:
     # Custom navigation
-    pages = ["Home", "Data Analysis", "Predictions", "Account"]
+    pages = ["Home", "Data Analysis", "Predictions", "Account", "Model"]
     if is_admin():
         pages.extend(["Create User", "Administration"])
 
@@ -88,6 +88,8 @@ else:
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     if selection == "Home":
         home.show()
+    elif selection == "Model":
+        model.show()
     elif selection == "Data Analysis":
         data_analysis.show()
     elif selection == "Predictions":
