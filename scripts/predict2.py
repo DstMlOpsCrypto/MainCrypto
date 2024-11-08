@@ -9,6 +9,35 @@ import argparse
 import sys
 import os
 
+### START:ADDED FOR API
+import psycopg2
+from datetime import datetime
+
+def save_prediction_to_db(date, value):
+    conn = get_db()  # Function to get a database connection
+    try:
+        with conn.cursor() as cursor:
+            query = "INSERT INTO predictions (prediction_date, prediction_value) VALUES (%s, %s);"
+            cursor.execute(query, (date, value))
+            conn.commit()
+    except Exception as e:
+        print(f"Error saving prediction to database: {e}")
+    finally:
+        conn.close()
+
+def get_db():
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST', 'db'),
+        port=os.getenv('DB_PORT', '5432'),
+        user=os.getenv('DB_USER', 'crypto'),
+        password=os.getenv('DB_PASSWORD', 'crypto'),
+        dbname=os.getenv('DB_NAME', 'cryptoDb')
+    )
+    return conn
+### END:ADDED FOR API
+
+
+
 #PATH
 # Récupérer le chemin du répertoire courant
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -113,6 +142,14 @@ def pipeline_predict():
     prediction = int(X_test[-1, 0].item())
     
     print(f"La valeur du Bitcoin était de {int(X_test[-1, 0].item())} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction} {ticker} pour aujourd'hui")
+
+    ### START:ADDED FOR API
+    prediction_value = float(test_predict[-1].item())
+    prediction_date = datetime.now()
+
+    # Save the prediction to the database
+    save_prediction_to_db(prediction_date, prediction_value)
+    ### END:ADDED FOR API
 
     return {"prediction": prediction}
 
