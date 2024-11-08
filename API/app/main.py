@@ -8,6 +8,7 @@ from slowapi.errors import RateLimitExceeded
 # Importe les routeurs 
 from app.authentification.router import router as authentification_router
 from app.crypto import router as crypto_router
+from app.prediction.router import router as prediction_router
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -36,5 +37,7 @@ async def root():
 
 app.include_router(authentification_router, prefix="/auth", tags=["authentication"])
 app.include_router(crypto_router.router, prefix="/crypto", tags=["crypto"])
+app.include_router(prediction_router, prefix="/prediction", tags=["prediction"])
+
 
 

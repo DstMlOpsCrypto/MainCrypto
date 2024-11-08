@@ -4,6 +4,8 @@ from airflow.sensors.external_task import ExternalTaskSensor
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
 from airflow.utils.state import DagRunState
+from custom_sensors import ExternalDagRunSensor
+
 
 default_args = {
     'owner': 'airflow',
@@ -23,16 +25,12 @@ with DAG(
 
 ) as my_dag:
 
-    # Définition de l'ExternalTaskSensor
-    wait_for_crypto_ohlc_dag = ExternalTaskSensor(
+    wait_for_crypto_ohlc_dag = ExternalDagRunSensor(
         task_id='wait_for_crypto_ohlc_dag',
-        external_dag_id='crypto_ohlc_dag',  # Nom du DAG à attendre
-        external_task_id=None,  # Attend la fin du DAG entier
-        allowed_states=[DagRunState.SUCCESS],  # États acceptables du DAG attendu
-        failed_states=[DagRunState.FAILED],  # États considérés comme des échecs
+        external_dag_id='crypto_ohlc_dag',
         mode='reschedule',
-        poke_interval=60,  # Vérifie toutes les 60 secondes
-        timeout=600,  # Temps maximum d'attente de 10 minutes
+        poke_interval=60,
+        timeout=600,
     )
 
     predict_model = BashOperator(
