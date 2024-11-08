@@ -367,7 +367,7 @@ services:
     container_name: mlflow_db
     restart: always
     ports:
-      - "5434:5434"
+      - "5434:5432" # 5434:5434
     environment:
       - POSTGRES_USER=mlflow
       - POSTGRES_PASSWORD=mlflow
@@ -409,7 +409,7 @@ services:
         condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
     working_dir: /app # Définit le répertoire de travail sur /app où le script de démarrage est localisé
     environment:
-      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5434/mlflow
+      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
     command: 
       [
         "mlflow",
@@ -535,15 +535,24 @@ services:
       - LOG_LEVEL=debug
       - MAIN_API_URL=http://api:3000
       - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+      - AIRFLOW_USERNAME=airflow
+      - AIRFLOW_PASSWORD=airflow
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=crypto
+      - DB_PASSWORD=crypto
+      - DB_NAME=cryptoDb
     volumes:
       - ./PredictionAPI:/app
       - ./scripts:/app/scripts
       - ./src:/app/src
-      - ./mlflow:/mlflow
+      - ./mlflow-artifacts:/mlflow-artifacts
+      #- ./mlflow:/mlflow
     depends_on:
       - db
       - api
       - mlflow-server
+      - airflow-webserver
     command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
