@@ -116,8 +116,14 @@ def pipeline():
     #load best_model
     best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
   
-    mv = client.get_latest_versions(model_name, stages=None)[0]
-    model_version = mv.version
+    mv = client.search_model_versions(f"name='{model_name}'")
+    if mv:
+        # Trier par version et prendre la plus récente
+        latest_version = sorted(mv, key=lambda x: int(x.version), reverse=True)[0]
+        model_version = latest_version.version
+    else:
+        raise Exception(f"No versions found for model {model_name}")
+
     # Prediction
     train_predict = best_model.predict(X_train)
     test_predict = best_model.predict(X_test)
