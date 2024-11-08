@@ -1,4 +1,4 @@
-# Api
+# FastAPI
 
 ## Introduction to FastAPI
 

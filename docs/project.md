@@ -1,16 +1,31 @@
-# Project Plan
+# Project
+
+All project has been manage through github
+
+- project plan + roadmap
+- issues
+
+We use a flavor of XP programming to enhanced collaboration and communication (3 meetings per week included 1 to 1 dedicated meeting if necessary). 
+
+We were focused on delivery through short delivery cycle  (more than 5 times per week) to get rapid feedback, and to keep motivation up ! 
+
+???+ note
+    [See github statistics](https://github.com/DstMlOpsCrypto/MainCrypto/pulse)
+
+
+The following part sumup the setup
 
 ## Project Setup and Environment Configuration
 
 ### Tasks
 
 * Set up the development environment (Docker, virtual environments, etc.).
-* Install necessary libraries and frameworks (TensorFlow, Airflow, MLflow, etc.).
+* Install necessary libraries and frameworks (Airflow, MLflow, etc.).
 * Set up GitHub repository for version control.
 
 ### Deliverables
 
-* Dockerfile and docker-compose.yml
+* Dockerfile and docker-compose.yml for each services
 * Environment configuration files
 * Initial commit to GitHub
 
@@ -110,12 +125,14 @@
 
 ### Tasks
 
-* Deploy the entire MLOps pipeline to a production environment.
+* Deploy the entire MLOps pipeline to a developement environment included unit tests
+* Deploy the entire MLOps pipeline to a production environment (VM EC2 DataScientest).
 * Ensure all components are correctly integrated and functional.
 
 ### Deliverables
 
-* Deployment scripts
+* Deployment scripts under Githhub Actions
+* Live development system with test
 * Live production system
 
 ## Documentation
@@ -128,7 +145,7 @@
 ### Deliverables
 
 * Comprehensive project documentation
-* Presentation slides
+* Presentation document under [MkDocs](https://www.mkdocs.org/)
 
 
 # Project Timeline 
@@ -143,3 +160,6 @@
 * Week 13-14: Testing and Validation
 * Week 15: Deployment :rocket:
 * Week 16: Documentation 
+
+???+ note
+    [Github project](https://github.com/orgs/DstMlOpsCrypto/projects/1)

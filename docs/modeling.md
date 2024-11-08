@@ -166,3 +166,7 @@ Using LSTM. Machine Learning with Applications 2020; 9: 100320.
 Stock Market Prediction. In Proceedings of the 2018 9th International Conference on Information and Communication Systems (ICICS), Irbid, Jordan, 3–5 April 2018
 11. Moghar A, Hamiche M. Stock Market Prediction Using LSTM Recurrent Neural Network. Procedia
 Computer Science 2020; 170: 1168–1173.
+
+
+https://www.sciencedirect.com/science/article/pii/S0957417423008485
+file:///home/misterneo/Downloads/9-2023+IAET-Conference-template-A4_Zhenglin+Li_H+(1).pdf

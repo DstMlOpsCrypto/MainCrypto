@@ -1,0 +1,13 @@
+nav:
+    - index.md
+    - project.md
+    - architecture.md
+    - modeling.md
+    - results.md
+    - thanks.md
+    - Tools:
+          - airflow.md
+          - fastapi.md
+          - mlflow.md
+          - prometeus.md
+          - kibana.md
