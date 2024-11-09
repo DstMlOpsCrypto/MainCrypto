@@ -12,3 +12,4 @@ nav:
           - prometeus.md
           - kibana.md
           - streamlit.md
+          - description_monitoring.md

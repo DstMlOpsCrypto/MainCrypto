@@ -14,7 +14,7 @@ Prometheus is connected to services (Prediction and Gateway APIs, Airflow, node-
 It is configured using the prometheus.yml file, which is set up to scrape logs from those different services :
 
 Classical scheme is the following :
-![Schéma classique du fonctionnement de Prometheus](images/prometheus.png)
+![Schema classique du fonctionnement de Prometheus](images/prometheus.png)
 
 We will use another classical approah using **Stats_exporter**.
 The StatsD exporter is a drop-in replacement for StatsD, used to collect various metrics and convert them to Prometheus format automaticly via configured mapping rules.
@@ -23,24 +23,24 @@ tatsD's repeater backend is configured to repeat all received metrics to a stats
 For example, Airflow emits metrics in the StatsD format automatically if certain environment variables (starting with AIRFLOW__SCHEDULER__STATSD_) are set.
 New schemes arethe following :
 
-+-------------+    +----------+                  +------------+
-| Application +--->| Exporter +----------------->|  StatsD    |
-+-------------+    +----------+                  +------------+
-                          ^
-                          |                      +------------+
-                          +----------------------+ Prometheus |
-                                                 +------------+
+```mermaid
+    flowchart
+    Application --> Exporter --> StatsD
+    Prometheus --> Exporter
+    StatsD --UDP/TCP repeater)--> statsd_exporter
+    statsd_exporter --(scrape /metrics)-->Prometheus
+```
 
-+----------+                         +-------------------+                        +--------------+
-|  StatsD  |---(UDP/TCP repeater)--->|  statsd_exporter  |<---(scrape /metrics)---|  Prometheus  |
-+----------+                         +-------------------+                        +--------------+
 
 For example, Airflow emits metrics in the StatsD format automatically if certain environment variables (starting with AIRFLOW__SCHEDULER__STATSD_) are set.
 
 
 
 ### Node-exporter:
-Node Exporter is a tool designed to collect and expose various system-level metrics from a target (node or machine). It runs as a service on the node and provides valuable insights into CPU usage, memory consumption, disk usage, network statistics, and other crucial system-level data. Node Exporter allows Prometheus to scrape these metrics using the pull model and store them as time-series data. Native service is available on browser port 9100.
+
+Node Exporter is a tool designed to collect and expose various system-level metrics from a target (node or machine). 
+It runs as a service on the node and provides valuable insights into CPU usage, memory consumption, disk usage, network statistics, and other crucial system-level data. 
+Node Exporter allows Prometheus to scrape these metrics using the pull model and store them as time-series data. Native service is available on browser port 9100.
 
 
 ### Grafana
@@ -75,4 +75,3 @@ It is realized directly trought configuration files :
 Grafana have its own AlerManager with an UI interface, selecting metrics and conditions.
 It is also possible to use a configuration file, which configure alert rules and contacts point, what we have done.
 Alerting system have be done through email and Slack canal. TO MODIFY AND FINALIZE
-
