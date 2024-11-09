@@ -2,9 +2,11 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.sensors.external_task import ExternalTaskSensor
 from airflow.utils.dates import days_ago
+# from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime, timedelta
 from airflow.utils.state import DagRunState
 from custom_sensors import ExternalDagRunSensor
+
 
 
 default_args = {
@@ -34,8 +36,16 @@ with DAG(
     )
 
     predict_model = BashOperator(
-        bash_command= " cd ../../app/scripts && python3 predict2.py --currency='BTC-USD'",
         task_id="prediction_model",
-        dag=my_dag)
+        bash_command= " cd ../../app/scripts && python3 predict2.py --currency='BTC-USD'",
+        dag=my_dag
+    )
 
-    wait_for_crypto_ohlc_dag >> predict_model
+    evaluate_model = BashOperator(
+        task_id="evaluate_model",
+        bash_command= " cd ../../app/scripts && python3 evaluate_model2.py --currency='BTC-USD'",
+        do_xcom_push=True,
+        dag=my_dag
+    )
+
+    wait_for_crypto_ohlc_dag >> predict_model >> evaluate_model 

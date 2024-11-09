@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
 
@@ -22,8 +23,9 @@ with DAG(
 ) as my_dag:
 
     train_model = BashOperator(
+        task_id="evaluate_model",
         bash_command= " cd ../../app/scripts && python3 evaluate_model2.py --currency='BTC-USD'",
-        task_id="training_model",
+        do_xcom_push=True,
         dag=my_dag
     )
 

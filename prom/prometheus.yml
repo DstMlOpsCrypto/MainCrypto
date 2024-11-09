@@ -14,35 +14,32 @@ alerting:
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
   - "alertmanager/monitoring_rules.yml" # pour correspondre à l'arborescence actuelle
-  # - "second_rules.yml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-
-  - job_name: prometheus-statsd-exporter
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-    static_configs:
-    - targets:
-    # - prometheus:9090  #first config
-      - prometheus-statsd-exporter:9102   # second config with stats exporter : scraping statsd exporter for prometheus metrics
-
-  - job_name: node
+  #   # metrics_path defaults to '/metrics'
+  #   # scheme defaults to 'http'
+  - job_name: "node"
     scrape_interval: 5s
     static_configs:
     - targets: 
       - node-exporter:9100  # scraping node exporter 
 
-  - job_name: airflow
+  - job_name: "airflow_statsd"
     scrape_interval: 5s
     static_configs:
-      - targets: ['airflow-webserver:8080'] # si c'est airflow-webserver:8080 que l'on veut
-      #- targets: ['localhost:9102']   # #scraping airflow ?? voir PORT
+    - targets:
+      - statsd-exporter:9102 # with stats-exporter, or prometheus:9090 within statsd
 
-  - job_name: 'prediction_api'
+  - job_name: "prediction_api"
     scrape_interval: 5s
-    metrics_path: /metrics
     static_configs:
-      - targets: ['prediction-api:3001']
+    - targets:
+      - prediction-api:3001 
+    
+   - job_name: "prediction_api"
+     scrape_interval: 5s
+     static_configs:
+     - targets:
+       - airflow-webserver:8080 # a voir     

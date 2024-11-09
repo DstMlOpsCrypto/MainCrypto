@@ -6,6 +6,15 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 # callbacks
 def create_callbacks():
+    """
+    Creates two training callbacks:
+    
+    - EarlyStopping: Stops training if "val_loss" doesn't improve by at least 0.0001 after 8 epochs, restoring the best model weights.
+    - ReduceLROnPlateau: Reduces the learning rate by a factor of 0.0001 if "val_loss" plateaus for 5 epochs, with a cooldown period of 3 epochs and a minimum learning rate of 1e-6.
+    
+    Returns:
+        tuple: (early_stopping, reduce_learning_rate)
+    """
     early_stopping = EarlyStopping(monitor="val_loss",
                                 min_delta = 0.0001,
                                 patience = 8,
@@ -39,9 +48,3 @@ def train (X_train, y_train, X_test, y_test, model, batch_size = 5):
     return history, model, duration_seconds
 
 
-#     :param neurons: number of neurons (int>0)
-#     :param input_shape: Shape of the Input after sequencing of historical prices
-#     :param activ_func: activation function, "relu" by defaut
-#     :param loss: loss function used during training, 'mse' by defaut
-#     :param metrics name: metrics showed during training, 'mse' by defaut
-#     :param optimizer: optimizer used during compiling, 'adam' by defaut

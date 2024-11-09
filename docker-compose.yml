@@ -18,6 +18,10 @@ x-airflow-common: &airflow-common
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080 #ajout pour les logs
+    AIRFLOW__METRICS__STATSD_ON: 'true'
+    AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+    AIRFLOW__METRICS__STATSD_PORT: 8125
+    AIRFLOW__METRICS__STATSD_PREFIX: airflow
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -28,6 +32,8 @@ x-airflow-common: &airflow-common
     redis:
       condition: service_healthy
     postgres:
+      condition: service_healthy
+    statsd-exporter:
       condition: service_healthy
 
 services:
@@ -70,6 +76,8 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+    depends_on:
+      - statsd-exporter
     networks:
       - app_network
 
@@ -86,6 +94,8 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+    depends_on:
+      - statsd-exporter
     networks:
       - app_network
 
@@ -110,6 +120,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_started
+      statsd-exporter:
+        condition: service_started
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -122,10 +134,6 @@ services:
     <<: *airflow-common
     command: scheduler
     #environment:
-    #- AIRFLOW__SCHEDULER__STATSD_ON: 'true'
-    #   - AIRFLOW__SCHEDULER__STATSD_HOST=statsd-exporter # Hostname of your StatsD container
-    #   - AIRFLOW__SCHEDULER__STATSD_PORT=8125
-    #   - AIRFLOW__SCHEDULER__STATSD_PREFIX=airflow
     #   - AIRFLOW__SCHEDULER__STATSD_ALLOW_LIST=""
     #   - AIRFLOW__LOGGING__LOGGING_LEVEL=DEBUG
     healthcheck:
@@ -146,7 +154,7 @@ services:
     <<: *airflow-common
     image: beletteu73docker666/worker_airflow_projetmlops
     #pull_policy: never
-    #build: ./scripts/Dockerfile
+    # build: ./scripts/Dockerfile
     command: celery worker
     healthcheck: 
       # yamllint disable rule:line-length
@@ -276,6 +284,7 @@ services:
       - airflow
     networks:
       - app_network
+  
   flower:
     <<: *airflow-common
     command: celery flower
@@ -293,6 +302,8 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
+        condition: service_started
+      statsd-exporter:
         condition: service_started
     networks:
       - app_network
@@ -465,6 +476,7 @@ services:
     # entrypoint: ["/bin/prometheus", "--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/etc/prometheus"]
     depends_on:
       - airflow-webserver
+      - statsd-exporter
     networks:
       - app_network 
 
@@ -490,7 +502,37 @@ services:
       - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
     networks:
     - app_network
+   
+  statsd-exporter:
+    image: prom/statsd-exporter
+    container_name: statsd-exporter
+    command: 
+      - "--statsd.mapping-config=/tmp/statsd_mapping.yml"
+      - "--statsd.listen-udp=:8125"
+      - "--web.listen-address=:9102"
+    restart: always
+    ports:
+      - "9102:9102"
+      - "8125:8125/udp"  #port Stats en udp
+    volumes:
+      - './prom/statsd/statsd_mapping.yml:/tmp/statsd_mapping.yml'  
+    networks:
+      - app_network
   
+  model-score-sender:
+    image: python:3.12
+    container_name: model-score-sender
+    command: bash -c "pip install -r /tmp/requirements.txt && python3 /tmp/first_model_score.py"    
+    restart: no 
+    volumes:
+      - './prom/statsd/requirements.txt:/tmp/requirements.txt'
+      - './prom/statsd/first_model_score.py:/tmp/first_model_score.py'
+    networks:
+      - app_network
+    depends_on:
+      statsd-exporter:
+        condition: service_healthy
+
   alert-manager:
     image: prom/alertmanager
     volumes:
@@ -506,21 +548,25 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    restart: always
+    environment: #tests
+    - GF_SECURITY_ADMIN_PASSWORD=grafana
+    - GF_SECURITY_ADMIN_USER=grafana
+    - GF_USERS_ALLOW_SIGN_UP=false
+    # - GF_SMTP_ENABLED=true
+    # - GF_SMTP_HOST=smtp.laposte.net:465
+    # - GF_SMTP_USER=frederic.lagniez@laposte.net
+    # - GF_SMTP_PASSWORD=XXXXXX
+    # - GF_SMTP_FROM_ADDRESS=frederic.lagniez@laposte.net
+    # - GF_SMTP_SKIP_VERIFY=true
+    # - GF_SMTP_FROM_NAME=Grafana
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./prom/grafana/provisioning:/etc/grafana/provisioning/dashboard
+      - ./prom/grafana/provisioning:/etc/grafana/provisioning      
     ports:
       - "3002:3000"
-    env_file:
-      - ./prom/grafana/config.monitoring
-        # contains environment variables that are used to configure the Grafana container. 
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=grafana
-      - GF_SECURITY_ADMIN_USER=grafana
-      - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
       - prometheus
-
     networks:
       - app_network      
 
