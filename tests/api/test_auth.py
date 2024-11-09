@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from typing import Optional
 import pytest
 
-# Code de l'API d'authentification (simplifié)
 app = FastAPI()
 router = APIRouter()
 
@@ -41,7 +40,7 @@ def fake_verify_password(plain_password: str, hashed_password: str):
     return hashed_password == fake_hash_password(plain_password)
 
 def fake_decode_token(token):
-    # Décoder le token (ici, simplement retourner l'utilisateur correspondant)
+    # Décode le token
     user = fake_users_db.get(token)
     return user
 
@@ -100,7 +99,7 @@ def test_protected_route():
     response = client.post("/auth/login", data={"username": "testuser", "password": "testpassword"})
     token = response.json()["access_token"]
 
-    # Accéder à la route protégée
+    # Accéde à la route protégée
     response = client.get("/auth/protected", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     data = response.json()
