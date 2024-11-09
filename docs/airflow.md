@@ -2,6 +2,38 @@
 
 This part presents an overview of Airflow tool for educational purposes.
 
+=== "Creator"
+
+    * **Name**: Maxime Beauchemin
+    * **Background**: Ex-Airbnb and ex-Facebook engineer
+    * **Contribution**: Developed Apache Airflow at Airbnb to manage complex workflows
+
+=== "Use Cases"
+
+    * **Data Engineering**
+        * ETL/ELT Pipelines: Extract, Transform, Load (Extract, Load, Transform) data from various sources.
+        * Data Processing: Automate data cleaning, transformation, and loading processes.
+
+    * **Machine Learning**
+
+        * MLOps: Orchestrate the entire machine learning lifecycle, including data preparation, model training, and deployment2.
+        * Model Training: Schedule and monitor machine learning model training jobs.
+
+    * **Operational Analytics**
+
+        * Automated Reporting: Generate and distribute reports on a scheduled basis.
+        * Real-time Analytics: Process and analyze data in real-time for timely insights.
+        
+    * **DevOps**
+
+        * Infrastructure Management: Manage infrastructure provisioning and de-provisioning.
+        * Backup and Restore: Schedule regular backups and automate restore processes.
+
+    * **Custom Workflows  
+
+        * Ad Hoc Tasks: Run one-off tasks that are not tied to a schedule.
+        * Event-Driven Workflows: Trigger tasks based on external events, such as file uploads or API calls5.
+
 ## Introduction to Apache Airflow
 
 Apache Airflow is—a platform to programmatically author, schedule, and monitor workflows.
