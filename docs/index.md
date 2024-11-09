@@ -29,7 +29,7 @@ The purpose of this project have 1 Objectives : Develop a fully functional Bitco
 
     * Frederic
     * Tristan
-    * Yann :robot:
+    * Yann
 
 === "Project management"
 
