@@ -34,7 +34,7 @@ jobs:
 
           payload: |
             {
-              "text": "PublicPage Update: ${{ github.event.pull_request.title }}\nBy: ${{ github.event.pull_request.user.login }}\nStatus:${{ job.status }}\nURL:'https://dstmlopscrypto.github.io/MainCrypto/'"
+              "text": "PublicPage Update: ${{ github.event.head_commit.message }}\nBy: ${{ github.event.head_commit.author.name }}\nStatus:${{ job.status }}\nURL:'https://dstmlopscrypto.github.io/MainCrypto/'"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
