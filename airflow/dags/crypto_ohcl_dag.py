@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date':days_ago(0),
+    'start_date':days_ago(1),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
@@ -23,7 +23,7 @@ dag = DAG(
     'crypto_ohlc_dag',
     default_args=default_args,
     description='A simple DAG to get daily OHLC data from Kraken API',
-    schedule_interval=timedelta(days=1),  # timedelta(seconds=5, minutes=5, hours=1, days=1) for hourly runs
+    schedule_interval="@daily", #timedelta(days=1),  # timedelta(seconds=5, minutes=5, hours=1, days=1) for hourly runs
     catchup=False
 )
 

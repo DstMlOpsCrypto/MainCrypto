@@ -27,6 +27,7 @@ yfinance \
 pytest \
 psycopg2-binary \
 apache-airflow \
+statsd \
 requests
 
 USER root

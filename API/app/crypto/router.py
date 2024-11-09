@@ -48,7 +48,7 @@ class OHLCData(BaseModel):
     low: float
     close: float
     volume: float
-    trades: float
+    trades: Optional[float] = None
 
 @router.get("/asset_history/{asset}", response_model=List[OHLCData])
 async def get_asset_history(
@@ -180,3 +180,22 @@ async def get_kraken_assets(current_user: User = Depends(get_current_user)):
 
 
 
+@router.get("/asset_latest/{asset}", response_model=List[OHLCData])
+async def get_asset_latest(
+    asset: str,
+    limit: int = Query(14, description="Nombre de derniers enregistrements à retourner"),
+    current_user: User = Depends(get_current_user)
+):
+    async with get_db() as db:
+        try:
+            query = """
+            SELECT * FROM ohlc
+            WHERE asset = %s
+            ORDER BY dtutc DESC
+            LIMIT %s
+            """
+            db.execute(query, (asset, limit))
+            history = db.fetchall()
+            return [OHLCData(**record) for record in history]
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

@@ -25,8 +25,8 @@ sys.path.append(parent_dir)
 
 # Import des modules
 from src.data.make_dataset import make_dataset
-from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
-from src.features.preprocess import normalize_data,normalize_data2
+from src.data.import_raw_data import load_data_2
+from src.features.preprocess import normalize_data2
 from src.evaluation.ml_flow import get_best_model, init_mlflow_experiment
 from src.evaluation.evaluate import scaling, score
 from src.models.model_LSTM import LSTMModel
@@ -48,10 +48,12 @@ args = parser.parse_args()
 exp_name = "Projet_Bitcoin_price_prediction"
 run_name = "first_run"
 
-tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+#tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+tracking_uri = "http://mlflow-server:5000"
 mlflow.set_tracking_uri(tracking_uri)
 
 neurons = 350
+#neurons = 32
 
 # MLflow Tracking client
 client = MlflowClient(tracking_uri= tracking_uri)
@@ -88,12 +90,12 @@ def pipeline_train():
         print(f"Error loading data: {e}") 
         print("Le chargement ou la normalisation des données Kraken a échoué")
 
-    with mlflow.start_run (run_name=run_name, experiment_id=experiment_id):           
+    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id):           
         print("MLflow run started")
         
-        for pas_temps in [3]:  #[1,2,3,5,8,10,12,14,16,20] # paramater finally chosen to 14        
-                for batch_size in [1,2,5,10,20,30]:#15,20]:
-                                   
+        for pas_temps in [14]:  # paramater finally fixed to 14       
+                for batch_size in [2,5,10]: # 2,5,10,15,20,30,40]:#15,20]
+                   
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):
 
@@ -104,7 +106,8 @@ def pipeline_train():
                         print("Construction du Dataset terminée")      
                                         
                         # Model instanciation
-                        model = LSTMModel(neurons=350)
+                        #model = LSTMModel(neurons=350)
+                        model = LSTMModel(neurons=32)
                         # Training
                         history, model, duration_seconds = train(X_train, y_train, X_test, y_test, model, batch_size)
                         print(f"Entrainement du modèle {model} effectué en {duration_seconds} secondes.")
@@ -136,12 +139,10 @@ def pipeline_train():
                         print("mean_squared_error_test", mse_test)
                         print("r2_test_score", r2_score_test)
           
-        #best_model_info = get_best_model(experiment_id = experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
-        best_model_info = get_best_model(experiment_id = experiment_id, metric_name="r2_test_score", ticker=ticker, period=period, tracking_uri=tracking_uri)
+        best_model_info = get_best_model(experiment_id = experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
      
 
     # training with best params
-
     #fetching best params
     if best_model_info is not None:
         print(best_model_info)
@@ -155,7 +156,8 @@ def pipeline_train():
             X_train, X_test, y_train, y_test= make_dataset(data = df_array, pas_temps=pas_temps, test_size=0.3)
 
             # Model instanciation
-            model = LSTMModel(neurons=350)
+            #model = LSTMModel(neurons=350)
+            model = LSTMModel(neurons=32)
 
             # Best model Training
             history, model, duration_seconds = train(X_train, y_train, X_test, y_test, model, batch_size)

@@ -9,6 +9,35 @@ import argparse
 import sys
 import os
 
+### START:ADDED FOR API
+import psycopg2
+from datetime import datetime
+
+def save_prediction_to_db(date, value):
+    conn = get_db()  # Function to get a database connection
+    try:
+        with conn.cursor() as cursor:
+            query = "INSERT INTO predictions (prediction_date, prediction_value) VALUES (%s, %s);"
+            cursor.execute(query, (date, value))
+            conn.commit()
+    except Exception as e:
+        print(f"Error saving prediction to database: {e}")
+    finally:
+        conn.close()
+
+def get_db():
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST', 'db'),
+        port=os.getenv('DB_PORT', '5432'),
+        user=os.getenv('DB_USER', 'crypto'),
+        password=os.getenv('DB_PASSWORD', 'crypto'),
+        dbname=os.getenv('DB_NAME', 'cryptoDb')
+    )
+    return conn
+### END:ADDED FOR API
+
+
+
 #PATH
 # Récupérer le chemin du répertoire courant
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -24,8 +53,8 @@ sys.path.append(parent_dir)
 
 #import des modules
 from src.data.make_dataset import make_dataset_for_testing
-from src.data.import_raw_data import load_data, load_data_2, load_transform_data,load_transform_data2
-from src.features.preprocess import normalize_data, normalize_data2
+from src.data.import_raw_data import load_data_2
+from src.features.preprocess import normalize_data2
 from src.evaluation.ml_flow import get_check_experiment, load_best_model, init_mlflow_experiment
 
 #supprimer warnings GPU tensorflow
@@ -41,7 +70,8 @@ args = parser.parse_args()
 
 
 # Update the tracking URI to point to the MLflow server container
-tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+#tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+tracking_uri = "http://mlflow-server:5000"
 mlflow.set_tracking_uri(tracking_uri)
 client = MlflowClient(tracking_uri=tracking_uri)
 
@@ -53,7 +83,7 @@ experiment_id = init_mlflow_experiment(exp_name = exp_name)
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
-pas_temps=3
+pas_temps=14
 
 # Mise en place des nouveaux arguments
 # bitcoin = args.bitcoin
@@ -112,6 +142,14 @@ def pipeline_predict():
     prediction = int(X_test[-1, 0].item())
     
     print(f"La valeur du Bitcoin était de {int(X_test[-1, 0].item())} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction} {ticker} pour aujourd'hui")
+
+    ### START:ADDED FOR API
+    prediction_value = float(test_predict[-1].item())
+    prediction_date = datetime.now()
+
+    # Save the prediction to the database
+    save_prediction_to_db(prediction_date, prediction_value)
+    ### END:ADDED FOR API
 
     return {"prediction": prediction}
 

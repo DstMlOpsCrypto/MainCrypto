@@ -206,33 +206,39 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 - login: grafana
 - password: grafana
 
-  - Add Data Source:
-  Go to Configuration > Data Sources > Add data source.
+  **Add Data Source** :
+  Go to Configuration > Data Sources > Add new data source.
   
     **Prometheus**
     - Select Prometheus.
+    - Choose Prometheus type: Prometheus
     - In URL, enter http://prometheus:9090
     - Click Save & Test
 
-    **Node-exporter**
-    - Select AlertManager
+    **AlertManager**
+    - Select a name : Alertmanager
     - Choose Implementation: Prometheus
+    - Choose Alerting / Manage alerts via Alerting UI : yes 
     - In URL, enter http://alert-manager:9093
     - Click Save & Test
-    
+    - go to 'Alert rules' and  add a new alert rules
+
     **Add Dashboards for Node Exporter Metrics**
     - Go to to + > Import.
     - Enter dashboard ID 1860 (from Grafana’s dashboard repository); Click on  Load
-    - Enter name and Slectect a prometheus Data Source : Prometheus
-    - Click on import
+    - Enter name and Sectect a prometheus Data Source : Prometheus    
+    - Click on Import
+    - Select job and host (node-exporter ou statssd-exporter)
 
-     **Alerting** (TO BE DONE)
-    - In Grafana, go to  > Alerting / Alert rules
-    - Give a name to the rules
-    - Choose service Prometheus
-    - .... IN PROGRESS...
+    **Alerting** (StatsD)
+    - IPoint to '0.0.0.0:9093' on your browser
+    
+     **Alerting** (Grafana)
+    - In Grafana, go to  > Alert rules and "+ New alert rules"
+    - Give a name to the rules : Alertmanager
+    - Choose Source Prometheus
+    - Select metric and function
 
-    **Airflow** (TO BE DONE?)
 
 ## Build
 Launch 

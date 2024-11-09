@@ -1,10 +1,41 @@
 import mlflow
 from mlflow.tracking.client import MlflowClient
+from statsd import StatsClient
 
 #packages
 import argparse
 import sys
 import os
+
+import psycopg2
+from datetime import datetime
+
+# Database connection function
+def get_db():
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST', 'db'),
+        port=os.getenv('DB_PORT', '5432'),
+        user=os.getenv('DB_USER', 'crypto'),
+        password=os.getenv('DB_PASSWORD', 'crypto'),
+        dbname=os.getenv('DB_NAME', 'cryptoDb')
+    )
+    return conn
+
+# Function to save metrics
+def save_evaluation_to_db(model_name, model_version, evaluation_date, mse_train, r2_train, mse_test, r2_test):
+    conn = get_db()
+    try:
+        with conn.cursor() as cursor:
+            query = """
+            INSERT INTO model_evaluation (model_name, model_version, evaluation_date, mse_train, r2_score_train, mse_test, r2_score_test)
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
+            """
+            cursor.execute(query, (model_name, model_version, evaluation_date, mse_train, r2_train, mse_test, r2_test))
+            conn.commit()
+    except Exception as e:
+        print(f"Error saving evaluation to database: {e}")
+    finally:
+        conn.close()
 
 #PATH
 # Récupérer le chemin du répertoire courant
@@ -20,23 +51,24 @@ sys.path.append(src_dir)
 sys.path.append(parent_dir)
 
 from src.evaluation.ml_flow import init_mlflow_experiment, load_best_model
-from src.data.import_raw_data import load_transform_data, load_transform_data2
-from src.features.preprocess import normalize_data,normalize_data2
+from src.features.preprocess import normalize_data2
 from src.data.make_dataset import make_dataset
-from src.data.import_raw_data import load_data, load_data_2
+from src.data.import_raw_data import load_data_2
 from src.evaluation.evaluate import scaling, score
 
 #Arguments du script
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
 
+# other parmaeters desactived
 #parser.add_argument('--bitcoin', choices= ['BTC'], required=True, help="Selectionne le bitcoin")
 #parser.add_argument('--currency', choices= ['-USD','-EUR'], required=True, help="Selectionne la devise")
 #parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selectionne la période de prédiction") # on garde une prédiction à un jour
 args = parser.parse_args()
 
 # Update the tracking URI to point to the MLflow server container
-tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+#tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+tracking_uri = "http://mlflow-server:5000"
 mlflow.set_tracking_uri(tracking_uri)
 client = MlflowClient(tracking_uri=tracking_uri)
 
@@ -46,20 +78,23 @@ experiment_id = init_mlflow_experiment(exp_name = exp_name)
 
 model_version = "latest"
 
+# Configurer le client StatsD
+statsd_client = StatsClient(host='statsd-exporter', port=8125) 
+
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
-pas_temps=3
+pas_temps=14
 
 # bitcoin = args.bitcoin
     # currency = args.currency    
     # ticker = bitcoin + currency
-def pipeline():
-    """
-    Fonction which evaluate production model and send back score
-    """
 
-    print("je suis entré dans le pipeline")
+def evaluate_model():
+
+    """
+    Fonction which evaluate model and send back score
+    """
 
     model_name = f"tf-lstm-reg-model-{period}"
     #model_name = f"tf-lstm-reg-model-{ticker}-{period}"
@@ -84,6 +119,14 @@ def pipeline():
     #load best_model
     best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
   
+    mv = client.search_model_versions(f"name='{model_name}'")
+    if mv:
+        # Trier par version et prendre la plus récente
+        latest_version = sorted(mv, key=lambda x: int(x.version), reverse=True)[0]
+        model_version = latest_version.version
+    else:
+        raise Exception(f"No versions found for model {model_name}")
+
     # Prediction
     train_predict = best_model.predict(X_train)
     test_predict = best_model.predict(X_test)
@@ -98,7 +141,24 @@ def pipeline():
     print("mse_test",mse_test)
     print("r2_score_test :", r2_score_test)
 
-    return {"mse_test": mse_test, "r2_score_test": r2_score_test} 
+    # Envoyer le score à StatsD
+    statsd_client.gauge('model.score', mse_test)
+    
+    return {"mse_test": mse_test}
+    
+    # Save evaluation metrics
+    evaluation_date = datetime.now()
+    save_evaluation_to_db(model_name, model_version, evaluation_date, mse_train, r2_score_train, mse_test, r2_score_test)
+    print("Evaluation metrics saved to the database.")
+
+    return {
+        "model_name": model_name,
+        "model_version": model_version,
+        "mse_train": mse_train,
+        "r2_score_train": r2_score_train,
+        "mse_test": mse_test,
+        "r2_score_test": r2_score_test
+    }
 
 if __name__ == "__main__":
-        pipeline()
+    evaluate_model()
