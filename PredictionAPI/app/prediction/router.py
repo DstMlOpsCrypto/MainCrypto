@@ -1,138 +1,198 @@
-# tests/api/test_auth.py
+# app/prediction/router.py
 
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
-from fastapi.testclient import TestClient
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, HTTPException, Path, Query, status, Body
+import requests
+from requests.auth import HTTPBasicAuth
+import os
+import pandas as pd
+import mlflow
+import logging
 from pydantic import BaseModel
-from typing import Optional
-import pytest
+from typing import List
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from datetime import datetime
+import numpy as np
+import joblib
+from prometheus_client import Counter, Gauge
 
-# Code de l'API d'authentification (simplifié)
-app = FastAPI()
+PREDICTION_COUNT = Counter('prediction_api_prediction_count', 'Total number of predictions made')
+MODEL_SCORE = Gauge('prediction_api_model_score', 'Score of the latest model')
+
+
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+def get_db():
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST', 'db'),
+        port=os.getenv('DB_PORT', '5432'),
+        user=os.getenv('DB_USER', 'crypto'),
+        password=os.getenv('DB_PASSWORD', 'crypto'),
+        dbname=os.getenv('DB_NAME', 'cryptoDb')
+    )
+    return conn
 
-class User(BaseModel):
-    username: str
-    email: str
-    role: str
 
-# Base de données fictive
-fake_users_db = {
-    "admin": {
-        "username": "admin",
-        "email": "admin@example.com",
-        "hashed_password": "fakehashedadminpassword",
-        "role": "admin",
-    },
-    "testuser": {
-        "username": "testuser",
-        "email": "testuser@example.com",
-        "hashed_password": "fakehashedtestpassword",
-        "role": "user",
-    },
-}
+class InputData(BaseModel):
+    data: List[float]  # A list of floats with length 14
 
-def fake_hash_password(password: str):
-    return "fakehashed" + password
+# MLflow configuration
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-server:5000")
+# Set the tracking URI
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
-def fake_verify_password(plain_password: str, hashed_password: str):
-    return hashed_password == fake_hash_password(plain_password)
+# Airflow API URL
+AIRFLOW_API_URL = "http://airflow-webserver:8080/api/v1"
 
-def fake_decode_token(token):
-    # Décoder le token (ici, simplement retourner l'utilisateur correspondant)
-    user = fake_users_db.get(token)
-    return user
+# Airflow credentials (consider using environment variables for security)
+AIRFLOW_USERNAME = os.getenv("AIRFLOW_USERNAME", "airflow")
+AIRFLOW_PASSWORD = os.getenv("AIRFLOW_PASSWORD", "airflow")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    user = fake_decode_token(token)
-    if not user:
+
+
+@router.get("/latest-prediction", summary="Get the latest prediction")
+async def get_latest_prediction():
+    PREDICTION_COUNT.inc()
+    try:
+        conn = get_db()
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            query = """
+            SELECT prediction_date, prediction_value
+            FROM predictions
+            ORDER BY prediction_date DESC
+            LIMIT 1;
+            """
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return {
+                    "prediction_date": result['prediction_date'].isoformat(),
+                    "prediction_value": float(result['prediction_value'])
+                }
+            else:
+                raise HTTPException(status_code=404, detail="No predictions found")
+    except Exception as e:
+        logger.error(f"Error retrieving prediction: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+
+@router.get("/model-evaluation", summary="Get the latest model evaluation metrics")
+async def get_latest_evaluation():
+    try:
+        conn = get_db()
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            query = """
+            SELECT evaluation_date, mse_train, r2_score_train, mse_test, r2_score_test
+            FROM model_evaluation
+            ORDER BY evaluation_date DESC
+            LIMIT 1;
+            """
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                MODEL_SCORE.set(float(result['r2_score_test']))
+                return {
+                    "evaluation_date": result['evaluation_date'].isoformat(),
+                    "mse_train": float(result['mse_train']),
+                    "r2_score_train": float(result['r2_score_train']),
+                    "mse_test": float(result['mse_test']),
+                    "r2_score_test": float(result['r2_score_test'])
+                }
+            else:
+                raise HTTPException(status_code=404, detail="No evaluation metrics found")
+    except Exception as e:
+        logger.error(f"Error retrieving evaluation metrics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@router.get("/best-model", summary="Get the best model based on evaluation metrics")
+async def get_best_model():
+    try:
+        conn = get_db()
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            # Modify the query based on your criteria for "best"
+            query = """
+            SELECT model_name, model_version, evaluation_date, mse_train, r2_score_train, mse_test, r2_score_test
+            FROM model_evaluation
+            ORDER BY mse_test ASC  -- Assuming lower mse_test is better
+            LIMIT 1;
+            """
+            cursor.execute(query)
+            result = cursor.fetchone()
+            if result:
+                return {
+                    "model_name": result['model_name'],
+                    "model_version": result['model_version'],
+                    "evaluation_date": result['evaluation_date'].isoformat(),
+                    "mse_train": float(result['mse_train']),
+                    "r2_score_train": float(result['r2_score_train']),
+                    "mse_test": float(result['mse_test']),
+                    "r2_score_test": float(result['r2_score_test'])
+                }
+            else:
+                raise HTTPException(status_code=404, detail="No evaluation metrics found")
+    except Exception as e:
+        logger.error(f"Error retrieving best model: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@router.get("/models", summary="List available models")
+async def list_models():
+    try:
+        client = mlflow.tracking.MlflowClient()
+        # Get all registered models
+        registered_models = client.search_registered_models()
+        models = []
+        for rm in registered_models:
+            model_info = {
+                "name": rm.name,
+                "latest_versions": []
+            }
+            # Obtenir les versions via search_model_versions
+            versions = client.search_model_versions(f"name='{rm.name}'")
+            for mv in versions:
+                model_info["latest_versions"].append({
+                    "version": mv.version,
+                    "stage": mv.current_stage,
+                    "description": mv.description,
+                    "run_id": mv.run_id
+                })
+            models.append(model_info)
+        return {"models": models}
+    except Exception as e:
+        logger.error(f"Error listing models: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+def trigger_dag(dag_id: str):
+    url = f"{AIRFLOW_API_URL}/dags/{dag_id}/dagRuns"
+    response = requests.post(
+        url,
+        auth=HTTPBasicAuth(AIRFLOW_USERNAME, AIRFLOW_PASSWORD),
+        json={},  # Empty JSON payload
+    )
+    if response.status_code == 200:
+        return {"message": f"DAG {dag_id} triggered successfully"}
+    else:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials"
+            status_code=response.status_code,
+            detail=f"Failed to trigger DAG {dag_id}: {response.text}",
         )
-    return User(**user)
 
-@router.post("/auth/signup")
-async def signup(user: User, current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins can create new accounts")
-    if user.username in fake_users_db:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already registered")
-    hashed_password = fake_hash_password(user.username + "password")
-    fake_users_db[user.username] = {
-        "username": user.username,
-        "email": user.email,
-        "hashed_password": hashed_password,
-        "role": user.role,
-    }
-    return {"message": f"User {user.username} created successfully"}
+@router.post("/train", status_code=status.HTTP_202_ACCEPTED)
+async def trigger_training_dag():
+    return trigger_dag("training_dag")
 
-@router.post("/auth/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user_dict = fake_users_db.get(form_data.username)
-    if not user_dict or not fake_verify_password(form_data.password, user_dict["hashed_password"]):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
-    return {"access_token": user_dict["username"], "token_type": "bearer", "role": user_dict["role"]}
+@router.post("/score", status_code=status.HTTP_202_ACCEPTED)
+async def trigger_scoring_dag():
+    return trigger_dag("scoring_model_dag")
 
-@router.get("/auth/protected")
-async def protected_route(current_user: User = Depends(get_current_user)):
-    return {
-        "message": "This is a protected route",
-        "user": current_user.username,
-        "role": current_user.role
-    }
-
-app.include_router(router)
-
-# Début des tests
-client = TestClient(app)
-
-def test_login():
-    response = client.post("/auth/login", data={"username": "testuser", "password": "testpassword"})
-    assert response.status_code == 200
-    data = response.json()
-    assert "access_token" in data
-    assert data["role"] == "user"
-
-def test_protected_route():
-    # Obtenir le token
-    response = client.post("/auth/login", data={"username": "testuser", "password": "testpassword"})
-    token = response.json()["access_token"]
-
-    # Accéder à la route protégée
-    response = client.get("/auth/protected", headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == 200
-    data = response.json()
-    assert data["user"] == "testuser"
-    assert data["role"] == "user"
-
-def test_signup():
-    # Connexion en tant qu'admin pour créer un nouvel utilisateur
-    response = client.post("/auth/login", data={"username": "admin", "password": "adminpassword"})
-    token = response.json()["access_token"]
-
-    # Création d'un nouvel utilisateur
-    new_user = {
-        "username": "newuser",
-        "email": "newuser@example.com",
-        "role": "user"
-    }
-    response = client.post("/auth/signup", json=new_user, headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == 200
-    assert response.json()["message"] == f"User {new_user['username']} created successfully"
-
-def test_signup_non_admin():
-    # Connexion en tant qu'utilisateur non-admin
-    response = client.post("/auth/login", data={"username": "testuser", "password": "testpassword"})
-    token = response.json()["access_token"]
-
-    # Tentative de création d'un nouvel utilisateur
-    new_user = {
-        "username": "anotheruser",
-        "email": "anotheruser@example.com",
-        "role": "user"
-    }
-    response = client.post("/auth/signup", json=new_user, headers={"Authorization": f"Bearer {token}"})
-    assert response.status_code == 403
-    assert response.json()["detail"] == "Only admins can create new accounts"
+@router.post("/predict", status_code=status.HTTP_202_ACCEPTED)
+async def trigger_prediction_dag():
+    return trigger_dag("prediction_dag")

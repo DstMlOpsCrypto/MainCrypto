@@ -17,3 +17,4 @@ SQLAlchemy
 typing_extensions
 joblib
 scikit-learn
+prometheus-client

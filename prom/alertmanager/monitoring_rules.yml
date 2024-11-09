@@ -19,3 +19,11 @@ groups:
           severity: critical
         annotations:
           summary: 'Node exporter is Down'
+      - alert: ModelScoreTooLow
+        expr: prediction_api_model_score < 0.96
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model score is too low"
+          description: "The model score has dropped below 0.96"
