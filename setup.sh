@@ -3,6 +3,14 @@
 ### clean docker
 bash local_docker_clean.sh
 
+# Que je dois executer avant de lancer le script / à résoudre pour la suite et éviter de devoir faire ces manips
+# sudo chown -R 50000:0 airflow/logs/
+# sudo chmod -R 777 airflow/logs/
+# sudo chown -R ubuntu:ubuntu mlflow-artifacts/
+# sudo chmod -R 777 mlflow-artifacts/
+# export AIRFLOW_UID=50000
+
+
 ### Install environnement
 docker-compose up stats-exporter model-score-sender
 

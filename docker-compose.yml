@@ -172,6 +172,7 @@ services:
       DUMB_INIT_SETSID: "0"
       CUDA_VISIBLE_DEVICES: ""
       AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0"
+      MLFLOW_TRACKING_URI: "http://mlflow-server:5000"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -184,10 +185,7 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
       - ./scripts:/app/scripts
       - ./src:/app/src
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/config:/opt/airflow/config
-      - ./airflow/plugins:/opt/airflow/plugins
+      - ./mlflow-artifacts:/mlflow-artifacts
     networks:
       - app_network
 
@@ -380,7 +378,7 @@ services:
     container_name: mlflow_db
     restart: always
     ports:
-      - "5434:5434"
+      - "5434:5432" # 5434:5434
     environment:
       - POSTGRES_USER=mlflow
       - POSTGRES_PASSWORD=mlflow
@@ -412,14 +410,31 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow:/app
+      - ./mlflow-artifacts:/mlflow-artifacts
+    #volumes:
+    #  - ./mlruns:/app/mlruns
+    #  #-./mlflow:/app/mlruns
+    #  #- ./mlflow:/app
     depends_on:
       mlflow_db:
         condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
     working_dir: /app # Définit le répertoire de travail sur /app où le script de démarrage est localisé
     environment:
-      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5434/mlflow
-    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
+      - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
+    command: 
+      [
+        "mlflow",
+        "server",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5000",
+        "--backend-store-uri",
+        "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow",
+        "--default-artifact-root",
+        "file:///mlflow-artifacts"
+      ]
+      #["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
     networks:
       - app_network
 
@@ -451,7 +466,7 @@ services:
     volumes:
       - ./prom:/etc/prometheus    # Use /data instead of /etc/prometheus
       - prometheus-data:/prometheus
-      - "./prom/alertmanager/monitoring_rules.yml:/etc/prometheus/alermanager/monitoring_rules.yml"
+      - "./prom/alertmanager/monitoring_rules.yml:/etc/prometheus/alertmanager/monitoring_rules.yml"
     command:
         - '--config.file=/etc/prometheus/prometheus.yml'
         - '--storage.tsdb.path=/prometheus'
@@ -521,7 +536,7 @@ services:
   alert-manager:
     image: prom/alertmanager
     volumes:
-      - "./prom/alertmanager/alertmanager.yml:/alertmanager/alermanager.yml"
+      - "./prom/alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml"
     ports:
       - "9093:9093"
     depends_on:
@@ -566,15 +581,24 @@ services:
       - LOG_LEVEL=debug
       - MAIN_API_URL=http://api:3000
       - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+      - AIRFLOW_USERNAME=airflow
+      - AIRFLOW_PASSWORD=airflow
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=crypto
+      - DB_PASSWORD=crypto
+      - DB_NAME=cryptoDb
     volumes:
       - ./PredictionAPI:/app
       - ./scripts:/app/scripts
       - ./src:/app/src
-      - ./mlflow:/mlflow
+      - ./mlflow-artifacts:/mlflow-artifacts
+      #- ./mlflow:/mlflow
     depends_on:
       - db
       - api
       - mlflow-server
+      - airflow-webserver
     command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network

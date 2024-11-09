@@ -13,14 +13,14 @@ groups:
           severity: critical
         annotations:
           summary: 'Node exporter is Down'
-      - alert: ModelScoreLow
-        expr: model_score < 0.90  # Définissez ici le seuil de votre choix
+      - alert: ModelScoreTooLow
+        expr: model_score < 0.96  # Définissez ici le seuil de votre choix
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "Le score du modèle est inférieur au seuil défini"
-          description: "Le score du modèle est actuellement {{ $value }}."
+          summary: "Model score is too low"
+          description: "The model score has dropped below 0.96"
   - name: example_alert
     rules:
       - alert: HighCPULoad

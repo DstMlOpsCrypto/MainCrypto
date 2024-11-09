@@ -7,6 +7,36 @@ import argparse
 import sys
 import os
 
+import psycopg2
+from datetime import datetime
+
+# Database connection function
+def get_db():
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST', 'db'),
+        port=os.getenv('DB_PORT', '5432'),
+        user=os.getenv('DB_USER', 'crypto'),
+        password=os.getenv('DB_PASSWORD', 'crypto'),
+        dbname=os.getenv('DB_NAME', 'cryptoDb')
+    )
+    return conn
+
+# Function to save metrics
+def save_evaluation_to_db(model_name, model_version, evaluation_date, mse_train, r2_train, mse_test, r2_test):
+    conn = get_db()
+    try:
+        with conn.cursor() as cursor:
+            query = """
+            INSERT INTO model_evaluation (model_name, model_version, evaluation_date, mse_train, r2_score_train, mse_test, r2_score_test)
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
+            """
+            cursor.execute(query, (model_name, model_version, evaluation_date, mse_train, r2_train, mse_test, r2_test))
+            conn.commit()
+    except Exception as e:
+        print(f"Error saving evaluation to database: {e}")
+    finally:
+        conn.close()
+
 #PATH
 # Récupérer le chemin du répertoire courant
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +67,8 @@ parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True,
 args = parser.parse_args()
 
 # Update the tracking URI to point to the MLflow server container
-tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+#tracking_uri = "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow"
+tracking_uri = "http://mlflow-server:5000"
 mlflow.set_tracking_uri(tracking_uri)
 client = MlflowClient(tracking_uri=tracking_uri)
 
@@ -88,6 +119,14 @@ def evaluate_model():
     #load best_model
     best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
   
+    mv = client.search_model_versions(f"name='{model_name}'")
+    if mv:
+        # Trier par version et prendre la plus récente
+        latest_version = sorted(mv, key=lambda x: int(x.version), reverse=True)[0]
+        model_version = latest_version.version
+    else:
+        raise Exception(f"No versions found for model {model_name}")
+
     # Prediction
     train_predict = best_model.predict(X_train)
     test_predict = best_model.predict(X_test)
@@ -106,6 +145,20 @@ def evaluate_model():
     statsd_client.gauge('model.score', mse_test)
     
     return {"mse_test": mse_test}
+    
+    # Save evaluation metrics
+    evaluation_date = datetime.now()
+    save_evaluation_to_db(model_name, model_version, evaluation_date, mse_train, r2_score_train, mse_test, r2_score_test)
+    print("Evaluation metrics saved to the database.")
+
+    return {
+        "model_name": model_name,
+        "model_version": model_version,
+        "mse_train": mse_train,
+        "r2_score_train": r2_score_train,
+        "mse_test": mse_test,
+        "r2_score_test": r2_score_test
+    }
 
 if __name__ == "__main__":
     evaluate_model()
