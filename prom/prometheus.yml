@@ -13,7 +13,7 @@ alerting:
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-  - "monitoring_rules.yml"
+  - "alertmanager/monitoring_rules.yml" # pour correspondre à l'arborescence actuelle
   # - "second_rules.yml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
@@ -27,7 +27,7 @@ scrape_configs:
     static_configs:
     - targets:
     # - prometheus:9090  #first config
-      - prometheus-statsd-exporter:9102']   # second config with stats exporter : scraping statsd exporter for prometheus metrics
+      - prometheus-statsd-exporter:9102   # second config with stats exporter : scraping statsd exporter for prometheus metrics
 
   - job_name: node
     scrape_interval: 5s
@@ -38,4 +38,11 @@ scrape_configs:
   - job_name: airflow
     scrape_interval: 5s
     static_configs:
-      - targets: ['localhost:9102']   # #scraping airflow ?? voir PORT
+      - targets: ['airflow-webserver:8080'] # si c'est airflow-webserver:8080 que l'on veut
+      #- targets: ['localhost:9102']   # #scraping airflow ?? voir PORT
+
+  - job_name: 'prediction_api'
+    scrape_interval: 5s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['prediction-api:3001']
