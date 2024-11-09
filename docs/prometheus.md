@@ -1,5 +1,7 @@
 # Prometheus
 
+This part presents an overview of Prometheus tool for educational purposes.
+
 ## Introduction to Prometheus
 
 ### Overview

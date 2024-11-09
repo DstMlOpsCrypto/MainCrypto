@@ -10,6 +10,6 @@ nav:
           - fastapi.md
           - mlflow.md
           - prometheus.md
-          - kibana.md
+          - grafana.md
           - streamlit.md
           - description_monitoring.md
