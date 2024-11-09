@@ -9,7 +9,7 @@ nav:
           - airflow.md
           - fastapi.md
           - mlflow.md
-          - prometeus.md
+          - prometheus.md
           - kibana.md
           - streamlit.md
           - description_monitoring.md
