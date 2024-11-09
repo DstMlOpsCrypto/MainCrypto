@@ -31,12 +31,10 @@ jobs:
         with:
           channel-id: "#juin24cmlops_crypto"
           # slack-message: "Public-Page Update(PR): ${{ job.status }}\n Author: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+
           payload: |
             {
-              "Public-Page Update(PR)": '${{ github.event.pull_request.title }}',
-              "Author": '${{ github.event.pull_request.user.login }}',
-              "URL": 'https://dstmlopscrypto.github.io/MainCrypto/',
-              "Job-Status": '${{ job.status }}'
+              "text": "PublicPage Update: ${{ github.event.pull_request.title }}\nBy: ${{ github.event.pull_request.user.login }}\nStatus:${{ job.status }}\nURL:'https://dstmlopscrypto.github.io/MainCrypto/'"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
