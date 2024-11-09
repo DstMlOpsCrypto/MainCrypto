@@ -16,7 +16,7 @@ def load_data_2(table):
     conn = get_db()  # Obtenir la connexion
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            query = f"SELECT * FROM {table}"  # Construire la requête SQL
+            query = f"SELECT * FROM {table} ORDER BY dtutc DESC"  # Construire la requête SQL
             df = pd.read_sql_query(query, conn)  # Charger les données dans un DataFrame Pandas
         return df  # Retourner le DataFrame
     except Exception as e:

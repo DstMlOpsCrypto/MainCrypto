@@ -1,5 +1,6 @@
 import mlflow
 from mlflow.tracking.client import MlflowClient
+from statsd import StatsClient
 
 #packages
 import argparse
@@ -29,6 +30,7 @@ from src.evaluation.evaluate import scaling, score
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
 
+# other parmaeters desactived
 #parser.add_argument('--bitcoin', choices= ['BTC'], required=True, help="Selectionne le bitcoin")
 #parser.add_argument('--currency', choices= ['-USD','-EUR'], required=True, help="Selectionne la devise")
 #parser.add_argument('--period', choices= ['1d','5d'], required=True, help="Selectionne la période de prédiction") # on garde une prédiction à un jour
@@ -45,6 +47,9 @@ experiment_id = init_mlflow_experiment(exp_name = exp_name)
 
 model_version = "latest"
 
+# Configurer le client StatsD
+statsd_client = StatsClient(host='statsd-exporter', port=8125) 
+
 # recupérer les arguments du scripts
 ticker = args.currency   
 period='1d'
@@ -53,12 +58,12 @@ pas_temps=14
 # bitcoin = args.bitcoin
     # currency = args.currency    
     # ticker = bitcoin + currency
-def pipeline():
-    """
-    Fonction which evaluate production model and send back score
-    """
 
-    print("je suis entré dans le pipeline")
+def evaluate_model():
+
+    """
+    Fonction which evaluate model and send back score
+    """
 
     model_name = f"tf-lstm-reg-model-{period}"
     #model_name = f"tf-lstm-reg-model-{ticker}-{period}"
@@ -97,7 +102,10 @@ def pipeline():
     print("mse_test",mse_test)
     print("r2_score_test :", r2_score_test)
 
-    return {"mse_test": mse_test, "r2_score_test": r2_score_test} 
+    # Envoyer le score à StatsD
+    statsd_client.gauge('model.score', mse_test)
+    
+    return {"mse_test": mse_test}
 
 if __name__ == "__main__":
-        pipeline()
+    evaluate_model()

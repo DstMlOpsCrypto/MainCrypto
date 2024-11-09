@@ -88,11 +88,11 @@ def pipeline_train():
         print(f"Error loading data: {e}") 
         print("Le chargement ou la normalisation des données Kraken a échoué")
 
-    with mlflow.start_run (run_name=run_name, experiment_id=experiment_id):           
+    with mlflow.start_run(run_name=run_name, experiment_id=experiment_id):           
         print("MLflow run started")
         
-        for pas_temps in [14]:  #[1,2,3,5,8,10,12,14,16,20] # paramater finally chosen to 14        
-                for batch_size in [1,2,5,10,20,30]:#15,20]:
+        for pas_temps in [14]:  # paramater finally fixed to 14       
+                for batch_size in [2,5,10]: # 2,5,10,15,20,30,40]:#15,20]
                                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):
@@ -136,12 +136,10 @@ def pipeline_train():
                         print("mean_squared_error_test", mse_test)
                         print("r2_test_score", r2_score_test)
           
-        #best_model_info = get_best_model(experiment_id = experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
-        best_model_info = get_best_model(experiment_id = experiment_id, metric_name="r2_test_score", ticker=ticker, period=period, tracking_uri=tracking_uri)
+        best_model_info = get_best_model(experiment_id = experiment_id, metric_name="mean_squared_error_test", ticker=ticker, period=period, tracking_uri=tracking_uri)
      
 
     # training with best params
-
     #fetching best params
     if best_model_info is not None:
         print(best_model_info)

@@ -4,10 +4,12 @@
 bash local_docker_clean.sh
 
 ### Install environnement
-docker-compose --verbose up airflow-init
+docker-compose up stats-exporter model-score-sender
+
+docker-compose up airflow-init
 
 ### Launch docker compose
-docker-compose --verbose up -d
+docker-compose up -d
 
 #wait 65s for containers to get ready
 sleep 65

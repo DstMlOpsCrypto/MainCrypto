@@ -1,0 +1,59 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: test_rule
+      folder: AlertRules
+      interval: 10s
+      rules:
+        - uid: ee38xawy00u0wc
+          title: TooLowScore
+          condition: A
+          for: 1m 
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: model_score > 100000
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+          noDataState: NoData
+          execErrState: Error
+          annotations:
+            summary: Problem with score
+          labels:
+            Severity: Critical
+          isPaused: false
+          notification_settings:
+            receiver: Slack
+
+contactPoints:
+    # - orgId: 1
+    #   name: email receiver
+    #   receivers:
+    #     - uid: ee38xawy00u0wc
+    #       type: email
+    #       settings:
+    #         addresses: fl@belette73.fr
+    #       disableResolveMessage: false
+    - orgId: 1
+      name: Slack
+      receivers:
+        - uid: de3excyy05xc1c
+          type: slack
+          settings:
+            url: https://hooks.slack.com/services/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
+          disableResolveMessage: false
+
+
