@@ -4,12 +4,15 @@ nav:
     - architecture.md
     - modeling.md
     - results.md
-    - thanks.md
+    - monitoring.md
+
     - Tools...:
-          - airflow.md
-          - fastapi.md
-          - mlflow.md
-          - prometheus.md
-          - grafana.md
-          - streamlit.md
-          - description_monitoring.md
+        - airflow.md
+        - fastapi.md
+        - mlflow.md
+        - prometheus.md
+        - grafana.md
+        - streamlit.md
+    - Model...:
+        - model-ltsm.md
+    - thanks.md

@@ -4,7 +4,6 @@ This part presents an overview of MLflow tool for educational purposes.
 
 ## Overview 
 
-
 === "Creator"
 
     * **Name**: Developed by a team of engineers and data scientists at Databricks with significant contributions from the open-source community
