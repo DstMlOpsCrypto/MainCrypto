@@ -29,12 +29,13 @@ jobs:
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v1.27.0
         with:
-          status: ${{ job.status }}
-          channel: "#juin24cmlops_crypto"
-          message: |
-            Public-Page Update(PR): ${{ github.event.pull_request.title }}
-            Author: ${{ github.event.pull_request.user.login }}
-            URL: 'https://dstmlopscrypto.github.io/MainCrypto/'
-            Job-Status: ${{ job.status }}
+          channel-id: "#juin24cmlops_crypto"
+          payload: |
+            {
+              "Public-Page Update(PR)": ${{ github.event.pull_request.title }},
+              "Author": "${{ github.event.pull_request.user.login }},
+              "URL": 'https://dstmlopscrypto.github.io/MainCrypto/',
+              "Job-Status": ${{ job.status }}
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
