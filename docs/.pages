@@ -5,9 +5,10 @@ nav:
     - modeling.md
     - results.md
     - thanks.md
-    - Tools:
+    - Tools...:
           - airflow.md
           - fastapi.md
           - mlflow.md
           - prometeus.md
           - kibana.md
+          - streamlit.md

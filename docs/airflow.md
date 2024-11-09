@@ -1,12 +1,14 @@
 # Airflow
 
+This part presents an overview of Airflow tool for educational purposes.
+
 ## Introduction to Apache Airflow
 
 Apache Airflow is—a platform to programmatically author, schedule, and monitor workflows.
 
 Use Cases: Highlight common use cases, such as ETL processes, data pipeline automation, and machine learning workflows.
 
-## Key Points
+### Key Points
 
 * Open-source workflow management tool
 * Focus on scalability and flexibility

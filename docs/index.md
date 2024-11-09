@@ -153,5 +153,5 @@ sh setup.sh
 ## Down the rabbit hole
 ![Down the Rabbit Hole](https://insatpress.tn/wp-content/uploads/2018/08/down-the-rabbit-hole-1.jpg){ align=center }
 
-We encourage anyone to take time to refer to dedicated pages listed 
+We encourage anyone to take time to refer to dedicated pages listed on header.
 
