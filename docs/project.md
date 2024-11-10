@@ -74,12 +74,14 @@ The following part sumup the setup
 
 ### Tasks
 
-* Develop FastAPI endpoints for model predictions.
+* Develop a private API for sensitive operations (training, etc.)
+* Develop a bridge API for communication with the frontend, the private API and other services
 * Create endpoints for data input and output.
 
 ### Deliverables
 
-* FastAPI application script
+* FastAPI application for model management (prédiction, training, etc.)
+* FastAPI application for authentication and communication with the frontend
 * API documentation
 
 ## Monitoring and Logging
