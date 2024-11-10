@@ -22,6 +22,6 @@ with DAG(
 ) as my_dag:
 
      train_model = BashOperator(
-        bash_command= " cd ../../app/scripts && python3 train2.py --currency='BTC-USD'",
+        bash_command= " cd ../../app/scripts && python3 train2.py --currency='BTC-USD' --asset='XXBTZUSD'",
         task_id="training_model",
         dag=my_dag)

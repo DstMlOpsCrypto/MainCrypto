@@ -37,9 +37,11 @@ scrape_configs:
     static_configs:
     - targets:
       - prediction-api:3001 
+
+# pas utilisé manifestement
     
-   - job_name: "prediction_api"
-     scrape_interval: 5s
-     static_configs:
-     - targets:
-       - airflow-webserver:8080 # a voir     
+#  - job_name: "airflow-webserver"
+#    scrape_interval: 5s
+#    static_configs:
+#    - targets:
+#      - airflow-webserver:8080 # a voir     
