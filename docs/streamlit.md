@@ -483,3 +483,34 @@ Streamlit offers several deployment options to share apps with others:
 * Streamlit simplifies the creation of interactive data apps
 * Its architecture supports rapid development and integration
 * Ideal for data scientists and machine learning practitioners
+
+
+## Streamlit in the project
+
+Streamlit is our frontend application. It's the only service available only on the public network. It shares the public network with the gateway API which is used to access the private services securely. It's exposed on the port 8501.
+
+### Structure
+
+```
+RepoCrypto/frontend/
+├── Dockerfile              # Streamlit container configuration
+├── app.py                  # Streamlit entry point
+├── requirements.txt        # Python dependencies
+├── utils/
+│   ├── __init__.py
+│   ├── api_client.py      # API client functions
+│   └── auth.py            # authentification functions
+└── pages/
+    ├── __init__.py
+    ├── account.py         # manage his account
+    ├── administration.py  # manage user accounts
+    ├── create_user.py     # create a new user
+    ├── data_analysis.py   # data analysis of historical data
+    ├── home.py            # home page
+    ├── model.py           # model management
+    └── predictions.py     # predictions visualization
+```
+
+Some pages are only accessible for admin users, such as administration.py and create_user. Other pages are accessible for all users. The frontend use the role and the token to manage the access to the pages.
+The only service with which the frontend communicate is the gateway API. It's throught the API that the frontend can access authentification / authorization services and backend features.
+In streamlit we used plotly to create the charts and display the data.

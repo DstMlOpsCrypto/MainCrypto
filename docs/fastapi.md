@@ -256,7 +256,7 @@ app.add_middleware(UnicornMiddleware, some_config="rainbow")
 
 ## FastAPI in the project
 
-in our project, we decided to have 2 FastAPI applications, one is only on a private network for security reasons and the other one is on both private and public networks to work as a bridge between the frontend, the private API and other services.
+in our project, we decided to have 2 FastAPI applications, one is only on a private network for security reasons and the other one is on both private and public networks to work as a bridge between the frontend (streamlit), the private API and other services.
 
 ### Private API
 
@@ -393,3 +393,8 @@ The list of all endpoints:
 * POST /prediction/train
 * POST /prediction/score
 * POST /prediction/predict
+
+The endpoints works with:
+* Private API
+* PostgreSQL database
+* Airflow
