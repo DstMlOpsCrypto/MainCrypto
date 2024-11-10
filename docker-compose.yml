@@ -579,6 +579,7 @@ services:
     environment:
       - WORKERS_PER_CORE=2
       - LOG_LEVEL=debug
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus
       - MAIN_API_URL=http://api:3000
       - MLFLOW_TRACKING_URI=http://mlflow-server:5000
       - AIRFLOW_USERNAME=airflow
@@ -593,6 +594,7 @@ services:
       - ./scripts:/app/scripts
       - ./src:/app/src
       - ./mlflow-artifacts:/mlflow-artifacts
+      - ./prometheus_multiproc_dir:/tmp/prometheus
       #- ./mlflow:/mlflow
     depends_on:
       - db

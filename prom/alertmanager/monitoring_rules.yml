@@ -2,7 +2,7 @@ groups:
   - name: monitoring_group
     rules:
       - alert: AirflowDown
-        expr: up{job="airflow_statsd} == 0
+        expr: up{job="airflow_statsd"} == 0
         labels:
           severity: operation
         annotations:

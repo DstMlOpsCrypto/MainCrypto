@@ -38,6 +38,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 # CLI parameters
 parser = argparse.ArgumentParser(prog ='main.py',description="Pipeline d'exécution pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
+parser.add_argument('--asset', required=True, help="Sélectionne le nom de la paire correspondante dans la table ohlc")
 
 #parser.add_argument('--bitcoin', choices= ['BTC'], required=True, help="Selectionne le bitcoin")
 #parser.add_argument('--currency', choices= ['-USD','-EUR'], required=True, help="Selectionne la devise")
@@ -64,6 +65,7 @@ experiment_id = init_mlflow_experiment(exp_name)
 
 #recupérer les arguments du script
 ticker = args.currency
+asset = args.asset
 #period= args.period # non conservé
 period='1d'
 
@@ -81,7 +83,7 @@ def pipeline_train():
     # Data loading 
     try:
         # Data loading 
-        df = load_data_2(table='ohlc')
+        df = load_data_2(table='ohlc', asset=asset)
         print("Chargement des données KRAKEN effectué")
         # Data Normalization
         df_array, df.index, scaler = normalize_data2(df= df, period=period)

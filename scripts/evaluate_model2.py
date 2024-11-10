@@ -59,7 +59,7 @@ from src.evaluation.evaluate import scaling, score
 #Arguments du script
 parser = argparse.ArgumentParser(prog ='predict.py',description="Pipeline de prediction pour le projet MLops de prédiction des prix du bticoin")
 parser.add_argument('--currency', choices= ['BTC-USD','BTC-EUR'], required=True, help="Selectionne la devise")
-
+parser.add_argument('--asset', required=True, help="Sélectionne le nom de la paire correspondante dans la table ohlc")
 # other parmaeters desactived
 #parser.add_argument('--bitcoin', choices= ['BTC'], required=True, help="Selectionne le bitcoin")
 #parser.add_argument('--currency', choices= ['-USD','-EUR'], required=True, help="Selectionne la devise")
@@ -83,6 +83,7 @@ statsd_client = StatsClient(host='statsd-exporter', port=8125)
 
 # recupérer les arguments du scripts
 ticker = args.currency   
+asset = args.asset
 period='1d'
 pas_temps=14
 
@@ -102,7 +103,7 @@ def evaluate_model():
 
     try:
         # Data loading 
-        df = load_data_2(table='ohlc')
+        df = load_data_2(table='ohlc', asset=asset)
         print("Chargement des données KRAKEN effectué")
         # Data Normalization
         df_array, df.index, scaler = normalize_data2(df= df, period=period)
@@ -143,8 +144,6 @@ def evaluate_model():
 
     # Envoyer le score à StatsD
     statsd_client.gauge('model.score', mse_test)
-    
-    return {"mse_test": mse_test}
     
     # Save evaluation metrics
     evaluation_date = datetime.now()

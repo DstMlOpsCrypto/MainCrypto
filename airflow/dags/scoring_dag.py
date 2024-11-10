@@ -24,7 +24,7 @@ with DAG(
 
     train_model = BashOperator(
         task_id="evaluate_model",
-        bash_command= " cd ../../app/scripts && python3 evaluate_model2.py --currency='BTC-USD'",
+        bash_command= " cd ../../app/scripts && python3 evaluate_model2.py --currency='BTC-USD' --asset='XXBTZUSD'",
         do_xcom_push=True,
         dag=my_dag
     )

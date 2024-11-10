@@ -15,9 +15,8 @@ from datetime import datetime
 import numpy as np
 import joblib
 from prometheus_client import Counter, Gauge
+from app.registry import registry, PREDICTION_COUNT, MODEL_SCORE
 
-PREDICTION_COUNT = Counter('prediction_api_prediction_count', 'Total number of predictions made')
-MODEL_SCORE = Gauge('prediction_api_model_score', 'Score of the latest model')
 
 
 router = APIRouter()
