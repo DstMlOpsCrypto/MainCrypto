@@ -19,16 +19,13 @@ Your invaluable insights have made a significant impact on our learning experien
 
 ### [Frederic]
 
-- **Topics**: MlFlow
-
+- **Topics**: MlFlow, Monitoring
 
 ### [Tristan]
 
 - **Topics**: API, Frontend.
 
-
 ### [Yann]
-
 - **Topics**: Devops
 
 
