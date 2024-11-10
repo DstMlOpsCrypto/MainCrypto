@@ -102,13 +102,12 @@ The following part sumup the setup
 
 ### Tasks
 
-* Develop Streamlit dashboard for visualizing model predictions and metrics.
-* Integrate Streamlit with PostgreSQL to fetch data and display results.
+* Develop Streamlit dashboard for visualizing model predictions and metrics, manage users and assets.
+* Integrate Streamlit with Gateway API to access backend services.
 
 ### Deliverables
 
-* Streamlit dashboard script
-* Dashboard components and features
+* Streamlit application.
 
 ## Testing and Validation
 
