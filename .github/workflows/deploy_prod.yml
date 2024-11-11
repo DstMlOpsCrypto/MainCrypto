@@ -34,40 +34,41 @@ jobs:
     # Install docker & docker compose
     - name: Install docker
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum update && sudo yum -y install docker"
-    - name: Add group membership for the default ec2-user
+        ssh mlflow "sudo apt-get update && sudo apt-get install -y docker.io"
+
+    - name: Add group membership for ubuntu user
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo usermod -a -G docker ec2-user && id ec2-user && newgrp docker"
+        ssh mlflow "sudo usermod -a -G docker ubuntu && id ubuntu && newgrp docker"
+
     - name: Install docker-compose
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "wget https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) && sudo mv docker-compose-$(uname -s)-$(uname -m) /usr/local/bin/docker-compose && sudo chmod -v +x /usr/local/bin/docker-compose"
-    - name: Enable docker service at AMI boot time
+        ssh mlflow "sudo curl -L 'https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)' -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose"
+
+    - name: Enable docker service
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo systemctl enable docker.service && sudo systemctl start docker.service"
+        ssh mlflow "sudo systemctl enable docker && sudo systemctl start docker"
     
-    - name: check Docker install
+    - name: Check Docker install
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo systemctl status docker.service"
-    - name: Install python3
+        ssh mlflow "sudo systemctl status docker"
+
+    - name: Install Python
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo dnf install python3.11 -y && python3.11 --version"
-    # Install git and clone repo
-    - name: Install pip
-      run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo dnf install python3.11-pip -y && python3.11 -m pip --version"
+        ssh mlflow "sudo apt-get install -y python3.11 python3.11-pip"
+
     # Install git and clone repo
     - name: Install git
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install git"
-    - name: Install psycopg2
+        ssh mlflow "sudo apt-get install -y git"
+    # Install git and clone repo
+    - name: Remove existing app folder
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo yum -y install gcc python3-devel postgresql-devel && python3.11 -m pip install psycopg2-binary"  
-    - name: Remove app folder" 
-      run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "sudo rm -rf ~/MainCrypto && ls"
+        ssh mlflow "sudo rm -rf ~/MainCrypto"
+
     - name: Clone repo
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "git clone --single-branch --branch dev https://github.com/DstMlOpsCrypto/MainCrypto.git"
+        ssh mlflow "git clone --single-branch --branch dev https://github.com/DstMlOpsCrypto/MainCrypto.git"
+    
     - name: Launch app
       run: |
-        ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_URL "cd ~/MainCrypto && bash setup.sh"
+        ssh mlflow "cd ~/MainCrypto && bash setup.sh"
