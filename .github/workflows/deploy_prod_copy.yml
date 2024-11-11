@@ -11,26 +11,18 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      # Modified
-      SSH_PRIVATE_KEY: ${{ secrets.MLFLOW_SSH_KEY }}
-      VM_HOST: "3.250.142.234"
-      VM_USER: "ubuntu"
+      EC2_SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      EC2_URL: ${{ secrets.EC2_HOST }}
+      EC2_USERNAME: ${{ secrets.EC2_USER }}
       GIT_PAT: ${{ secrets.GIT_PAT }}
-      
-
     if: github.head_ref == 'dev'
     steps:
-    - name: Setup SSH for VM
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/mlflow_key.pem
-        chmod 600 ~/.ssh/mlflow_key.pem
-        echo -e "Host mlflow\n\tHostName $VM_HOST\n\tUser $VM_USER\n\tIdentityFile ~/.ssh/mlflow_key.pem\n\tStrictHostKeyChecking no" > ~/.ssh/config
-      
-      # End of modified
-
-    
-    # then you cn run commands/scripts directly on the EC2 instance e.g.:a
+    - name: Setup SSH for EC2
+      uses: omarhosny206/setup-ssh-for-ec2@v1.0.0
+      with:
+          EC2_SSH_PRIVATE_KEY: $EC2_SSH_PRIVATE_KEY
+          EC2_URL: $EC2_URL
+    # then you can run commands/scripts directly on the EC2 instance e.g.:a
     # Install docker & docker compose
     - name: Install docker
       run: |
