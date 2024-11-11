@@ -1,7 +1,8 @@
-from prometheus_client import CollectorRegistry, Counter, Histogram, Gauge
+from prometheus_client import CollectorRegistry, Counter, Histogram, Gauge, multiprocess
 
 # Créer un registre Prometheus global
 registry = CollectorRegistry()
+multiprocess.MultiProcessCollector(registry)
 
 # Définir les métriques globales
 REQUEST_COUNT = Counter('prediction_api_request_count', 'Total number of requests', registry=registry)
