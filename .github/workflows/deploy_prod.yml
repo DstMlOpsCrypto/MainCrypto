@@ -13,7 +13,7 @@ jobs:
     env:
       # Modified
       SSH_PRIVATE_KEY: ${{ secrets.MLFLOW_SSH_KEY }}
-      VM_HOST: "3.250.142.234"
+      VM_HOST: "79.125.99.52"
       VM_USER: "ubuntu"
       GIT_PAT: ${{ secrets.GIT_PAT }}
       
