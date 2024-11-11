@@ -24,6 +24,9 @@ jobs:
       - name: Launch Container
         run: |
           docker-compose -f docker-compose-dev.yml up -d --build
+        env:
+          AIRFLOW_UID: 50000
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: Run Pytest
         run: |
           python -m pytest tests/crypto/
