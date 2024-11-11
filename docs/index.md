@@ -128,11 +128,11 @@ sh setup.sh
     notebooks/              # TODO: Models scripts (See modeling)
         exploration/
         modeling/
-    prom/                   # TODO: Check with frederic/tristan
+    prom/                   # TODO: Monitoring Service including Prometheus annd Grafana
         alertmanager/
         statsd/
-    scripts/                # TODO: Check with frederic/tristan 
-    src/                    # TODO: Check with frederic/tristan 
+    scripts/                # TODO: Models scripts for training, predicting and evaluating model 
+    src/                    # TODO: Ressources and modules useful for model scripts 
         data/
         deployment/
         evaluation/
@@ -140,11 +140,11 @@ sh setup.sh
         models/
         utils/
         vizualisation/
-    tests/                  # TODO: Tests repository for dev 
+    tests/                  # TODO: Tests repository for dev, including api, crypto datbase and modelling
         api/
         crypto/
         model/
-    setup.sh                # bash script to install application
+    setup.sh                # bash script to install complete application
     local_docker_clean.sh   # Bash script to clean docker
     docker-compose.yml      # Production compose (see XX)
     docker-compose-dev.yml  # Development compose (see XX)

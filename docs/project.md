@@ -1,11 +1,11 @@
 # Project
 
-All project has been manage through github
+All project has been managed through github
 
 - project plan + roadmap
 - issues
 
-We use a flavor of XP programming to enhanced collaboration and communication (3 meetings per week included 1 to 1 dedicated meeting if necessary). 
+We used a flavor of XP programming to enhanced collaboration and communication (3 meetings per week included 1 to 1 dedicated meeting if necessary). 
 
 We were focused on delivery through short delivery cycle  (more than 5 times per week) to get rapid feedback, and to keep motivation up ! 
 
@@ -33,14 +33,14 @@ The following part sumup the setup
 
 ### Tasks
 
-* Create Airflow DAG for data extraction from Kaggle.
+* Create Airflow DAG for data extraction from Kraken.
 * Preprocess the data (cleaning, normalization, etc.).
 * Store processed data in PostgreSQL database.
 
 ### Deliverables
 
 * Airflow DAG script for data collection
-* Data preprocessing scripts
+* Data preprocessing Python scripts
 * PostgreSQL schema and data
 
 ## Model Development
@@ -90,7 +90,7 @@ The following part sumup the setup
 
 * Set up Prometheus for monitoring logs and metrics.
 * Configure Prometheus to trigger Airflow DAGs based on log metrics.
-* Integrate Kibana for log visualization.
+* Integrate Grafana for log visualization and alerting.
 
 ### Deliverables
 

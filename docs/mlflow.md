@@ -149,6 +149,15 @@ The integrated UI allows users to visualize and compare runs, facilitating bette
 
 MLflow provides APIs for interacting programmatically with the tracking system, enabling seamless integration with other tools and workflows.
 
+### tracking Server
+
+MLflow Tracking Server can be configured with an artifacts HTTP proxy, passing artifact requests through the tracking server to store and retrieve artifacts without having to interact with underlying object store services. This is particularly useful for team development scenarios where you want to store artifacts and experiment metadata in a shared location with proper access control.
+
+Here a scheme of MLFflow Tracking in Team development as we used it :
+
+![MLFLOW Tracking Server Schema](images/tracking-setup-overview.png)
+
+
 ## MLflow Projects
 
 ### Project Definition
