@@ -1,6 +1,7 @@
 import pandas as pd
 import sys
 import os
+#import psycopg2
 from psycopg2.extras import RealDictCursor
 
 # Add the src directory to the Python path
@@ -24,5 +25,4 @@ def load_data_2(table, asset):
         return None
     finally:
         conn.close()  # Toujours fermer la connexion à la base de données
-
 

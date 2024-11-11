@@ -417,8 +417,8 @@ services:
     #  #- ./mlflow:/app
     depends_on:
       mlflow_db:
-        condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
-    working_dir: /app # Définit le répertoire de travail sur /app où le script de démarrage est localisé
+        condition: service_healthy 
+    working_dir: /app
     environment:
       - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
     command: 
@@ -434,19 +434,21 @@ services:
         "--default-artifact-root",
         "file:///mlflow-artifacts"
       ]
-      #["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]  # Exécute MLflow directement
     networks:
       - app_network
 
-  # tests-ml:   # desactived
-  #   image: beletteu73docker666/tests-ml_projetmlops
-  #   volumes:
-  #     - ./scripts:/app/scripts
-  #     - ./src:/app/src
-  #     - ./tests/unit:/app/tests/units
-  #   command: [ "pytest", "/app/tests/model" ] # Exécute les tests dans le conteneur
-  #   networks:
-  #     - app_network
+  tests-ml:   # actived
+    image: beletteu73docker666/tests-ml_projetmlops
+    volumes:
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./tests/model:/app/tests/model
+    command: [ "pytest", "/app/tests/model" ] # Exécute les tests dans le conteneur
+    environment:
+      - PYTHONPATH=/app
+    #restart: always
+    networks:
+      - app_network
     
   prometheus:
     image: prom/prometheus:latest
@@ -553,11 +555,12 @@ services:
     - GF_SECURITY_ADMIN_PASSWORD=grafana
     - GF_SECURITY_ADMIN_USER=grafana
     - GF_USERS_ALLOW_SIGN_UP=false
+    - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
     # - GF_SMTP_ENABLED=true
     # - GF_SMTP_HOST=smtp.laposte.net:465
-    # - GF_SMTP_USER=frederic.lagniez@laposte.net
+    # - GF_SMTP_USER=
     # - GF_SMTP_PASSWORD=XXXXXX
-    # - GF_SMTP_FROM_ADDRESS=frederic.lagniez@laposte.net
+    # - GF_SMTP_FROM_ADDRESS=
     # - GF_SMTP_SKIP_VERIFY=true
     # - GF_SMTP_FROM_NAME=Grafana
     volumes:

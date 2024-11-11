@@ -14,17 +14,17 @@ groups:
         annotations:
           summary: 'Node exporter is Down'
       - alert: ModelScoreTooLow
-        expr: model_score < 0.96  # Définissez ici le seuil de votre choix
+        expr: model_score > 100000  # Définissez ici le seuil de votre choix
         for: 5m
         labels:
           severity: critical
         annotations:
           summary: "Model score is too low"
-          description: "The model score has dropped below 0.96"
-  - name: example_alert
+          description: "The model score is geater thant 100000, you can consider retrainng"
+  - name: HighCPULoad
     rules:
       - alert: HighCPULoad
-        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 10
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
         for: 5m
         labels:
           severity: critical
