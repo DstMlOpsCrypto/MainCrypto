@@ -8,8 +8,11 @@ RUN apt-get update && \
     && pip install --upgrade pip \
     && pip install tensorflow \
     && pip install mlflow \
-    && pip install yfinance \
+    && pip install psycopg2-binary \
     && pip install pytest \
+    # && pip install apache-airflow \
+    && pip install statsd \
+    && pip install requests \
     && pip install --upgrade typing_extensions \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

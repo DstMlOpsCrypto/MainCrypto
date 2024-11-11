@@ -96,7 +96,7 @@ def pipeline_train():
         print("MLflow run started")
         
         for pas_temps in [14]:  # paramater finally fixed to 14       
-                for batch_size in [2,5,10]: # 2,5,10,15,20,30,40]:#15,20]
+                for batch_size in [2]: # 2,5,10,15,20,30,40]:#15,20]
                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):

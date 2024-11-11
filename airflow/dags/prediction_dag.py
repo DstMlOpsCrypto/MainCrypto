@@ -5,8 +5,7 @@ from airflow.utils.dates import days_ago
 # from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from datetime import datetime, timedelta
 from airflow.utils.state import DagRunState
-from custom_sensors import ExternalDagRunSensor
-
+#from custom_sensors import ExternalDagRunSensor
 
 
 default_args = {
@@ -27,7 +26,7 @@ with DAG(
 
 ) as my_dag:
 
-    wait_for_crypto_ohlc_dag = ExternalDagRunSensor(
+    wait_for_crypto_ohlc_dag = ExternalTaskSensor(
         task_id='wait_for_crypto_ohlc_dag',
         external_dag_id='crypto_ohlc_dag',
         mode='reschedule',
@@ -48,4 +47,4 @@ with DAG(
         dag=my_dag
     )
 
-    wait_for_crypto_ohlc_dag >> predict_model >> evaluate_model 
+    wait_for_crypto_ohlc_dag >> predict_model >> evaluate_model
