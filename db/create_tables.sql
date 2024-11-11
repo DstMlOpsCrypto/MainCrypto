@@ -30,6 +30,26 @@ CREATE TABLE members  (
     role VARCHAR(20) NOT NULL
 );
 
+-- START:ADDED FOR API
+CREATE TABLE predictions (
+    id SERIAL PRIMARY KEY,
+    prediction_date TIMESTAMP,
+    prediction_value NUMERIC
+);
+
+
+CREATE TABLE model_evaluation (
+    id SERIAL PRIMARY KEY,
+    model_name VARCHAR(255),
+    model_version VARCHAR(255),
+    evaluation_date TIMESTAMP,
+    mse_train NUMERIC,
+    r2_score_train NUMERIC,
+    mse_test NUMERIC,
+    r2_score_test NUMERIC
+);
+-- END:ADDED FOR API
+
 -- Insert records into the "assets" table
 INSERT INTO assets (id, asset, symbol, exchange)
 VALUES

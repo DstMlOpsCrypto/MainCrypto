@@ -1,0 +1,42 @@
+metrics:
+  # Exemple de mappage pour les métriques liées au scheduler d'Airflow
+  - match: "airflow.scheduler.job.*"
+    name: "airflow_scheduler_jobs"
+    labels:
+      job: "$1"       # Exemple d'extraction d'étiquette depuis le nom de la métrique (.*) dans StatsD
+    type: "counter"   # Type de métrique: compteur (counter)
+
+  # Exemple de mappage pour les métriques liées à la mise en file d'attente Celery
+  - match: "airflow.celery.queue.*"
+    name: "airflow_celery_queue"
+    labels:
+      queue: "$1"     # Le premier groupe de l'expression régulière devient une étiquette 'queue'
+    type: "gauge"     # Type de métrique: jauge (gauge)
+
+  # Exemple de mappage pour les métriques du worker Airflow
+  - match: "airflow.worker.task.*"
+    name: "airflow_worker_task"
+    labels:
+      task: "$1"      # Une étiquette 'task' extraite de la métrique
+    type: "counter"   # Type de métrique: compteur (counter)
+
+  # Exemple de mappage pour les métriques sur les DAGs
+  - match: "airflow.dag.*"
+    name: "airflow_dag"
+    labels:
+      dag_id: "$1"    # Extraction du DAG ID en tant qu'étiquette
+    type: "gauge"     # Type de métrique: jauge (gauge)
+
+  # Exemple de mappage des métriques de performance du scheduler
+  - match: "airflow.scheduler.durations.*"
+    name: "airflow_scheduler_durations"
+    labels:
+      duration: "$1"  # Enregistrer la durée sous forme d'étiquette
+    type: "histogram" # Type de métrique: histogramme (histogram)
+
+  # Exemple de mappage pour les erreurs du worker
+  - match: "airflow.worker.error.*"
+    name: "airflow_worker_errors"
+    labels:
+      error_type: "$1" # Utilisation du type d'erreur comme étiquette
+    type: "counter"    # Type de métrique: compteur (counter)

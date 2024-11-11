@@ -2,20 +2,32 @@ groups:
   - name: monitoring_group
     rules:
       - alert: AirflowDown
-        expr: up{job="airflow"} == 0
+        expr: up{job="airflow_statsd"} == 0
         labels:
           severity: operation
         annotations:
           summary: 'Airflow is down'
-      - alert: PrometheusDown
-        expr: up{job="prometheus"} == 0
-        labels:
-          severity: operation
-        annotations:
-          summary: 'Our Prometheus Server is down'
       - alert: Server_monitorDown
-        expr: up{job="server_monitor"} == 0
+        expr: up{job="node"} == 0
         labels:
           severity: critical
         annotations:
           summary: 'Node exporter is Down'
+      - alert: ModelScoreTooLow
+        expr: model_score > 100000  # Définissez ici le seuil de votre choix
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model score is too low"
+          description: "The model score is geater thant 100000, you can consider retrainng"
+  - name: HighCPULoad
+    rules:
+      - alert: HighCPULoad
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for more than 5 minutes on instance {{ $labels.instance }}"

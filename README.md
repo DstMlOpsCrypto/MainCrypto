@@ -84,13 +84,11 @@ The script follow these steps:
 
 ### Install environnement
 
-
 ```bash
 docker-compose up airflow-init
 
 docker-compose up -d
 ```
-
 ### Airflow
 
 DAG refer to connection id set withing airflow.
@@ -198,11 +196,53 @@ docker exec -it {container-id or container-name} psql -U "{user}" -d "{db_name}"
 ## fastAPI
 
 
-## MLFlow
+## Monitoring
+
+### Prometheus
+- Point to '0.0.0.0:9090' on your browser
+
+### Grafana
+- Point to '0.0.0.0:3002' on your browser
+- login: grafana
+- password: grafana
+
+  **Add Data Source** :
+  Go to Configuration > Data Sources > Add new data source.
+  
+    **Prometheus**
+    - Select Prometheus.
+    - Choose Prometheus type: Prometheus
+    - In URL, enter http://prometheus:9090
+    - Click Save & Test
+
+    **AlertManager**
+    - Select a name : Alertmanager
+    - Choose Implementation: Prometheus
+    - Choose Alerting / Manage alerts via Alerting UI : yes 
+    - In URL, enter http://alert-manager:9093
+    - Click Save & Test
+    - go to 'Alert rules' and  add a new alert rules
+
+    **Add Dashboards for Node Exporter Metrics**
+    - Go to to + > Import.
+    - Enter dashboard ID 1860 (from Grafana’s dashboard repository); Click on  Load
+    - Enter name and Sectect a prometheus Data Source : Prometheus    
+    - Click on Import
+    - Select job and host (node-exporter ou statssd-exporter)
+
+    **Alerting** (StatsD)
+    - IPoint to '0.0.0.0:9093' on your browser
+    
+     **Alerting** (Grafana)
+    - In Grafana, go to  > Alert rules and "+ New alert rules"
+    - Give a name to the rules : Alertmanager
+    - Choose Source Prometheus
+    - Select metric and function
 
 
 ## Build
-Write the build Instruction here.
+Launch 
+```bash setup.sh```
 
 ## Deployment
 Write the deployment instruction here.

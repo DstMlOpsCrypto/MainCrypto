@@ -171,9 +171,17 @@ notebooks/
 
 # folder created by airflow (folder are mapped !)
 logs/
-plugins/
+#plugins/
 airflow/logs/
-airflow/logs/scheduler/latest
+airflow/logs/scheduler/latest/
 
 # pem 
 .pem
+
+#fichiers internes FL
+./build_and_push.sh
+./script_install_docker_sh
+./scripts/open_worker.sh
+./scripts/launch_calcul_score.sh
+./scripts/launch_prediction.sh
+./scripts/launch_training.sh
