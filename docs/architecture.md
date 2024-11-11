@@ -2,54 +2,141 @@
 
 
 
-## Capacity 
+## Capability
 
-```mermaid
-%%{init: {'theme':'forest'}}%%
-architecture-beta
+This diagram provides a structured view of the capabilities and sub-capabilities involved in a cryptocurrency prediction application, or at least how we imagine it !
 
-    group ec2(cloud)[DataScienceTest VM AWS]
-        group airflow_container(airflow)[Airflow Container] in ec2
-            service airflow_db(database)[Airflow Db] in airflow_container
-            service ohcl_db(database)[OHCL Db] in airflow_container
-            group master_node(airflow)[Master Node] in airflow_container
-                service airflow_webserver(server)[WebServer] in master_node
-                service airflow_scheduler(server)[Scheduler] in master_node
-                service airflow_executor(server)[Executor] in master_sub
-            service airflow_queue(server)[Airflow Db] in airflow_container
-            service airflow_redis(server)[Redis] in airflow_container
-            service airflow_celery(server)[Celery] in airflow_container
+???+ Info
 
-            airflow_db:R <--> L:airflow_webserver
-            airflow_db:R <--> L:airflow_executor
+    All sub capabilities surrounded by red line are note implemented in ths Proof Of Concept (POC).
 
-```
+![Infrastructure - Overview](../images/archview-capability.png)
+
+
+### Data Collection
+
+This capability involves gathering data from various sources, which is essential for making accurate predictions.
+
+#### Sub-capabilities
+
+* _**Real-time Market Data Retrieval:**_ Continuously collecting current price, volume, and other relevant market data from exchanges and financial platforms.
+
+* _**Historical Data Access:**_ Accessing past market data to identify patterns and trends over time.
+
+* _**API Integration for Data Sources:**_ Connecting with external APIs to fetch data from different exchanges, news platforms, social media, and more.
+
+### Data Processing
+
+Once data is collected, it needs to be processed to make it suitable for analysis and model training.
+
+#### Sub-capabilities
+
+* _**Data Cleaning and Normalization:**_ Removing noise and inconsistencies in the data, and normalizing it to a standard format.
+
+* _**Feature Extraction and Selection:**_ Identifying and selecting the most relevant features that will be used in model training.
+
+* _**Data Transformation and Aggregation:**_ Transforming data into a structured format and aggregating it to make it suitable for analysis.
+
+### Model Training
+
+Training predictive models using the processed data to forecast future cryptocurrency prices and trends.
+
+#### Sub-capabilities
+
+* _**Selection of Machine Learning Algorithms:**_ Choosing the appropriate machine learning algorithms for prediction (e.g., LSTM, Random Forest, SVM).
+
+* _**Training and Validation of Models:**_ Training the models using historical data and validating their performance using a validation set.
+
+* _**Hyperparameter Tuning:** Adjusting the model parameters to optimize performance.
+
+### Prediction Generation
+
+Generating predictions based on the trained models.
+
+#### Sub-capabilities:
+
+* _**Real-time Prediction Generation:**_ Producing predictions in real-time based on current market data.
+
+* _**Batch Prediction Processing:**_ Running predictions in batches for historical analysis or reporting.
+
+* _**Integration with Prediction APIs:**_ Exposing prediction functionalities through APIs for other applications to consume.
+
+### User Interface
+
+Providing an interface for users to interact with the application, view predictions, and customize their experience.
+
+#### Sub-capabilities
+
+* _**Dashboard for Visualizing Predictions:**_ Creating interactive dashboards to display predictions, trends, and insights.
+
+* _**Alerts and Notifications:**_ Sending real-time alerts and notifications for significant market movements.
+
+* _**User Customization Options:**_ Allowing users to customize their dashboards and set preferences for alerts and notifications.
+
+
+### Security
+
+Ensuring that the application and data are secure from unauthorized access and breaches.
+
+#### Sub-capabilities
+
+* _**Data Encryption and Protection:**_ Encrypting data at rest and in transit to protect it from unauthorized access.
+
+* _**Secure API Access:**_ Implementing security measures like API keys and authentication to secure API endpoints.
+
+* _**Anomaly Detection and Response:**_ Detecting and responding to anomalies in data access and usage.
+
+
+### Scalability
+
+Ensuring that the application can handle increased loads and grow as needed.
+
+#### Sub-capabilities
+
+* _**Load Balancing and Resource Management:**_ Distributing workload across multiple servers to ensure optimal performance.
+
+* _**Horizontal Scaling of Services:**_ Adding more instances of services to handle increased demand.
+
+* _**Efficient Data Storage Solutions:**_ Implementing scalable and efficient storage solutions to manage large volumes of data.
+
+### Monitoring and Maintenance
+
+Regularly monitoring and maintaining the application to ensure it runs smoothly.
+
+#### Sub-capabilities
+
+* _**Performance Monitoring:**_ Continuously monitoring the performance of the application and its components.
+
+* _**Log Management and Analysis:**_ Collecting and analyzing logs to identify and troubleshoot issues.
+
+* _**Regular Model Retraining and Updates:**_ Regularly updating the models with new data to ensure their accuracy and relevance.
+
 
 ## Architecture layers
 
-### Business
+### Business (user process)
 
-```mermaid
-%%{init: {'theme':'forest'}}%%
-sequenceDiagram
+The user journey refers to the sequence of steps a user takes to interact with our application. In the context of a cryptocurrency prediction application with a FastAPI front end, the user journey can be broken down into several stages. 
 
- box Inference
-    participant A
-    participant J
-    end
-    box Another Group
-    participant B
-    participant C
-    end
-    A->>J: Hello John, how are you?
-    J->>A: Great!
-    A->>B: Hello Bob, how is Charley?
-    B->>C: Hello Charley, how are you?
-
-```
-
+![User Journey](../images/Business-Process.png)
 
 ### Applicative
+
+This diagram illustrate all apps used in our application.
+
+![User Journey](../images/Application.png)
+
+
+### Technology
+
+When choosing infrastructure containers for a cryptocurrency prediction project, several factors come into play to ensure scalability, reliability, and efficiency. 
+
+This project can be view a a POC and we did not use Orchestration with Kubernetes, we used Docker and Docker-Compose on a single VM.
+
+This schema illustrate the containerized structure of the application.
+
+![Infrastructure - Overview](../images/archview-technology-usage.png)
+
 
 #### Streamlit
 
@@ -77,8 +164,12 @@ RepoCrypto/frontend/
     └── predictions.py     # predictions visualization
 ```
 
-Some pages are only accessible for admin users, such as administration.py and create_user. Other pages are accessible for all users. The frontend use the role and the token to manage the access to the pages.
+Some pages are only accessible for admin users, such as administration.py and create_user. Other pages are accessible for all users. 
+
+The frontend use the role and the token to manage the access to the pages.
+
 The only service with which the frontend communicate is the gateway API. It's throught the API that the frontend can access authentification / authorization services and backend features.
+
 In streamlit we used plotly to create the charts and display the data.
 
 Below is the scheme of Streamlit features through the API Gateway endpoints
@@ -86,20 +177,19 @@ Below is the scheme of Streamlit features through the API Gateway endpoints
 ![Streamlit scheme](../images/streamlit.png)
 
 
-#### API
+#### API management
 
 in our project, we decided to have 2 FastAPI applications, one is only on a private network for security reasons and the other one is on both private and public networks to work as a bridge between the frontend (streamlit), the private API and other services.
 
 Please see below an illustration of our API architecture
 
-![API scheme](../images/API.png)
+
+![Infrastructure - Overview](../images/archview-technology-api.png)
 
 
-##### Private API
+* Private API : The goal of our private API is to communicates with airflow to trigger training and prediction tasks.
 
-The goal of our private API is to communicates with airflow to trigger training and prediction tasks.
-
-###### Structure
+##### Prediction API
 ```
 PredictionAPI/
 ├── app/
@@ -116,10 +206,20 @@ PredictionAPI/
 └── requirements.txt   # Python dependencies
 ```
 
-The Dockerfile configures the containerized environment for the Prediction API. It is used by the docker-compose file to start this service. It exposes port 3001, uses gunicorn_conf.py to configure the gunicorn server and requirements.txt to install the dependencies. The dockerfile is configured to use the start-reload.sh script to start the service in development mode (enabling hot reloading) and the start.sh script to start the service in production mode.
+The Dockerfile configures the containerized environment for the Prediction API. 
+* It is used by the docker-compose file to start this service. 
+
+* It exposes port 3001, uses gunicorn_conf.py to configure the gunicorn server and requirements.txt to install the dependencies. 
+
+The dockerfile is configured to use the start-reload.sh script to start the service in development mode (enabling hot reloading) and the start.sh script to start the service in production mode.
+
 Gunicorn_conf.py configures the Gunicorn WSGI server that runs the FastAPI application. It manages the number of workers, timeout, and other settings.
+
 main.py is the entry point of the FastAPI application. It initializes the application and sets up the necessary configurations. It sets up CORS middleware, implements rate limiting, configures Prometheus metrics middleware and registers routers.
-As we have FastAPI running with multiple Gunicorn workers, the request is load balanced across the workers. It also meands that registry is crucial for prometheus metrics to be scraped properly. Registry.py is used to configure the prometheus metrics which are  used in the main.py and router.py files.
+
+As we have FastAPI running with multiple Gunicorn workers, the request is load balanced across the workers. It also meands that registry is crucial for prometheus metrics to be scraped properly. 
+
+Registry.py is used to configure the prometheus metrics which are  used in the main.py and router.py files.
 Router.py defines the routes and the logic behind them.
 
 ###### Endpoints
@@ -135,7 +235,7 @@ graph LR
 
 we have several endpoints:
 
-* GET /metrics
+* _**GET /metrics**_
     * Response: Prometheus metrics in text format
     * This endpoint provides monitoring metrics including:
         * prediction_api_request_count: Total requests
@@ -144,25 +244,25 @@ we have several endpoints:
         * prediction_api_prediction_count: Prediction usage
         * prediction_api_model_score: Model performance
 
-* GET /predict/latest-prediction
+* _**GET /predict/latest-prediction**_
     * Response: JSON object containing the latest prediction
     * It uses the prediction saved in the database to avoid calling the model unnecessarily.
 
-* GET /predict/model-evaluation
+* _**GET /predict/model-evaluation**_
     * Response: JSON object containing the model evaluation (MSE (train/test) and R² score (train/test))
     * It uses the evaluation saved in the database to avoid calling the model unnecessarily.
 
-* GET /predict/models
+* _**GET /predict/models**_
     * Response: JSON object containing the list of available models
     * It uses MLflow client to get the list of models.
 
-* GET /predict/best-model
+* _**GET /predict/best-model**_
     * Response: JSON object containing the best model
     * It uses the best models in the database to return the best model based on the MSE.
 
-* POST /predict/train
-* POST /predict/score
-* POST /predict/predict
+* _**POST /predict/train**_
+* _**POST /predict/score**_
+* _**POST /predict/predict**_
     * These endpoints are used to trigger the training, scoring and prediction tasks in airflow.
 
 The endpoints works with:
@@ -201,6 +301,7 @@ PredictionAPI/
 ```
 
 The architecture is quite similar to the private API but it has some differences. It includes authentication and authorization mechanisms based on user roles, passwords and tokens. These enables us to protect sensitive and critical points.
+
 The crypto folder includes the endpoints to get the list of available cryptocurrencies, add new cryptocurrencies based on what's available in Kraken (our dataprovider) delete cryptocurrencies, get current prices or historical data.
 The prediction folder just had endpoints querying the private API to get the predictions, models, trigger training, scoring and prediction tasks...
 
@@ -208,26 +309,26 @@ The prediction folder just had endpoints querying the private API to get the pre
 
 The list of all endpoints:
 
-* POST /auth/signup 
-* POST /auth/login (not protected)
-* GET /auth/users/me
-* PUT /auth/users/me
-* DELETE /auth/users/{username}
-* PUT /auth/users/{username}/role
-* GET /auth/users
-* GET /crypto/assets
-* POST /crypto/assets
-* GET /crypto/asset_history/{asset}
-* DELETE /crypto/assets/{asset_id}
-* GET /crypto/kraken_assets
-* GET /crypto/asset_latest/{asset}
-* GET /prediction/latest-prediction
-* GET /prediction/model-evaluation
-* GET /prediction/best-model
-* GET /prediction/models
-* POST /prediction/train
-* POST /prediction/score
-* POST /prediction/predict
+* _**POST /auth/signup**_ : 
+* _**POST /auth/login (not protected)**_ : 
+* _**GET /auth/users/me**_ : 
+* _**PUT /auth/users/me**_ : 
+* _**DELETE /auth/users/{username}**_ : 
+* _**PUT /auth/users/{username}/role**_ : 
+* _**GET /auth/users**_ : 
+* _**GET /crypto/assets**_ : 
+* _**POST /crypto/assets**_ : 
+* _**GET /crypto/asset_history/{asset}**_ : 
+* _**DELETE /crypto/assets/{asset_id}**_ : 
+* _**GET /crypto/kraken_assets**_ : 
+* _**GET /crypto/asset_latest/{asset}**_ : 
+* _**GET /prediction/latest-prediction**_ : 
+* _**GET /prediction/model-evaluation**_ : 
+* _**GET /prediction/best-model**_ : 
+* _**GET /prediction/models**_ : 
+* _**POST /prediction/train**_ : 
+* _**POST /prediction/score**_ : 
+* _**POST /prediction/predict**_ : 
 
 The endpoints works with:
 * Private API
@@ -236,23 +337,3 @@ The endpoints works with:
 
 
 ### Technologique
-
-```mermaid
-architecture-beta
-    service left_disk(disk)[Disk]
-    service top_disk(disk)[Disk]
-    service bottom_disk(disk)[Disk]
-    service top_gateway(internet)[Gateway]
-    service bottom_gateway(internet)[Gateway]
-    junction junctionCenter
-    junction junctionRight
-
-    left_disk:R -- L:junctionCenter
-    top_disk:B -- T:junctionCenter
-    bottom_disk:T -- B:junctionCenter
-    junctionCenter:R -- L:junctionRight
-    top_gateway:B -- T:junctionRight
-    bottom_gateway:T -- B:junctionRight
-
-
-```
