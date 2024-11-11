@@ -15,6 +15,11 @@ x-airflow-common: &airflow-common
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW__WEBSERVER__BASE_UR: http://localhost:8080 #ajout pour les logs
+
+    AIRFLOW__METRICS__STATSD_ON: 'true' ############################## ADDED 11/24
+    AIRFLOW__METRICS__STATSD_HOST: statsd-exporter ############################## ADDED 11/24
+    AIRFLOW__METRICS__STATSD_PORT: 8125 ############################## ADDED 11/24
+    AIRFLOW__METRICS__STATSD_PREFIX: airflow ############################## ADDED 11/24
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -26,6 +31,8 @@ x-airflow-common: &airflow-common
       condition: service_healthy
     postgres:
       condition: service_healthy
+    statsd-exporter: ############################## ADDED 11/24
+      condition: service_healthy ############################## ADDED 11/24
 
 services:
   db:
@@ -41,6 +48,7 @@ services:
     volumes:
       - crypto_data_volume:/var/lib/postgresql/data
       - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./db/BTC_Historic.csv:/docker-entrypoint-initdb.d/BTC_Historic.csv ############################## ADDED 11/24
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "crypto" ]
       interval: 10s
@@ -66,6 +74,8 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+    depends_on: ############################## ADDED 11/24
+      - statsd-exporter ############################## ADDED 11/24
     networks:
       - app_network
 
@@ -82,6 +92,8 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+    depends_on: ############################## ADDED 11/24
+      - statsd-exporter ############################## ADDED 11/24
     networks:
       - app_network
 
@@ -101,6 +113,13 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_started
+      statsd-exporter: ############################## ADDED 11/24
+        condition: service_started ############################## ADDED 11/24
+    volumes: ############################## ADDED 11/24
+      - ./airflow/dags:/opt/airflow/dags ############################## ADDED 11/24
+      - ./airflow/logs:/opt/airflow/logs ############################## ADDED 11/24
+      - ./airflow/config:/opt/airflow/config ############################## ADDED 11/24
+      - ./airflow/plugins:/opt/airflow/plugins ############################## ADDED 11/24
     networks:
       - app_network
 
@@ -123,7 +142,8 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    image: worker
+    # image: worker ############################## DELETED 11/24
+    image: beletteu73docker666/worker_airflow_projetmlops ############################## ADDED 11/24
     command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
@@ -139,12 +159,19 @@ services:
       # Required to handle warm shutdown of the celery workers properly
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
+      CUDA_VISIBLE_DEVICES: "" ############################## ADDED 11/24
+      AIRFLOW__CELERY__BROKER_URL: "redis://:@redis:6379/0" ############################## ADDED 11/24
+      MLFLOW_TRACKING_URI: "http://mlflow-server:5000" ############################## ADDED 11/24
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_started
     volumes:
+      - ./airflow/dags:/opt/airflow/dags ############################## ADDED 11/24
+      - ./airflow/logs:/opt/airflow/logs ############################## ADDED 11/24
+      - ./airflow/config:/opt/airflow/config ############################## ADDED 11/24
+      - ./airflow/plugins:/opt/airflow/plugins ############################## ADDED 11/24
       - ./scripts:/app/scripts
       - ./src:/app/src
     networks:
@@ -245,6 +272,7 @@ services:
       - airflow
     networks:
       - app_network
+
   flower:
     <<: *airflow-common
     command: celery flower
@@ -285,7 +313,8 @@ services:
       - app_network
 
   api:
-    build: ./API
+    #build: ./API ############################## DELETED 11/24
+    image: beletteu73docker666/api_projet_mlops ############################## ADDED 11/24
     restart: always
     ports:
       - "3000:3000"
@@ -308,12 +337,14 @@ services:
     #command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
     networks:
       - app_network
+      - public_app ############################## ADDED 11/24
 
   frontend:
     build: ./frontend
     restart: always
     ports:
       - "8501:8501"
+      - "80:80" ############################## ADDED 11/24
     volumes:
       - ./frontend:/app
     depends_on:
@@ -322,12 +353,14 @@ services:
     environment:
       - API_URL=http://api:3000
     networks:
-      - app_network
+      # - app_network ############################## DELETED 11/24
+      - public_app ############################## ADDED 11/24
 
   mlflow_db:
-    build:
-      context: .
-      dockerfile: ./mlflow/Dockerfile
+    #build: ############################## DELETED 11/24
+    #  context: . ############################## DELETED 11/24
+    #  dockerfile: ./mlflow/Dockerfile ############################## DELETED 11/24
+    image: beletteu73docker666/mflow_db_projet_mlops  ############################### ADDED 11/24
     container_name: mlflow_db
     restart: always
     ports:
@@ -348,10 +381,10 @@ services:
       - app_network
 
   mlflow-server:
-    #image: ghcr.io/mlflow/mlflow  # image officielle MLflow
-    build:
-      context: .
-      dockerfile: ./mlflow/Dockerfile.server
+    image: beletteu73docker666/mflow_server_projet_mlops ############################## ADDED 11/24
+    #build: ############################## DELETED 11/24
+    #  context: . ############################## DELETED 11/24
+    #  dockerfile: ./mlflow/Dockerfile.server ############################## DELETED 11/24
     restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:5000/" ]
@@ -362,16 +395,195 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow:/app
+      #- ./mlflow:/app ############################## DELETED 11/24
+      - ./mlflow-artifacts:/mlflow-artifacts ############################## ADDED 11/24
     depends_on:
       mlflow_db:
         condition: service_healthy # Assure que mlflow_db est healthy avant de démarrer
     working_dir: /app # Définit le répertoire de travail sur /app où le script de démarrage est localisé
     environment:
       - MLFLOW_TRACKING_URI=postgresql://mlflow:mlflow@mlflow_db:5432/mlflow
-    command: [ "mlflow", "server", "--host", "0.0.0.0", "--port", "5000" ] # Exécute MLflow directement
+    # command: [ "mlflow", "server", "--host", "0.0.0.0", "--port", "5000" ] # Exécute MLflow directement ############################## DELETED 11/24
+    command: ############################################################## ADDED 11/24
+      [
+        "mlflow",
+        "server",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5000",
+        "--backend-store-uri",
+        "postgresql://mlflow:mlflow@mlflow_db:5432/mlflow",
+        "--default-artifact-root",
+        "file:///mlflow-artifacts"
+      ] ############################################################## ADDED 11/24
     networks:
       - app_network
+
+
+### START ADDED NEW SERVICES ############################## ADDED 11/24
+  prometheus:
+    image: prom/prometheus:latest
+    expose:
+    - 9090
+    ports:
+    - "9090:9090"
+    container_name: prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    # volumes:
+    #   - ./prom:/etc/prometheus
+    volumes:
+      - ./prom:/etc/prometheus    # Use /data instead of /etc/prometheus
+      - prometheus-data:/prometheus
+      - "./prom/alertmanager/monitoring_rules.yml:/etc/prometheus/alertmanager/monitoring_rules.yml"
+    command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/prometheus'
+        - '--web.console.libraries=/etc/prometheus/console_libraries'
+        - '--web.console.templates=/etc/prometheus/consoles'
+        - '--storage.tsdb.retention=200h'
+    # entrypoint: ["/bin/prometheus", "--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/etc/prometheus"]
+    depends_on:
+      - airflow-webserver
+      - statsd-exporter
+    networks:
+      - app_network 
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9100/metrics"] # trying to retrieve the metrics endpoint
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    ports:
+    - 9100:9100
+    volumes:
+      - ./prom/node-exporter/proc:/app/proc:ro,rshared
+      - ./prom/node-exporter/sys:/app/sys:ro,rshared
+      - /:/rootfs:ro,rshared
+    command:
+      - '--path.rootfs=/app/proc'
+      - '--path.sysfs=/app/sys'
+      - '--collector.filesystem.ignored-mount-points'
+      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
+    networks:
+    - app_network
+   
+  statsd-exporter:
+    image: prom/statsd-exporter
+    container_name: statsd-exporter
+    command: 
+      - "--statsd.mapping-config=/tmp/statsd_mapping.yml"
+      - "--statsd.listen-udp=:8125"
+      - "--web.listen-address=:9102"
+    restart: always
+    ports:
+      - "9102:9102"
+      - "8125:8125/udp"  #port Stats en udp
+    volumes:
+      - './prom/statsd/statsd_mapping.yml:/tmp/statsd_mapping.yml'  
+    networks:
+      - app_network
+  
+  model-score-sender:
+    image: python:3.12
+    container_name: model-score-sender
+    command: bash -c "pip install -r /tmp/requirements.txt && python3 /tmp/first_model_score.py"    
+    restart: no 
+    volumes:
+      - './prom/statsd/requirements.txt:/tmp/requirements.txt'
+      - './prom/statsd/first_model_score.py:/tmp/first_model_score.py'
+    networks:
+      - app_network
+    depends_on:
+      statsd-exporter:
+        condition: service_healthy
+
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - "./prom/alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml"
+    ports:
+      - "9093:9093"
+    depends_on:
+      - prometheus
+    restart: always 
+    networks:
+    - app_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    environment: #tests
+    - GF_SECURITY_ADMIN_PASSWORD=grafana
+    - GF_SECURITY_ADMIN_USER=grafana
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+    # - GF_SMTP_ENABLED=true
+    # - GF_SMTP_HOST=smtp.laposte.net:465
+    # - GF_SMTP_USER=
+    # - GF_SMTP_PASSWORD=XXXXXX
+    # - GF_SMTP_FROM_ADDRESS=
+    # - GF_SMTP_SKIP_VERIFY=true
+    # - GF_SMTP_FROM_NAME=Grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./prom/grafana/provisioning:/etc/grafana/provisioning      
+    ports:
+      - "3002:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - app_network      
+
+  prediction-api:
+    build: ./PredictionAPI
+    restart: always
+    container_name: prediction-api
+    ports:
+      - "3001:3001"
+    environment:
+      - WORKERS_PER_CORE=2
+      - LOG_LEVEL=debug
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus
+      - MAIN_API_URL=http://api:3000
+      - MLFLOW_TRACKING_URI=http://mlflow-server:5000
+      - AIRFLOW_USERNAME=airflow
+      - AIRFLOW_PASSWORD=airflow
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=crypto
+      - DB_PASSWORD=crypto
+      - DB_NAME=cryptoDb
+    volumes:
+      - ./PredictionAPI:/app
+      - ./scripts:/app/scripts
+      - ./src:/app/src
+      - ./mlflow-artifacts:/mlflow-artifacts
+      - ./prometheus_multiproc_dir:/tmp/prometheus
+      #- ./mlflow:/mlflow
+    depends_on:
+      - db
+      - api
+      - mlflow-server
+      - airflow-webserver
+    command: sh -c "cd /app && gunicorn -k uvicorn.workers.UvicornWorker -c gunicorn_conf.py app.main:app"
+    networks:
+      - app_network
+    expose:
+      - "3001"
+### END ADDED NEW SERVICES ############################## ADDED 11/24
+
+
 
 volumes:
   pgadmin_data_volume:
@@ -381,8 +593,15 @@ volumes:
   airflow:
   scripts:
   src:
+  prometheus-data: {} ############################## ADDED 11/24
+  grafana-data: {} ############################## ADDED 11/24
 
 
 networks:
   app_network:
     driver: bridge
+    internal: False # true  # Ce réseau n'est pas accessible depuis l'extérieur ############################## ADDED 11/24
+  public_app: ############################## ADDED 11/24
+    driver: bridge ############################## ADDED 11/24
+    internal: false  # Ce réseau est accessible depuis l'extérieur ############################## ADDED 11/24
+
