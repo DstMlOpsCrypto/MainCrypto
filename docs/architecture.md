@@ -309,31 +309,29 @@ The prediction folder just had endpoints querying the private API to get the pre
 
 The list of all endpoints:
 
-* _**POST /auth/signup**_ : 
-* _**POST /auth/login (not protected)**_ : 
-* _**GET /auth/users/me**_ : 
-* _**PUT /auth/users/me**_ : 
-* _**DELETE /auth/users/{username}**_ : 
-* _**PUT /auth/users/{username}/role**_ : 
-* _**GET /auth/users**_ : 
-* _**GET /crypto/assets**_ : 
-* _**POST /crypto/assets**_ : 
-* _**GET /crypto/asset_history/{asset}**_ : 
-* _**DELETE /crypto/assets/{asset_id}**_ : 
-* _**GET /crypto/kraken_assets**_ : 
-* _**GET /crypto/asset_latest/{asset}**_ : 
-* _**GET /prediction/latest-prediction**_ : 
-* _**GET /prediction/model-evaluation**_ : 
-* _**GET /prediction/best-model**_ : 
-* _**GET /prediction/models**_ : 
-* _**POST /prediction/train**_ : 
-* _**POST /prediction/score**_ : 
-* _**POST /prediction/predict**_ : 
+* _**POST /auth/signup**_ : Record new user
+* _**POST /auth/login (not protected)**_ : User loggin
+* _**GET /auth/users/me**_ : Modify user information profil by user
+* _**PUT /auth/user/me**_ : Check user account for user
+* _**DELETE /auth/users/{username}**_ : Delete users by admin
+* _**PUT /auth/users/{username}/role**_ : Modify user role by admin
+* _**GET /auth/users**_ : Get users list by admin
+* _**GET /crypto/assets**_ : Get all assets in db
+* _**POST /crypto/assets**_ : Add new asset
+* _**GET /crypto/asset_history/{asset}**_ : Get asset OHLC value history to date 
+* _**DELETE /crypto/assets/{asset_id}**_ : Get asset OHLC value history to date 
+* _**GET /crypto/kraken_assets**_ : Get list of assets from provider
+* _**GET /crypto/asset_latest/{asset}**_ : Get last OHCL value from Db
+* _**GET /prediction/latest-prediction**_ : Get last prediction for asset (BTC)
+* _**GET /prediction/model-evaluation**_ : Get last model evalution for asset (BTC)
+* _**GET /prediction/best-model**_ : Get prediction of best model for asset (BTC)
+* _**GET /prediction/models**_ : List all model experiments
+* _**POST /prediction/train**_ : Trigger Airflow DAG training
+* _**POST /prediction/score**_ : Trigger Airflow DAG scoring
+* _**POST /prediction/predict**_ : Trigger Airflow DAG prediction
 
 The endpoints works with:
 * Private API
 * PostgreSQL database
 * Airflow
 
-
-### Technologique
