@@ -497,7 +497,7 @@ services:
     image: python:3.12
     container_name: model-score-sender
     command: bash -c "pip install -r /tmp/requirements.txt && python3 /tmp/first_model_score.py"    
-    restart: no 
+    restart: "no" 
     volumes:
       - './prom/statsd/requirements.txt:/tmp/requirements.txt'
       - './prom/statsd/first_model_score.py:/tmp/first_model_score.py'
