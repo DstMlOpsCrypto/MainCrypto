@@ -1,1 +1,4 @@
-.env/    
+# python virtual env
+.env/
+# archimate backup
+*.bak

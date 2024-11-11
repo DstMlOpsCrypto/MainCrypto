@@ -1,12 +1,52 @@
 # Architecture
 
 
+
 ## Capacity 
 
+```mermaid
+%%{init: {'theme':'forest'}}%%
+architecture-beta
+
+    group ec2(cloud)[DataScienceTest VM AWS]
+        group airflow_container(airflow)[Airflow Container] in ec2
+            service airflow_db(database)[Airflow Db] in airflow_container
+            service ohcl_db(database)[OHCL Db] in airflow_container
+            group master_node(airflow)[Master Node] in airflow_container
+                service airflow_webserver(server)[WebServer] in master_node
+                service airflow_scheduler(server)[Scheduler] in master_node
+                service airflow_executor(server)[Executor] in master_sub
+            service airflow_queue(server)[Airflow Db] in airflow_container
+            service airflow_redis(server)[Redis] in airflow_container
+            service airflow_celery(server)[Celery] in airflow_container
+
+            airflow_db:R <--> L:airflow_webserver
+            airflow_db:R <--> L:airflow_executor
+
+```
 
 ## Architecture layers
 
 ### Business
+
+```mermaid
+%%{init: {'theme':'forest'}}%%
+sequenceDiagram
+
+ box Inference
+    participant A
+    participant J
+    end
+    box Another Group
+    participant B
+    participant C
+    end
+    A->>J: Hello John, how are you?
+    J->>A: Great!
+    A->>B: Hello Bob, how is Charley?
+    B->>C: Hello Charley, how are you?
+
+```
 
 
 ### Applicative
@@ -194,5 +234,25 @@ The endpoints works with:
 * PostgreSQL database
 * Airflow
 
+
 ### Technologique
 
+```mermaid
+architecture-beta
+    service left_disk(disk)[Disk]
+    service top_disk(disk)[Disk]
+    service bottom_disk(disk)[Disk]
+    service top_gateway(internet)[Gateway]
+    service bottom_gateway(internet)[Gateway]
+    junction junctionCenter
+    junction junctionRight
+
+    left_disk:R -- L:junctionCenter
+    top_disk:B -- T:junctionCenter
+    bottom_disk:T -- B:junctionCenter
+    junctionCenter:R -- L:junctionRight
+    top_gateway:B -- T:junctionRight
+    bottom_gateway:T -- B:junctionRight
+
+
+```
