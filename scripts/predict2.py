@@ -8,7 +8,7 @@ from mlflow.tracking.client import MlflowClient
 import argparse
 import sys
 import os
-
+import numpy as np
 import psycopg2
 from datetime import datetime
 
@@ -138,7 +138,7 @@ def pipeline_predict():
     # Save the prediction to the database
     save_prediction_to_db(prediction_date, prediction_value)
 
-    return {"prediction": prediction}
+    return {"prediction": prediction_value}
 
 if __name__ == "__main__":
     prediction = pipeline_predict()
