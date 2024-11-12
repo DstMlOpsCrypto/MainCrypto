@@ -437,18 +437,18 @@ services:
     networks:
       - app_network
 
-  tests-ml:   # actived
-    image: beletteu73docker666/tests-ml_projetmlops
-    volumes:
-      - ./scripts:/app/scripts
-      - ./src:/app/src
-      - ./tests/model:/app/tests/model
-    command: [ "pytest", "/app/tests/model" ] # Exécute les tests dans le conteneur
-    environment:
-      - PYTHONPATH=/app
-    #restart: always
-    networks:
-      - app_network
+  # tests-ml:   # desactived to gain place
+  #   image: beletteu73docker666/tests-ml_projetmlops
+  #   volumes:
+  #     - ./scripts:/app/scripts
+  #     - ./src:/app/src
+  #     - ./tests/model:/app/tests/model
+  #   command: [ "pytest", "/app/tests/model" ] # Exécute les tests dans le conteneur
+  #   environment:
+  #     - PYTHONPATH=/app
+  #   #restart: always
+  #   networks:
+  #     - app_network
     
   prometheus:
     image: prom/prometheus:latest

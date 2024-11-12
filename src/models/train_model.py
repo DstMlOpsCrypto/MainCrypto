@@ -29,7 +29,7 @@ def create_callbacks():
     return early_stopping,reduce_learning_rate
 
 
-def train (X_train, y_train, X_test, y_test, model, batch_size = 5):
+def train(X_train, y_train, X_test, y_test, model, batch_size = 5):
     """
     Fit the model acccording to the data and measure duration of the training process.
     Args:

@@ -84,11 +84,19 @@ The script follow these steps:
 
 ### Install environnement
 
-```bash
-docker-compose up airflow-init
+#### env
+Create a file .env with:
+``` nano .env```
 
-docker-compose up -d
-```
+- Complete with :
+AIRFLOW_UID=1000
+SLACK_WEBHOOK_URL= *REPLACE WITH YOUR WEBHOOK FOR SLACK**
+
+## script
+Use scripts setup.sh:
+
+``` bash setup.sh ```
+
 ### Airflow
 
 DAG refer to connection id set withing airflow.
