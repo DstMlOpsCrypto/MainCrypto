@@ -30,6 +30,7 @@ jobs:
       - name: Run Pytest
         run: |
           python -m pytest tests/crypto/
+          python -m pytest tests/api/
         env:
           CRYPTO_DB_HOST: localhost
           CRYPTO_DB_PORT: 5440
