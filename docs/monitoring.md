@@ -21,13 +21,10 @@ For example, Airflow emits metrics in the StatsD format automatically if certain
 
 New schemes are the following :
 
-```mermaid
-    flowchart
-    Application --> Exporter --> StatsD
-    Prometheus --> Exporter
-    StatsD --UDP/TCP repeater)--> statsd_exporter
-    statsd_exporter --(scrape /metrics)-->Prometheus
-```
++----------+                         +-------------------+                        +--------------+
+|  StatsD  |---(UDP/TCP repeater)--->|  statsd_exporter  |<---(scrape /metrics)---|  Prometheus  |
++----------+                         +-------------------+                        +--------------+
+
 
 ### Node-exporter:
 

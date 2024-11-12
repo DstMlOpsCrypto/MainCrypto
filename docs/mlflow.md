@@ -157,7 +157,6 @@ Here a scheme of MLFflow Tracking in Team development as we used it :
 
 ![MLFLOW Tracking Server Schema](images/tracking-setup-overview.png)
 
-
 ## MLflow Projects
 
 ### Project Definition

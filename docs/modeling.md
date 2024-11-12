@@ -1,4 +1,3 @@
-
 # Modeling
 
 ## Introduction
@@ -56,8 +55,10 @@ Our standard methodology involves several key steps:
 - model prediction and evaluation
 - model deployment. 
 
-The data is then preprocessed, normalized, and split into training and test sets.
+The data is preprocessed, normalized, and split into training and test sets.
+
 An LSTM model is developed, trained, and evaluated using MLflow for tracking and versioning. 
+
 The final model is deployed via FastAPI, with Prometheus and Grafana for monitoring and logging. Streamlit is used to create a user-friendly dashboard for visualizing predictions.
 
 #### Structure
@@ -115,7 +116,10 @@ This choice has been made taking incto account the short term prediction chosen 
 ### Building dataset for training and testing
 
 Transformed time-series data was splited into 2 datasets with 70% training data and 30% testing data.
-Then Sequencing of time series was made using two differents periods of time for training dataset and testing dataset.
+Then Sequencing of time series was made using two differents periods of time for training dataset and testing dataset as illustrated in the following graph :
+
+![Séparation dataset training-testing](images/separation_train_test.png)
+
 Two sequences was built (X and y) through Python module *make_dataset*:
 - X is a sequence of prices of size *pas_temps* (parameter representing the number of past days which are used directly for prediction)
 - y is the next value, which will be the value to predict.
@@ -164,6 +168,7 @@ graph TD;
     Output_Gate-->Memory_Cell
     end
 ```
+
 The architecture consists of multiple LSTM cells that process input sequentially, allowing the model to learn temporal dependencies.
 
 #### Model creation and instanciation
@@ -188,15 +193,20 @@ MLflow is an open-source platform for managing the end-to-end machine learning l
 
 #### Practical implementation
 
-The model has been  trained with training dataset.
+The model has been trained with training dataset.
+In ths context, Callbacks *early_stopping* and *reduce_learning_rate* has been used during training to make it more fast and efficient.
+Loss function fastly reach its equilibium level as seen on this graph :
 
-Callbacks early_stopping and reduce_learning_rate were used during training to make it more efficient.
-An mlflow run is created for each parameter tested (pas_temps and batch_size), then model score and parameters are logged into mlflow tracking Server.
-Finaly, the model with best mse is chosen and logged into mlflow throught *tensorflow.log_model* method.
+![Loss function](images/courbe_epochs.png)
 
-A number of neuron equal to 350 has been fixed after optimization tests, with a compromise between duration of the training and performance.
+An experiment is created in MLflow Tracking and an mlflow run is created for each parameter tested (pas_temps, batch_size or neurons) of the LTSM model.
+Then model score and parameters are logged into mlflow tracking Server.
+Finaly, the model with best mse is chosen and logged into mlflow throught *tensorflow.log_model* method using MLFloww Tracking and MLflow Registry.
 
-Bacth size was used as the main parameter to vary during the training.
+Differents optimization tests have been done to preselect some parameters :
+- pas_temps has been fixe to 14 (14 days are used to predict the next day price)
+- A number of neuron equal to 350 has been fixed after optimization tests, with a compromise between duration of the training and performance.
+- Bacth size was used as the main parameter to vary during the training of the model.
 
 ### Prediction and evaluation
 This step loads data, normalizes and create a test dataset in order to predict the next price of Bitcoin 
@@ -204,9 +214,6 @@ Then the best model thought is loaded through mlflow module *tensorflow.load_mod
 The script returns the predicted value as a dictionary.
 For each prediction, it records prediction metrics and the score (mse score on test dataset) and compares them to a reference for mse (fixed to a value of 100000, see Monitoring).
 
-## Results and Discussion
-
-Results have been globally satisfactory using only past bitcoin prices on a short term approach. Model has been volontary keep simple due to the fact that it was not the main purpose of the projet.
 
 ## tesaurus
 
@@ -250,7 +257,7 @@ Anchorage, AK, USA, 14–19 May 2017.
 
 ## Similar project and scientific paper
 
-![Tableau1](pictures/exemples_modeles.png)
+![Tableau1](images/exemples_modeles.png)
 
 [Lien n°1](https://github.com/Ali619/Bitcoin-Price-Prediction-LSTM/blob/master/Bitcoin_Price_Prediction.ipyn)
 [Lien n°2](https://colab.research.google.com/drive/1wWvtA5RC6-is6J8W86wzK52Knr3N1Xbm#scrollTo=mU4B3eNtLpgH)
@@ -262,4 +269,4 @@ Anchorage, AK, USA, 14–19 May 2017.
 [Lien n°8](https://www.sciencedirect.com/science/article/pii/S2405918821000027)
 [Lien n°9] https://www.sciencedirect.com/science/article/pii/S0957417423008485
 
-![Tableau2](pictures/tableau_variables.png)
+![Tableau2](images/tableau_variables.png)

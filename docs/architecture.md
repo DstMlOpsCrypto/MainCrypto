@@ -3,6 +3,14 @@
 
 ## Capacity 
 
+Our standard methodology has involved several key steps: 
+- data collection
+- data loading and preprocessing (normalization, transformation)
+- model creation
+- model training
+- model prediction and evaluation
+- model deployment. 
+
 
 ## Architecture layers
 
