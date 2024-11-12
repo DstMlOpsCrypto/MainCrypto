@@ -21,6 +21,14 @@ jobs:
           sudo apt-get install python3-pip
           sudo apt-get install python3-psycopg2
           sudo apt-get install python3-pytest
+          sudo apt-get install python3-fastapi
+          sudo apt-get install -y python3-httpx
+          sudo pip3 install python-multipart
+          sudo pip3 install pydantic
+          sudo pip3 install pytest-asyncio
+          sudo pip3 install python-jose[cryptography]
+          sudo pip3 install passlib[bcrypt]
+
       - name: Launch Container
         run: |
           docker-compose -f docker-compose-dev.yml up -d --build
