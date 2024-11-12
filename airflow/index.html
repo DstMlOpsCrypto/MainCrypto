@@ -1,0 +1,2479 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dstmlopscrypto.github.io/MainCrypto/airflow/">
+      
+      
+        <link rel="prev" href="../monitoring/">
+      
+      
+        <link rel="next" href="../fastapi/">
+      
+      
+      <link rel="icon" href="../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+    
+    
+      
+        <title>Airflow - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775m1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.5 1.75v11.5c0 .138.112.25.25.25h3.17a.75.75 0 0 1 0 1.5H2.75A1.75 1.75 0 0 1 1 13.25V1.75C1 .784 1.784 0 2.75 0h8.5C12.216 0 13 .784 13 1.75v7.736a.75.75 0 0 1-1.5 0V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25m13.274 9.537zl-4.557 4.45a.75.75 0 0 1-1.055-.008l-1.943-1.95a.75.75 0 0 1 1.062-1.058l1.419 1.425 4.026-3.932a.75.75 0 1 1 1.048 1.074M4.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5M4 7.75A.75.75 0 0 1 4.75 7h2a.75.75 0 0 1 0 1.5h-2A.75.75 0 0 1 4 7.75"/></svg>');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75M8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg>');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.499.75a.75.75 0 0 1 1.5 0v.996C5.9 2.903 6.793 3.65 7.662 4.376l.24.202c-.036-.694.055-1.422.426-2.163C9.1.873 10.794-.045 12.622.26 14.408.558 16 1.94 16 4.25c0 1.278-.954 2.575-2.44 2.734l.146.508.065.22c.203.701.412 1.455.476 2.226.142 1.707-.4 3.03-1.487 3.898C11.714 14.671 10.27 15 8.75 15h-6a.75.75 0 0 1 0-1.5h1.376a4.5 4.5 0 0 1-.563-1.191 3.84 3.84 0 0 1-.05-2.063 4.65 4.65 0 0 1-2.025-.293.75.75 0 0 1 .525-1.406c1.357.507 2.376-.006 2.698-.318l.009-.01a.747.747 0 0 1 1.06 0 .75.75 0 0 1-.012 1.074c-.912.92-.992 1.835-.768 2.586.221.74.745 1.337 1.196 1.621H8.75c1.343 0 2.398-.296 3.074-.836.635-.507 1.036-1.31.928-2.602-.05-.603-.216-1.224-.422-1.93l-.064-.221c-.12-.407-.246-.84-.353-1.29a2.4 2.4 0 0 1-.507-.441 3.1 3.1 0 0 1-.633-1.248.75.75 0 0 1 1.455-.364c.046.185.144.436.31.627.146.168.353.305.712.305.738 0 1.25-.615 1.25-1.25 0-1.47-.95-2.315-2.123-2.51-1.172-.196-2.227.387-2.706 1.345-.46.92-.27 1.774.019 3.062l.042.19.01.05c.348.443.666.949.94 1.553a.75.75 0 1 1-1.365.62c-.553-1.217-1.32-1.94-2.3-2.768L6.7 5.527c-.814-.68-1.75-1.462-2.692-2.619a3.7 3.7 0 0 0-1.023.88c-.406.495-.663 1.036-.722 1.508.116.122.306.21.591.239.388.038.797-.06 1.032-.19a.75.75 0 0 1 .728 1.31c-.515.287-1.23.439-1.906.373-.682-.067-1.473-.38-1.879-1.193L.75 5.677V5.5c0-.984.48-1.94 1.077-2.664.46-.559 1.05-1.055 1.673-1.353z"/></svg>');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 .018-1.042.75.75 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.76 2.76 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6 6 0 0 0-.26.16 1 1 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1 1 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.61.61 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1 1 0 0 0-.34.398M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.344 2.343za8 8 0 0 1 11.314 11.314A8.002 8.002 0 0 1 .234 10.089a8 8 0 0 1 2.11-7.746m1.06 10.253a6.5 6.5 0 1 0 9.108-9.275 6.5 6.5 0 0 0-9.108 9.275M6.03 4.97 8 6.94l1.97-1.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734L9.06 8l1.97 1.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215L8 9.06l-1.97 1.97a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L6.94 8 4.97 6.03a.75.75 0 0 1 .018-1.042.75.75 0 0 1 1.042-.018"/></svg>');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.25 1.25 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006-.004-.009-.006-.006-.008-.001q-.005 0-.009.004"/></svg>');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4.72.22a.75.75 0 0 1 1.06 0l1 .999a3.5 3.5 0 0 1 2.441 0l.999-1a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.775.776c.616.63.995 1.493.995 2.444v.327q0 .15-.025.292c.408.14.764.392 1.029.722l1.968-.787a.75.75 0 0 1 .556 1.392L13 7.258V9h2.25a.75.75 0 0 1 0 1.5H13v.5q-.002.615-.141 1.186l2.17.868a.75.75 0 0 1-.557 1.392l-2.184-.873A5 5 0 0 1 8 16a5 5 0 0 1-4.288-2.427l-2.183.873a.75.75 0 0 1-.558-1.392l2.17-.868A5 5 0 0 1 3 11v-.5H.75a.75.75 0 0 1 0-1.5H3V7.258L.971 6.446a.75.75 0 0 1 .558-1.392l1.967.787c.265-.33.62-.583 1.03-.722a1.7 1.7 0 0 1-.026-.292V4.5c0-.951.38-1.814.995-2.444L4.72 1.28a.75.75 0 0 1 0-1.06m.53 6.28a.75.75 0 0 0-.75.75V11a3.5 3.5 0 1 0 7 0V7.25a.75.75 0 0 0-.75-.75ZM6.173 5h3.654A.17.17 0 0 0 10 4.827V4.5a2 2 0 1 0-4 0v.327c0 .096.077.173.173.173"/></svg>');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M5 5.782V2.5h-.25a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458Zm-2.4 6.565a.75.75 0 0 0 .633 1.153h9.534a.75.75 0 0 0 .633-1.153L12.225 10.5h-8.45ZM9.5 2.5h-3V6c0 .143-.04.283-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 0 1 9.5 6Z"/></svg>');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1.75 2.5h10.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5m4 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5m0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5M2.5 7.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 1.5 0"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans:300,300i,400,400i,700,700i%7CRed+Hat+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Merriweather Sans";--md-code-font:"Red Hat Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#airflow" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 32c0 113.6-84.6 207.5-194.2 222-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0h32c17.7 0 32 14.3 32 32M0 96c0-17.7 14.3-32 32-32h32c123.7 0 224 100.3 224 224v192c0 17.7-14.3 32-32 32s-32-14.3-32-32V320C100.3 320 0 219.7 0 96"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Airflow
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  CryptoPredict
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../project/" class="md-tabs__link">
+        
+  
+    
+  
+  Project
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../modeling/" class="md-tabs__link">
+        
+  
+    
+  
+  Modeling
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../results/" class="md-tabs__link">
+        
+  
+    
+  
+  Modelling results and Discussion
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../monitoring/" class="md-tabs__link">
+        
+  
+    
+  
+  Monitoring and Alerting Services
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  Tools...
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../model-ltsm/" class="md-tabs__link">
+          
+  
+  Model...
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 32c0 113.6-84.6 207.5-194.2 222-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0h32c17.7 0 32 14.3 32 32M0 96c0-17.7 14.3-32 32-32h32c123.7 0 224 100.3 224 224v192c0 17.7-14.3 32-32 32s-32-14.3-32-32V320C100.3 320 0 219.7 0 96"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CryptoPredict
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Project
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modeling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modelling results and Discussion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring and Alerting Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tools...
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Tools...
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Airflow
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Airflow
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction-to-apache-airflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction to Apache Airflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction to Apache Airflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Points
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-characteristics-of-apache-airflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Characteristics of Apache Airflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Main Characteristics of Apache Airflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#directed-acyclic-graphs-dags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Directed Acyclic Graphs (DAGs)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task Instances
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-dags-and-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring DAGs and Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduling-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduling Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#triggering-task-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Triggering Task Runs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#triggering-task-runs_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Triggering Task Runs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managing-concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing Concurrency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-failures-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Failures and Retries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuous Operation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilling-and-catchup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backfilling and Catchup
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executor Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executor Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sequentialexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      SequentialExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SequentialExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#localexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      LocalExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LocalExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#celeryexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      CeleryExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CeleryExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetesexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      KubernetesExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="KubernetesExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daskexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      DaskExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DaskExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Point
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-of-apache-airflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture of Apache Airflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture of Apache Airflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Components Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-points_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Points
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-architectural-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Architectural Breakdown
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Architectural Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scheduler_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduler:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Web Server
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-points_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Points
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-and-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration and Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration and Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Plugin
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-hooks-and-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Hooks and Operators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sensors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benefits-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits and Limitations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benefits and Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fastapi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FastAPI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mlflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MLFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prometheus/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prometheus
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grafana/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grafana
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamlit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Streamlit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Model...
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Model...
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-ltsm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LTSM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction-to-apache-airflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction to Apache Airflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction to Apache Airflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Points
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#main-characteristics-of-apache-airflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Characteristics of Apache Airflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Main Characteristics of Apache Airflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#directed-acyclic-graphs-dags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Directed Acyclic Graphs (DAGs)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task Instances
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-dags-and-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring DAGs and Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduling-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduling Tasks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#triggering-task-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Triggering Task Runs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#triggering-task-runs_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Triggering Task Runs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managing-concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing Concurrency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-failures-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handling Failures and Retries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuous Operation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backfilling-and-catchup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backfilling and Catchup
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executor Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executor Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sequentialexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      SequentialExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SequentialExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#localexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      LocalExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LocalExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#celeryexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      CeleryExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CeleryExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetesexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      KubernetesExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="KubernetesExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daskexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      DaskExecutor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DaskExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Point
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-of-apache-airflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture of Apache Airflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture of Apache Airflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Components Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-points_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Points
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-architectural-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Architectural Breakdown
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Architectural Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scheduler_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduler:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Web Server
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-points_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Points
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-and-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration and Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration and Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Plugin
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-hooks-and-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Hooks and Operators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sensors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benefits-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits and Limitations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benefits and Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Limitations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="airflow">Airflow<a class="headerlink" href="#airflow" title="Permanent link">&para;</a></h1>
+<p>This part presents an overview of Airflow tool for educational purposes.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Creator</label><label for="__tabbed_1_2">Use Cases</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ul>
+<li><strong>Name</strong>: Maxime Beauchemin</li>
+<li><strong>Background</strong>: Ex-Airbnb and ex-Facebook engineer</li>
+<li><strong>Contribution</strong>: Developed Apache Airflow at Airbnb to manage complex workflows</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Data Engineering</strong></p>
+<ul>
+<li>ETL/ELT Pipelines: Extract, Transform, Load (Extract, Load, Transform) data from various sources.</li>
+<li>Data Processing: Automate data cleaning, transformation, and loading processes.</li>
+</ul>
+</li>
+<li>
+<p><strong>Machine Learning</strong></p>
+<ul>
+<li>MLOps: Orchestrate the entire machine learning lifecycle, including data preparation, model training, and deployment2.</li>
+<li>Model Training: Schedule and monitor machine learning model training jobs.</li>
+</ul>
+</li>
+<li>
+<p><strong>Operational Analytics</strong></p>
+<ul>
+<li>Automated Reporting: Generate and distribute reports on a scheduled basis.</li>
+<li>Real-time Analytics: Process and analyze data in real-time for timely insights.</li>
+</ul>
+</li>
+<li>
+<p><strong>DevOps</strong></p>
+<ul>
+<li>Infrastructure Management: Manage infrastructure provisioning and de-provisioning.</li>
+<li>Backup and Restore: Schedule regular backups and automate restore processes.</li>
+</ul>
+</li>
+<li>
+<p>**Custom Workflows  </p>
+<ul>
+<li>Ad Hoc Tasks: Run one-off tasks that are not tied to a schedule.</li>
+<li>Event-Driven Workflows: Trigger tasks based on external events, such as file uploads or API calls5.</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="introduction-to-apache-airflow">Introduction to Apache Airflow<a class="headerlink" href="#introduction-to-apache-airflow" title="Permanent link">&para;</a></h2>
+<p>Apache Airflow is—a platform to programmatically author, schedule, and monitor workflows.</p>
+<p>Use Cases: Highlight common use cases, such as ETL processes, data pipeline automation, and machine learning workflows.</p>
+<h3 id="key-points">Key Points<a class="headerlink" href="#key-points" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Open-source workflow management tool</li>
+<li>Focus on scalability and flexibility</li>
+<li>Suitable for batch-oriented workloads</li>
+</ul>
+<h2 id="main-characteristics-of-apache-airflow">Main Characteristics of Apache Airflow<a class="headerlink" href="#main-characteristics-of-apache-airflow" title="Permanent link">&para;</a></h2>
+<h3 id="directed-acyclic-graphs-dags">Directed Acyclic Graphs (DAGs)<a class="headerlink" href="#directed-acyclic-graphs-dags" title="Permanent link">&para;</a></h3>
+<p>workflows are defined as DAGs, ensuring tasks are executed in a specific order without cycles.</p>
+<h3 id="task-instances">Task Instances<a class="headerlink" href="#task-instances" title="Permanent link">&para;</a></h3>
+<p>Discuss how each task within a DAG is an instance, allowing for granular monitoring and control.</p>
+<h3 id="scheduler">Scheduler<a class="headerlink" href="#scheduler" title="Permanent link">&para;</a></h3>
+<p>The Airflow scheduler is essential for managing the execution of tasks in a workflow, ensuring that tasks run at the specified intervals and in the correct order1. Its ability to handle dependencies, manage concurrency, and handle failures makes it a powerful tool for orchestrating complex data pipelines.</p>
+<h4 id="monitoring-dags-and-tasks">Monitoring DAGs and Tasks<a class="headerlink" href="#monitoring-dags-and-tasks" title="Permanent link">&para;</a></h4>
+<p>The scheduler continuously monitors all Directed Acyclic Graphs (DAGs) and their tasks. It keeps track of the state of each task and DAG, ensuring that tasks are executed in the correct order based on their dependencies.</p>
+<h4 id="scheduling-tasks">Scheduling Tasks<a class="headerlink" href="#scheduling-tasks" title="Permanent link">&para;</a></h4>
+<p>The scheduler uses the <em>schedule_interval</em> parameter defined in each DAG to determine when to run tasks. This parameter can be a cron expression or a timedelta object. </p>
+<p>For example, a DAG with a schedule_interval of '@daily' will run once a day at midnight.</p>
+<h4 id="triggering-task-runs">Triggering Task Runs<a class="headerlink" href="#triggering-task-runs" title="Permanent link">&para;</a></h4>
+<p>When the scheduler determines that a task should be run (based on the <em>schedule_interval</em> and task dependencies), it triggers the task instance. This involves creating a DAG run and scheduling the tasks within that run.</p>
+<h4 id="triggering-task-runs_1">Triggering Task Runs<a class="headerlink" href="#triggering-task-runs_1" title="Permanent link">&para;</a></h4>
+<p>When the scheduler determines that a task should be run (based on the <em>schedule_interval</em> and task dependencies), it triggers the task instance. This involves creating a DAG run and scheduling the tasks within that run.</p>
+<h4 id="handling-dependencies">Handling Dependencies<a class="headerlink" href="#handling-dependencies" title="Permanent link">&para;</a></h4>
+<p>The scheduler ensures that tasks are executed only when their dependencies have been met. This means that if Task B depends on Task A, Task B will not start until Task A has successfully completed.</p>
+<h4 id="managing-concurrency">Managing Concurrency<a class="headerlink" href="#managing-concurrency" title="Permanent link">&para;</a></h4>
+<p>The scheduler enforces concurrency limits to prevent overloading the system. It checks the number of currently running tasks and ensures that the number of new tasks scheduled does not exceed the configured limits.</p>
+<h4 id="handling-failures-and-retries">Handling Failures and Retries<a class="headerlink" href="#handling-failures-and-retries" title="Permanent link">&para;</a></h4>
+<p>If a task fails, the scheduler can automatically retry the task based on the retry configuration specified in the DAG. It manages retries and ensures that failed tasks are retried according to the defined retry policy.</p>
+<h4 id="continuous-operation">Continuous Operation<a class="headerlink" href="#continuous-operation" title="Permanent link">&para;</a></h4>
+<p>The scheduler runs as a persistent service in a production environment. It continuously checks for new DAG runs and schedules tasks as needed. To start the scheduler, you simply run the command airflow scheduler.</p>
+<h4 id="backfilling-and-catchup">Backfilling and Catchup<a class="headerlink" href="#backfilling-and-catchup" title="Permanent link">&para;</a></h4>
+<p>Airflow can backfill data by running tasks for past intervals that have not been executed. This is useful for populating historical data. The scheduler can also catch up on missed runs if the system was down or tasks were delayed.</p>
+<h3 id="executor-types">Executor Types<a class="headerlink" href="#executor-types" title="Permanent link">&para;</a></h3>
+<p>In Apache Airflow, the Executor is responsible for managing how and where tasks are run. Different executors are designed to cater to different scalability and deployment needs. </p>
+<p>Here are the main types of executors in Airflow:</p>
+<h4 id="sequentialexecutor">SequentialExecutor<a class="headerlink" href="#sequentialexecutor" title="Permanent link">&para;</a></h4>
+<p>The simplest executor, which runs tasks sequentially, one at a time.
+<em>Use Case</em>: Suitable for development and testing environments where only one task needs to be run at a time.</p>
+<h5 id="pros">Pros:<a class="headerlink" href="#pros" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Easy to set up and use.</li>
+<li>Minimal resource requirements.</li>
+</ul>
+<h5 id="cons">Cons:<a class="headerlink" href="#cons" title="Permanent link">&para;</a></h5>
+<p>Not suitable for production or environments that require parallel task execution.</p>
+<h4 id="localexecutor">LocalExecutor<a class="headerlink" href="#localexecutor" title="Permanent link">&para;</a></h4>
+<p>Executes tasks in parallel using multiple worker processes on a single machine.
+<em>Use Case</em>: Suitable for small to medium-scale deployments where parallelism is required but resources are limited to a single machine.</p>
+<h5 id="pros_1">Pros:<a class="headerlink" href="#pros_1" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Easy to set up.</li>
+<li>Supports parallel execution.</li>
+</ul>
+<h5 id="cons_1">Cons:<a class="headerlink" href="#cons_1" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Limited by the resources of a single machine.</li>
+<li>May not scale well for very large workloads.</li>
+</ul>
+<h4 id="celeryexecutor">CeleryExecutor<a class="headerlink" href="#celeryexecutor" title="Permanent link">&para;</a></h4>
+<p>Uses Celery to distribute task execution across multiple worker nodes. This executor is suitable for larger-scale, distributed environments.
+<em>Use Case</em>: Ideal for production environments that need to scale out task execution across multiple machines.</p>
+<h5 id="pros_2">Pros:<a class="headerlink" href="#pros_2" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Highly scalable and flexible.</li>
+<li>Supports distributed execution and fault tolerance.</li>
+</ul>
+<h5 id="cons_2">Cons:<a class="headerlink" href="#cons_2" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Requires additional components like a message broker (RabbitMQ, Redis) and a backend database (e.g., PostgreSQL, MySQL).</li>
+<li>More complex to set up and maintain compared to simpler executors.</li>
+</ul>
+<h4 id="kubernetesexecutor">KubernetesExecutor<a class="headerlink" href="#kubernetesexecutor" title="Permanent link">&para;</a></h4>
+<p>Runs each task in a separate Kubernetes pod, leveraging Kubernetes for scalability and orchestration.
+<em>Use Case</em>: Best suited for environments that already use Kubernetes for container orchestration and need to scale Airflow tasks dynamically.</p>
+<h5 id="pros_3">Pros:<a class="headerlink" href="#pros_3" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Dynamic scaling based on Kubernetes.</li>
+<li>Isolation of tasks in separate pods enhances security and resource management.</li>
+</ul>
+<h5 id="cons_3">Cons:<a class="headerlink" href="#cons_3" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Requires a Kubernetes cluster.</li>
+<li>More complex to configure and manage.</li>
+</ul>
+<h4 id="daskexecutor">DaskExecutor<a class="headerlink" href="#daskexecutor" title="Permanent link">&para;</a></h4>
+<p>Dask is a parallel computing library to execute tasks. DaskExecutor is designed for distributed computing environments.
+<em>Use Case</em>: Suitable for environments that use Dask for parallel processing and need to integrate Airflow with Dask’s distributed computing capabilities.</p>
+<h5 id="pros_4">Pros:<a class="headerlink" href="#pros_4" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Leverages Dask's distributed computing power.</li>
+<li>Can scale out tasks across multiple workers.</li>
+</ul>
+<h5 id="cons_4">Cons:<a class="headerlink" href="#cons_4" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Requires knowledge of Dask.</li>
+<li>May be more complex to set up compared to LocalExecutor or SequentialExecutor.</li>
+</ul>
+<h3 id="key-point">Key Point<a class="headerlink" href="#key-point" title="Permanent link">&para;</a></h3>
+<p>Each executor in Airflow is designed to address different needs and scale levels. Here’s a quick comparison to help you choose the right executor for your use case:</p>
+<ul>
+<li><strong>SequentialExecutor</strong>: Best for development and testing.</li>
+<li><strong>LocalExecutor</strong>: Good for small to medium-scale deployments on a single machine.</li>
+<li><strong>CeleryExecutor</strong>: Ideal for large-scale, distributed production environments.</li>
+<li><strong>KubernetesExecutor</strong>: Perfect for Kubernetes-based environments needing dynamic scaling.</li>
+<li><strong>DaskExecutor</strong>: Suitable for integrating with Dask for distributed computing.</li>
+</ul>
+<p>Choosing the right executor depends on your specific requirements, available resources, and scalability needs.</p>
+<h2 id="architecture-of-apache-airflow">Architecture of Apache Airflow<a class="headerlink" href="#architecture-of-apache-airflow" title="Permanent link">&para;</a></h2>
+<h3 id="components-overview">Components Overview<a class="headerlink" href="#components-overview" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Scheduler: Manages task execution</li>
+<li>Executor: Executes tasks</li>
+<li>Worker: Executes the tasks, can be scaled horizontally</li>
+<li>Metadata Database: Stores state information of DAGs and tasks</li>
+<li>Web Server: Provides a UI for monitoring and managing workflows</li>
+</ul>
+<h3 id="key-points_1">Key Points<a class="headerlink" href="#key-points_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Centralized architecture for monitoring and control</li>
+<li>Scalable components to handle large workloads</li>
+<li>Integration with various backends and services</li>
+</ul>
+<h2 id="detailed-architectural-breakdown">Detailed Architectural Breakdown<a class="headerlink" href="#detailed-architectural-breakdown" title="Permanent link">&para;</a></h2>
+<p><img align="center" alt="Airflow" src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*PWQB6lj12818Kzp-rszvpw.png" />
+source : <a href="https://medium.com/@bageshwar.kumar/airflow-architecture-a-deep-dive-into-data-pipeline-orchestration-217dd2dbc1c3">Bageshwar Kumar</a></p>
+<h3 id="scheduler_1">Scheduler:<a class="headerlink" href="#scheduler_1" title="Permanent link">&para;</a></h3>
+<p>The scheduler is the heart of Airflow, responsible for scheduling the execution of tasks. Here’s how it works:</p>
+<ul>
+<li>
+<p><strong>Monitoring</strong>: Continuously monitors DAGs (Directed Acyclic Graphs) and their associated tasks.</p>
+</li>
+<li>
+<p><strong>Task Triggering</strong>: Determines when tasks should be run based on their schedule_interval and dependencies.</p>
+</li>
+<li>
+<p><strong>Concurrency Management</strong>: Manages the execution concurrency to ensure system stability.</p>
+</li>
+<li>
+<p><strong>Fault Tolerance</strong>: Handles task retries and failures, ensuring tasks are re-executed as configured.</p>
+</li>
+</ul>
+<p>The scheduler is crucial for ensuring that tasks are executed at the right time and in the correct order.</p>
+<h3 id="executor">Executor<a class="headerlink" href="#executor" title="Permanent link">&para;</a></h3>
+<p>The executor is responsible for executing the tasks scheduled by the scheduler. Airflow supports several types of executors, each designed for different use cases (see <a href="./#executor-types">Executor</a>).</p>
+<h3 id="workers">Workers<a class="headerlink" href="#workers" title="Permanent link">&para;</a></h3>
+<p>Workers are the entities that execute the tasks assigned by the executor. Depending on the executor type:</p>
+<ul>
+<li>
+<p><strong>LocalExecutor Workers</strong>: Use local processes to run tasks.</p>
+</li>
+<li>
+<p><strong>CeleryExecutor Workers</strong>: Distributed across multiple nodes, each running Celery workers.</p>
+</li>
+<li>
+<p><strong>KubernetesExecutor Workers</strong>: Use Kubernetes pods to run tasks.</p>
+</li>
+</ul>
+<p>Workers handle the actual execution of tasks, ensuring that they are completed successfully.</p>
+<h3 id="metadata-database">Metadata Database<a class="headerlink" href="#metadata-database" title="Permanent link">&para;</a></h3>
+<p>The metadata database stores all the state and configuration information for Airflow, including:</p>
+<ul>
+<li>
+<p><strong>DAG Definitions</strong>: The structure and schedule of DAGs.</p>
+</li>
+<li>
+<p><strong>Task Instances</strong>: The state of each task instance (e.g., success, failure, running).</p>
+</li>
+<li>
+<p><strong>Logs and Metrics</strong>: Detailed logs of task executions and system metrics.</p>
+</li>
+<li>
+<p><strong>User Information</strong>: User roles and access permissions.</p>
+</li>
+</ul>
+<p>Common databases used include PostgreSQL and MySQL. The metadata database is crucial for maintaining the state and history of workflows.</p>
+<h3 id="web-server">Web Server<a class="headerlink" href="#web-server" title="Permanent link">&para;</a></h3>
+<p>The web server provides a user interface for monitoring and managing Airflow workflows. Key features include:</p>
+<ul>
+<li>
+<p><strong>DAG Visualization</strong>: Visual representation of DAGs and their task dependencies.</p>
+</li>
+<li>
+<p><strong>Task Monitoring</strong>: Real-time status of task instances, including logs and execution details.</p>
+</li>
+<li>
+<p><strong>Triggering and Pausing DAGs</strong>: Ability to manually trigger or pause DAGs.</p>
+</li>
+<li>
+<p><strong>Access Control</strong>: User authentication and role-based access control.</p>
+</li>
+</ul>
+<p>The web server is built using Flask and offers an intuitive interface for interacting with Airflow.</p>
+<h4 id="key-points_2">Key Points<a class="headerlink" href="#key-points_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>DAG</strong>: User defines a DAG with its tasks and schedules it using a Python script.</li>
+<li><strong>Scheduler</strong>: Heart of the Airflow, triggering task execution</li>
+<li><strong>Executor</strong>: Executes tasks using different backend options</li>
+<li><strong>Workers</strong>: Scalable nodes that carry out tasks</li>
+<li><strong>Metadata Database</strong>: Maintains state and scheduling info</li>
+<li><strong>Web Server</strong>: UI for workflow management</li>
+</ul>
+<h2 id="integration-and-extensions">Integration and Extensions<a class="headerlink" href="#integration-and-extensions" title="Permanent link">&para;</a></h2>
+<p>Apache Airflow is highly extensible and integrates seamlessly with various tools and libraries, making it a powerful platform for orchestrating complex workflows.</p>
+<h3 id="plugins">Plugins<a class="headerlink" href="#plugins" title="Permanent link">&para;</a></h3>
+<p>Plugins in Airflow allow you to extend its core functionality by adding custom hooks, operators, sensors, executors, web views, and more. Plugins enable you to tailor Airflow to meet specific requirements of your workflows.</p>
+<h4 id="creating-a-plugin">Creating a Plugin<a class="headerlink" href="#creating-a-plugin" title="Permanent link">&para;</a></h4>
+<p>Creating a plugin is achieve by defining a Python class that inherits from AirflowPlugin and adding custom components to it.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">airflow.plugins_manager</span> <span class="kn">import</span> <span class="n">AirflowPlugin</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">airflow.operators.dummy_operator</span> <span class="kn">import</span> <span class="n">DummyOperator</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">class</span> <span class="nc">MyCustomPlugin</span><span class="p">(</span><span class="n">AirflowPlugin</span><span class="p">):</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;my_custom_plugin&quot;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">operators</span> <span class="o">=</span> <span class="p">[</span><span class="n">DummyOperator</span><span class="p">]</span>
+</span></code></pre></div>
+<h5 id="custom-hooks-and-operators">Custom Hooks and Operators<a class="headerlink" href="#custom-hooks-and-operators" title="Permanent link">&para;</a></h5>
+<p>Custom hooks can interact with external systems and custom operators to define specific tasks.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">airflow.models</span> <span class="kn">import</span> <span class="n">BaseOperator</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">airflow.utils.decorators</span> <span class="kn">import</span> <span class="n">apply_defaults</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">class</span> <span class="nc">MyCustomOperator</span><span class="p">(</span><span class="n">BaseOperator</span><span class="p">):</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="nd">@apply_defaults</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_param</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="nb">super</span><span class="p">(</span><span class="n">MyCustomOperator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">my_param</span> <span class="o">=</span> <span class="n">my_param</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running with parameter: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">my_param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="operators">Operators:<a class="headerlink" href="#operators" title="Permanent link">&para;</a></h3>
+<p>Operators are building blocks of workflows in Airflow. Each operator performs a specific task, such as executing a Python function, running a Bash script, or transferring data between systems.</p>
+<ul>
+<li>
+<p><strong>Types of Operators</strong>: Airflow comes with a variety of built-in operators, such as:</p>
+</li>
+<li>
+<p><strong>BashOperator</strong>: Runs a bash command.</p>
+</li>
+<li>
+<p><strong>PythonOperator</strong>: Executes a Python callable.</p>
+</li>
+<li>
+<p><strong>EmailOperator</strong>: Sends an email.</p>
+</li>
+<li>
+<p><strong>SqlOperator</strong>: Executes an SQL command.</p>
+</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span> <span class="nn">airflow</span> <span class="kn">import</span> <span class="n">DAG</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span> <span class="nn">airflow.operators.python_operator</span> <span class="kn">import</span> <span class="n">PythonOperator</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">def</span> <span class="nf">my_function</span><span class="p">():</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello from PythonOperator&quot;</span><span class="p">)</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">default_args</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="s1">&#39;airflow&#39;</span><span class="p">,</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">}</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="k">with</span> <span class="n">DAG</span><span class="p">(</span><span class="s1">&#39;my_dag&#39;</span><span class="p">,</span> <span class="n">default_args</span><span class="o">=</span><span class="n">default_args</span><span class="p">,</span> <span class="n">schedule_interval</span><span class="o">=</span><span class="s1">&#39;@daily&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dag</span><span class="p">:</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">PythonOperator</span><span class="p">(</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;my_python_task&#39;</span><span class="p">,</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        <span class="n">python_callable</span><span class="o">=</span><span class="n">my_function</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<p>You can extend the BaseOperator class to create custom operators that cater to specific needs.</p>
+<h3 id="sensors">Sensors<a class="headerlink" href="#sensors" title="Permanent link">&para;</a></h3>
+<p>Sensors are a special type of operator that waits for a certain condition to be met before proceeding. They are useful for tasks that depend on external events or conditions.</p>
+<ul>
+<li>
+<p><strong>Built-in Sensors</strong>: Airflow includes several built-in sensors, such as:</p>
+</li>
+<li>
+<p><strong>ExternalTaskSensor</strong>: Waits for a task in another DAG to complete.</p>
+</li>
+<li>
+<p><strong>FileSensor</strong>: Waits for a file to appear in a specified location.</p>
+</li>
+<li>
+<p><strong>HttpSensor</strong>: Waits for an HTTP endpoint to return a certain status.</p>
+</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span> <span class="nn">airflow</span> <span class="kn">import</span> <span class="n">DAG</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span> <span class="nn">airflow.operators.sensors</span> <span class="kn">import</span> <span class="n">FileSensor</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">default_args</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="s1">&#39;airflow&#39;</span><span class="p">,</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">}</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">with</span> <span class="n">DAG</span><span class="p">(</span><span class="s1">&#39;my_sensor_dag&#39;</span><span class="p">,</span> <span class="n">default_args</span><span class="o">=</span><span class="n">default_args</span><span class="p">,</span> <span class="n">schedule_interval</span><span class="o">=</span><span class="s1">&#39;@daily&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dag</span><span class="p">:</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">wait_for_file</span> <span class="o">=</span> <span class="n">FileSensor</span><span class="p">(</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;wait_for_file&#39;</span><span class="p">,</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;/path/to/file&#39;</span><span class="p">,</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="n">poke_interval</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>  <span class="c1"># Check every 30 seconds</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<p>custom sensors by extending the BaseSensorOperator class and implementing the poke method.
+The poke method is called repeatedly by the sensor until it returns True. If it returns False, the sensor will wait for a specified interval (defined by poke_interval) before checking again. This process continues until the sensor times out (defined by timeout) or the condition is met.</p>
+<h2 id="benefits-and-limitations">Benefits and Limitations<a class="headerlink" href="#benefits-and-limitations" title="Permanent link">&para;</a></h2>
+<h3 id="benefits">Benefits<a class="headerlink" href="#benefits" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Highly extensible and customizable</li>
+<li>Excellent for orchestrating complex workflows</li>
+<li>Scalable to handle increasing workloads</li>
+<li>Strong community support</li>
+</ul>
+<h3 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Can be complex to set up and manage</li>
+<li>Requires knowledge of Python for creating DAGs</li>
+<li>Potential performance issues with very large DAGs</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../monitoring/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Monitoring and Alerting Services">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Monitoring and Alerting Services
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../fastapi/" class="md-footer__link md-footer__link--next" aria-label="Next: FastAPI">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                FastAPI
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 CryptoMen ;-)
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.footer", "navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

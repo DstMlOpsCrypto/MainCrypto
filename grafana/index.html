@@ -1,0 +1,2156 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dstmlopscrypto.github.io/MainCrypto/grafana/">
+      
+      
+        <link rel="prev" href="../prometheus/">
+      
+      
+        <link rel="next" href="../streamlit/">
+      
+      
+      <link rel="icon" href="../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+    
+    
+      
+        <title>Grafana - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775m1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.5 1.75v11.5c0 .138.112.25.25.25h3.17a.75.75 0 0 1 0 1.5H2.75A1.75 1.75 0 0 1 1 13.25V1.75C1 .784 1.784 0 2.75 0h8.5C12.216 0 13 .784 13 1.75v7.736a.75.75 0 0 1-1.5 0V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25m13.274 9.537zl-4.557 4.45a.75.75 0 0 1-1.055-.008l-1.943-1.95a.75.75 0 0 1 1.062-1.058l1.419 1.425 4.026-3.932a.75.75 0 1 1 1.048 1.074M4.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5M4 7.75A.75.75 0 0 1 4.75 7h2a.75.75 0 0 1 0 1.5h-2A.75.75 0 0 1 4 7.75"/></svg>');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75M8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg>');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.499.75a.75.75 0 0 1 1.5 0v.996C5.9 2.903 6.793 3.65 7.662 4.376l.24.202c-.036-.694.055-1.422.426-2.163C9.1.873 10.794-.045 12.622.26 14.408.558 16 1.94 16 4.25c0 1.278-.954 2.575-2.44 2.734l.146.508.065.22c.203.701.412 1.455.476 2.226.142 1.707-.4 3.03-1.487 3.898C11.714 14.671 10.27 15 8.75 15h-6a.75.75 0 0 1 0-1.5h1.376a4.5 4.5 0 0 1-.563-1.191 3.84 3.84 0 0 1-.05-2.063 4.65 4.65 0 0 1-2.025-.293.75.75 0 0 1 .525-1.406c1.357.507 2.376-.006 2.698-.318l.009-.01a.747.747 0 0 1 1.06 0 .75.75 0 0 1-.012 1.074c-.912.92-.992 1.835-.768 2.586.221.74.745 1.337 1.196 1.621H8.75c1.343 0 2.398-.296 3.074-.836.635-.507 1.036-1.31.928-2.602-.05-.603-.216-1.224-.422-1.93l-.064-.221c-.12-.407-.246-.84-.353-1.29a2.4 2.4 0 0 1-.507-.441 3.1 3.1 0 0 1-.633-1.248.75.75 0 0 1 1.455-.364c.046.185.144.436.31.627.146.168.353.305.712.305.738 0 1.25-.615 1.25-1.25 0-1.47-.95-2.315-2.123-2.51-1.172-.196-2.227.387-2.706 1.345-.46.92-.27 1.774.019 3.062l.042.19.01.05c.348.443.666.949.94 1.553a.75.75 0 1 1-1.365.62c-.553-1.217-1.32-1.94-2.3-2.768L6.7 5.527c-.814-.68-1.75-1.462-2.692-2.619a3.7 3.7 0 0 0-1.023.88c-.406.495-.663 1.036-.722 1.508.116.122.306.21.591.239.388.038.797-.06 1.032-.19a.75.75 0 0 1 .728 1.31c-.515.287-1.23.439-1.906.373-.682-.067-1.473-.38-1.879-1.193L.75 5.677V5.5c0-.984.48-1.94 1.077-2.664.46-.559 1.05-1.055 1.673-1.353z"/></svg>');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 .018-1.042.75.75 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.76 2.76 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6 6 0 0 0-.26.16 1 1 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1 1 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.61.61 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1 1 0 0 0-.34.398M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.344 2.343za8 8 0 0 1 11.314 11.314A8.002 8.002 0 0 1 .234 10.089a8 8 0 0 1 2.11-7.746m1.06 10.253a6.5 6.5 0 1 0 9.108-9.275 6.5 6.5 0 0 0-9.108 9.275M6.03 4.97 8 6.94l1.97-1.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734L9.06 8l1.97 1.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215L8 9.06l-1.97 1.97a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L6.94 8 4.97 6.03a.75.75 0 0 1 .018-1.042.75.75 0 0 1 1.042-.018"/></svg>');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.25 1.25 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006-.004-.009-.006-.006-.008-.001q-.005 0-.009.004"/></svg>');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4.72.22a.75.75 0 0 1 1.06 0l1 .999a3.5 3.5 0 0 1 2.441 0l.999-1a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.775.776c.616.63.995 1.493.995 2.444v.327q0 .15-.025.292c.408.14.764.392 1.029.722l1.968-.787a.75.75 0 0 1 .556 1.392L13 7.258V9h2.25a.75.75 0 0 1 0 1.5H13v.5q-.002.615-.141 1.186l2.17.868a.75.75 0 0 1-.557 1.392l-2.184-.873A5 5 0 0 1 8 16a5 5 0 0 1-4.288-2.427l-2.183.873a.75.75 0 0 1-.558-1.392l2.17-.868A5 5 0 0 1 3 11v-.5H.75a.75.75 0 0 1 0-1.5H3V7.258L.971 6.446a.75.75 0 0 1 .558-1.392l1.967.787c.265-.33.62-.583 1.03-.722a1.7 1.7 0 0 1-.026-.292V4.5c0-.951.38-1.814.995-2.444L4.72 1.28a.75.75 0 0 1 0-1.06m.53 6.28a.75.75 0 0 0-.75.75V11a3.5 3.5 0 1 0 7 0V7.25a.75.75 0 0 0-.75-.75ZM6.173 5h3.654A.17.17 0 0 0 10 4.827V4.5a2 2 0 1 0-4 0v.327c0 .096.077.173.173.173"/></svg>');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M5 5.782V2.5h-.25a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458Zm-2.4 6.565a.75.75 0 0 0 .633 1.153h9.534a.75.75 0 0 0 .633-1.153L12.225 10.5h-8.45ZM9.5 2.5h-3V6c0 .143-.04.283-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 0 1 9.5 6Z"/></svg>');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1.75 2.5h10.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5m4 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5m0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5M2.5 7.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 1.5 0"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans:300,300i,400,400i,700,700i%7CRed+Hat+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Merriweather Sans";--md-code-font:"Red Hat Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#grafana" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 32c0 113.6-84.6 207.5-194.2 222-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0h32c17.7 0 32 14.3 32 32M0 96c0-17.7 14.3-32 32-32h32c123.7 0 224 100.3 224 224v192c0 17.7-14.3 32-32 32s-32-14.3-32-32V320C100.3 320 0 219.7 0 96"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Grafana
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  CryptoPredict
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../project/" class="md-tabs__link">
+        
+  
+    
+  
+  Project
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../modeling/" class="md-tabs__link">
+        
+  
+    
+  
+  Modeling
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../results/" class="md-tabs__link">
+        
+  
+    
+  
+  Modelling results and Discussion
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../monitoring/" class="md-tabs__link">
+        
+  
+    
+  
+  Monitoring and Alerting Services
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../airflow/" class="md-tabs__link">
+          
+  
+  Tools...
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../model-ltsm/" class="md-tabs__link">
+          
+  
+  Model...
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 32c0 113.6-84.6 207.5-194.2 222-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0h32c17.7 0 32 14.3 32 32M0 96c0-17.7 14.3-32 32-32h32c123.7 0 224 100.3 224 224v192c0 17.7-14.3 32-32 32s-32-14.3-32-32V320C100.3 320 0 219.7 0 96"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CryptoPredict
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Project
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modeling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modelling results and Discussion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring and Alerting Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Tools...
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Tools...
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Airflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fastapi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FastAPI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mlflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MLFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prometheus/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prometheus
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Grafana
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Grafana
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-source-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Source Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#support-for-multiple-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Support for Multiple Data Sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Editor
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dashboards-and-visualizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dashboards and Visualizations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dashboards and Visualizations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customizable-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizable Dashboards
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reusable-panels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reusable Panels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alert-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notification-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notification Channels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugins-and-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins and Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugins and Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-and-enterprise-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Community and Enterprise Plugins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Annotations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#annotations-on-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotations on Graphs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-management-and-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Management and Security
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Management and Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-authentication-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Authentication and Authorization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#grafana-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grafana Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Grafana Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frontend
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-source-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Integrations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Source Integrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-source-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Plugins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-and-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage and Caching
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storage and Caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caching
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualization-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visualization Engine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Visualization Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rendering
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting Engine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alerting Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alert-evaluator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Evaluator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notification-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notification System
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-and-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security and Authentication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security and Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugins-and-extensions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins and Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugins and Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugin Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases-and-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases and Benefits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases and Benefits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-cases_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamlit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Streamlit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Model...
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Model...
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-ltsm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LTSM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-source-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Source Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#support-for-multiple-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Support for Multiple Data Sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query Editor
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dashboards-and-visualizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dashboards and Visualizations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dashboards and Visualizations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customizable-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizable Dashboards
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reusable-panels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reusable Panels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alert-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notification-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notification Channels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugins-and-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins and Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugins and Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-and-enterprise-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Community and Enterprise Plugins
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Annotations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#annotations-on-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annotations on Graphs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-management-and-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Management and Security
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Management and Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-authentication-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Authentication and Authorization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#grafana-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grafana Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Grafana Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frontend
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-source-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Integrations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Source Integrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-source-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Plugins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-and-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage and Caching
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storage and Caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metadata-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metadata Storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caching
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualization-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visualization Engine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Visualization Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rendering
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerting-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alerting Engine
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alerting Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alert-evaluator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alert Evaluator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notification-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notification System
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-and-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security and Authentication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security and Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugins-and-extensions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugins and Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plugins and Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugin Architecture
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-cases-and-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases and Benefits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use Cases and Benefits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-cases_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Cases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="grafana">Grafana<a class="headerlink" href="#grafana" title="Permanent link">&para;</a></h1>
+<p>This part presents an overview of Grafana tool for educational purposes.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Creator</label><label for="__tabbed_1_2">Use Cases</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ul>
+<li><strong>Name</strong>: Torkel Ödegaard</li>
+<li><strong>Background</strong>: Torkel Ödegaard is a software engineer and entrepreneur who founded Grafana Labs, the company behind Grafana</li>
+<li><strong>Contribution</strong>: Torkel Ödegaard is the primary creator of Grafana, which started as a project to visualize time series data. His vision and leadership have driven the development of Grafana into a powerful, open-source platform used by millions worldwide for monitoring and visualization</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>See <a href="./#use-cases">Use Cases</a> </li>
+</ul>
+</div>
+</div>
+</div>
+<h2 id="overview_1">Overview<a class="headerlink" href="#overview_1" title="Permanent link">&para;</a></h2>
+<p>Grafana is an open-source platform for monitoring, visualization, and alerting. It enables users to visualize time series data and other metrics from a variety of sources, offering powerful capabilities to create interactive and customizable dashboards. 
+Grafana is widely used in the industry to gain insights into system performance, application metrics, and business data.</p>
+<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
+<h3 id="data-source-integration">Data Source Integration<a class="headerlink" href="#data-source-integration" title="Permanent link">&para;</a></h3>
+<h4 id="support-for-multiple-data-sources">Support for Multiple Data Sources<a class="headerlink" href="#support-for-multiple-data-sources" title="Permanent link">&para;</a></h4>
+<p>Grafana integrates with a wide range of data sources, allowing users to consolidate data from different systems into a single platform. Supported data sources include:</p>
+<ul>
+<li>
+<p><strong>Prometheus</strong>: A popular monitoring system and time series database.</p>
+</li>
+<li>
+<p><strong>InfluxDB</strong>: An open-source time series database designed for high-performance handling of time series data.</p>
+</li>
+<li>
+<p><strong>Graphite</strong>: A monitoring tool that provides real-time visualization and storage of numeric time-series data.</p>
+</li>
+<li>
+<p><strong>Elasticsearch</strong>: A distributed, RESTful search and analytics engine.</p>
+</li>
+<li>
+<p><strong>AWS CloudWatch</strong>: A monitoring service for AWS cloud resources and applications.</p>
+</li>
+<li>
+<p><strong>MySQL/PostgreSQL</strong>: Traditional relational databases that can be queried for metrics.</p>
+</li>
+</ul>
+<h4 id="query-editor">Query Editor<a class="headerlink" href="#query-editor" title="Permanent link">&para;</a></h4>
+<p>Grafana offers query editors tailored for each data source, providing an intuitive interface for writing queries and visualizing data. </p>
+<p>These editors support features like syntax highlighting, auto-completion, and interactive query building, making it easier for users to craft and refine their queries.</p>
+<h3 id="dashboards-and-visualizations">Dashboards and Visualizations<a class="headerlink" href="#dashboards-and-visualizations" title="Permanent link">&para;</a></h3>
+<h4 id="customizable-dashboards">Customizable Dashboards<a class="headerlink" href="#customizable-dashboards" title="Permanent link">&para;</a></h4>
+<p>Grafana allows users to create and customize dashboards with a wide range of visualization options, such as graphs, tables, heatmaps, and more. </p>
+<p>Users can combine different panels to build comprehensive and meaningful dashboards that provide insights into their data.</p>
+<h4 id="reusable-panels">Reusable Panels<a class="headerlink" href="#reusable-panels" title="Permanent link">&para;</a></h4>
+<p>Panels in Grafana can be reused across different dashboards, promoting consistency and efficiency. This feature allows users to create complex visualizations once and use them in multiple places, saving time and ensuring uniformity.</p>
+<h3 id="alerting">Alerting<a class="headerlink" href="#alerting" title="Permanent link">&para;</a></h3>
+<h4 id="alert-rules">Alert Rules<a class="headerlink" href="#alert-rules" title="Permanent link">&para;</a></h4>
+<p>Users can define alert rules based on queries and set conditions to trigger alerts. Grafana evaluates these rules at regular intervals, and when conditions are met, it triggers the corresponding alerts. This helps in proactive monitoring and immediate response to potential issues.</p>
+<h4 id="notification-channels">Notification Channels<a class="headerlink" href="#notification-channels" title="Permanent link">&para;</a></h4>
+<p>Grafana supports various notification channels, enabling users to receive alerts through their preferred mediums. Supported channels include:</p>
+<ul>
+<li>
+<p><strong>Email</strong>: Sends alerts via email.</p>
+</li>
+<li>
+<p><strong>Slack</strong>: Integrates with Slack for real-time notifications.</p>
+</li>
+<li>
+<p><strong>PagerDuty</strong>: Uses PagerDuty for incident management.</p>
+</li>
+<li>
+<p><strong>Webhooks</strong>: Sends alerts to custom endpoints via webhooks.</p>
+</li>
+</ul>
+<h3 id="plugins-and-extensions">Plugins and Extensions<a class="headerlink" href="#plugins-and-extensions" title="Permanent link">&para;</a></h3>
+<h4 id="plugins">Plugins<a class="headerlink" href="#plugins" title="Permanent link">&para;</a></h4>
+<p>Grafana has an extensive plugin ecosystem that extends its functionality. Plugins are available for:</p>
+<ul>
+<li>
+<p><strong>Data Source Plugins</strong>: Connect Grafana to different data sources.</p>
+</li>
+<li>
+<p><strong>Panel Plugins</strong>: Add new types of visualizations to dashboards.</p>
+</li>
+<li>
+<p><strong>App Plugins</strong>: Provide full applications within Grafana, combining data sources, panels, and custom pages.</p>
+</li>
+</ul>
+<h3 id="community-and-enterprise-plugins">Community and Enterprise Plugins<a class="headerlink" href="#community-and-enterprise-plugins" title="Permanent link">&para;</a></h3>
+<p>Grafana offers both community-contributed and enterprise-grade plugins. Community plugins are freely available and contributed by developers worldwide, while enterprise plugins offer additional features and support for Grafana Enterprise users.</p>
+<h3 id="annotations">Annotations<a class="headerlink" href="#annotations" title="Permanent link">&para;</a></h3>
+<h4 id="annotations-on-graphs">Annotations on Graphs<a class="headerlink" href="#annotations-on-graphs" title="Permanent link">&para;</a></h4>
+<p>Users can add annotations to graphs to mark specific events or periods, providing context to the data visualizations. Annotations can be added manually or automatically based on query results, helping to highlight important events and patterns in the data.</p>
+<h3 id="user-management-and-security">User Management and Security<a class="headerlink" href="#user-management-and-security" title="Permanent link">&para;</a></h3>
+<h4 id="user-authentication-and-authorization">User Authentication and Authorization<a class="headerlink" href="#user-authentication-and-authorization" title="Permanent link">&para;</a></h4>
+<p>Grafana supports various authentication methods, including LDAP, OAuth, and SAML, ensuring secure access to the platform.</p>
+<p>Fine-grained access control allows administrators to manage user permissions, ensuring that users have the appropriate level of access to dashboards and data sources.</p>
+<h2 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>Infrastructure Monitoring</strong>: Monitor the performance and health of servers, networks, and applications.</p>
+</li>
+<li>
+<p><strong>Application Performance Monitoring (APM)</strong>: Track application metrics and performance indicators.</p>
+</li>
+<li>
+<p><strong>Business Metrics</strong>: Visualize key business metrics to make data-driven decisions.</p>
+</li>
+<li>
+<p><strong>IoT Monitoring</strong>: Monitor IoT devices and sensor data in real-time.</p>
+</li>
+</ul>
+<h2 id="grafana-architecture">Grafana Architecture<a class="headerlink" href="#grafana-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h3>
+<h4 id="frontend">Frontend<a class="headerlink" href="#frontend" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>User Interface</strong> : Grafana provides a user-friendly and interactive web interface for creating and managing dashboards. The interface is designed to be intuitive, allowing users to easily navigate and configure their visualizations.</p>
+</li>
+<li>
+<p><strong>React Framework</strong> : The frontend of Grafana is built using React, a popular JavaScript framework. This provides a responsive and dynamic user experience, enabling real-time updates and smooth interactions.</p>
+</li>
+</ul>
+<h4 id="backend">Backend<a class="headerlink" href="#backend" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Go Language</strong> : The backend of Grafana is written in Go, a programming language known for its performance and concurrency capabilities. This ensures that Grafana can handle large volumes of data and multiple simultaneous users efficiently.</p>
+</li>
+<li>
+<p><strong>API Endpoints</strong> : Grafana exposes RESTful API endpoints that enable interaction with the platform from external systems and scripts. These APIs allow for programmatic management of dashboards, data sources, and alerts.</p>
+</li>
+</ul>
+<h3 id="data-source-integrations">Data Source Integrations<a class="headerlink" href="#data-source-integrations" title="Permanent link">&para;</a></h3>
+<h4 id="data-source-plugins">Data Source Plugins<a class="headerlink" href="#data-source-plugins" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Extensibility</strong> : Grafana enables to connect with a wide range of data storage systems, allowing users to aggregate and visualize data from multiple sources.</p>
+</li>
+<li>
+<p><strong>Query Processing</strong> : Queries are processed and executed against the connected data sources ensuring that users have access to up-to-date and accurate data.ensuring that users have access to up-to-date and accurate data.</p>
+</li>
+</ul>
+<h3 id="storage-and-caching">Storage and Caching<a class="headerlink" href="#storage-and-caching" title="Permanent link">&para;</a></h3>
+<h4 id="metadata-storage">Metadata Storage<a class="headerlink" href="#metadata-storage" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Database Options</strong>: By default, Grafana uses SQLite to store metadata, such as dashboard configurations and user settings. For larger installations, users have the option to use MySQL or PostgreSQL, providing scalability and reliability.</p>
+</li>
+<li>
+<p><strong>Configuration Storage</strong>: Dashboard configurations, user settings, and other metadata are stored and managed within the chosen database, ensuring consistency and persistence.</p>
+</li>
+</ul>
+<h4 id="caching">Caching<a class="headerlink" href="#caching" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Query Caching</strong>: Grafana employs caching mechanisms to optimize query performance and reduce load on data sources. Cached query results are stored and reused, minimizing the need to repeatedly execute the same queries.</li>
+</ul>
+<h3 id="visualization-engine">Visualization Engine<a class="headerlink" href="#visualization-engine" title="Permanent link">&para;</a></h3>
+<h4 id="rendering">Rendering<a class="headerlink" href="#rendering" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Dynamic Rendering</strong>: Grafana renders visualizations dynamically based on the data returned from queries. This ensures that the visualizations are always up-to-date and reflect the latest data.</p>
+</li>
+<li>
+<p><strong>Canvas and SVG</strong>: Grafana uses canvas and SVG technologies for high-quality rendering of graphs and charts. These technologies provide flexibility and performance, enabling complex and detailed visualizations.</p>
+</li>
+</ul>
+<h3 id="alerting-engine">Alerting Engine<a class="headerlink" href="#alerting-engine" title="Permanent link">&para;</a></h3>
+<h4 id="alert-evaluator">Alert Evaluator<a class="headerlink" href="#alert-evaluator" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Evaluation of Alert Rules</strong>: The alerting engine evaluates alert rules based on query results. When conditions specified in the alert rules are met, the engine triggers the corresponding alerts, enabling proactive monitoring and response.</li>
+</ul>
+<h4 id="notification-system">Notification System<a class="headerlink" href="#notification-system" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Notification Dispatch</strong>: Notifications are dispatched to various channels when alerts are triggered. This ensures that users are promptly informed of any issues, allowing for timely intervention and resolution.</li>
+</ul>
+<h3 id="security-and-authentication">Security and Authentication<a class="headerlink" href="#security-and-authentication" title="Permanent link">&para;</a></h3>
+<h4 id="authentication-methods">Authentication Methods<a class="headerlink" href="#authentication-methods" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Multiple Authentication Methods</strong>: Grafana supports multiple authentication methods, including LDAP, OAuth, and SAML. This ensures that access to the platform is secure and can be integrated with existing authentication systems.</p>
+</li>
+<li>
+<p><strong>Role-Based Access Control (RBAC)</strong>: Role-Based Access Control (RBAC) is implemented to manage user permissions and access levels. This allows administrators to define roles and assign permissions, ensuring that users have the appropriate level of access to the platform.</p>
+</li>
+</ul>
+<h3 id="plugins-and-extensions_1">Plugins and Extensions<a class="headerlink" href="#plugins-and-extensions_1" title="Permanent link">&para;</a></h3>
+<h4 id="plugin-architecture">Plugin Architecture<a class="headerlink" href="#plugin-architecture" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Types of Plugins</strong>: Grafana supports different types of plugins, including data source plugins, panel plugins, and app plugins.</p>
+</li>
+<li>
+<p><strong>Plugin Management</strong>: Users can browse available plugins, install them, and configure them through the Grafana interface, enhancing the platform's capabilities.</p>
+</li>
+</ul>
+<h2 id="use-cases-and-benefits">Use Cases and Benefits<a class="headerlink" href="#use-cases-and-benefits" title="Permanent link">&para;</a></h2>
+<h3 id="use-cases_1">Use Cases<a class="headerlink" href="#use-cases_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>Infrastructure Monitoring</strong>: Monitor the health and performance of servers, networks, and applications</p>
+</li>
+<li>
+<p><strong>Application Performance Monitoring (APM)</strong>: Track application metrics such as response times, error rates, and throughput.</p>
+</li>
+<li>
+<p><strong>Business Metrics</strong>: Visualize key business metrics like sales figures, customer engagement, and financial performance.</p>
+</li>
+<li>
+<p><strong>IoT Monitoring</strong>: Monitor data from IoT devices and sensors in real-time for insights and anomaly detection.</p>
+</li>
+</ul>
+<h3 id="benefits">Benefits<a class="headerlink" href="#benefits" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>Versatility</strong>: Grafana's ability to integrate with numerous data sources makes it a versatile tool for various monitoring and visualization needs.</p>
+</li>
+<li>
+<p><strong>Customization</strong>: Highly customizable dashboards and visualizations allow users to tailor Grafana to their specific requirements.</p>
+</li>
+<li>
+<p><strong>Scalability</strong>: Suitable for both small setups and large-scale enterprise environments, ensuring it grows with the user's needs.</p>
+</li>
+<li>
+<p><strong>Community and Support</strong>: A strong community and extensive documentation provide valuable resources for users, along with enterprise support options.</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../prometheus/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Prometheus">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Prometheus
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../streamlit/" class="md-footer__link md-footer__link--next" aria-label="Next: Streamlit">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Streamlit
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 CryptoMen ;-)
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.footer", "navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

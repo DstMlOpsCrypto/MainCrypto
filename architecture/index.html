@@ -1,0 +1,2018 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dstmlopscrypto.github.io/MainCrypto/architecture/">
+      
+      
+        <link rel="prev" href="../project/">
+      
+      
+        <link rel="next" href="../modeling/">
+      
+      
+      <link rel="icon" href="../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+    
+    
+      
+        <title>Architecture - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775m1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.5 1.75v11.5c0 .138.112.25.25.25h3.17a.75.75 0 0 1 0 1.5H2.75A1.75 1.75 0 0 1 1 13.25V1.75C1 .784 1.784 0 2.75 0h8.5C12.216 0 13 .784 13 1.75v7.736a.75.75 0 0 1-1.5 0V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25m13.274 9.537zl-4.557 4.45a.75.75 0 0 1-1.055-.008l-1.943-1.95a.75.75 0 0 1 1.062-1.058l1.419 1.425 4.026-3.932a.75.75 0 1 1 1.048 1.074M4.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5M4 7.75A.75.75 0 0 1 4.75 7h2a.75.75 0 0 1 0 1.5h-2A.75.75 0 0 1 4 7.75"/></svg>');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75M8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg>');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.499.75a.75.75 0 0 1 1.5 0v.996C5.9 2.903 6.793 3.65 7.662 4.376l.24.202c-.036-.694.055-1.422.426-2.163C9.1.873 10.794-.045 12.622.26 14.408.558 16 1.94 16 4.25c0 1.278-.954 2.575-2.44 2.734l.146.508.065.22c.203.701.412 1.455.476 2.226.142 1.707-.4 3.03-1.487 3.898C11.714 14.671 10.27 15 8.75 15h-6a.75.75 0 0 1 0-1.5h1.376a4.5 4.5 0 0 1-.563-1.191 3.84 3.84 0 0 1-.05-2.063 4.65 4.65 0 0 1-2.025-.293.75.75 0 0 1 .525-1.406c1.357.507 2.376-.006 2.698-.318l.009-.01a.747.747 0 0 1 1.06 0 .75.75 0 0 1-.012 1.074c-.912.92-.992 1.835-.768 2.586.221.74.745 1.337 1.196 1.621H8.75c1.343 0 2.398-.296 3.074-.836.635-.507 1.036-1.31.928-2.602-.05-.603-.216-1.224-.422-1.93l-.064-.221c-.12-.407-.246-.84-.353-1.29a2.4 2.4 0 0 1-.507-.441 3.1 3.1 0 0 1-.633-1.248.75.75 0 0 1 1.455-.364c.046.185.144.436.31.627.146.168.353.305.712.305.738 0 1.25-.615 1.25-1.25 0-1.47-.95-2.315-2.123-2.51-1.172-.196-2.227.387-2.706 1.345-.46.92-.27 1.774.019 3.062l.042.19.01.05c.348.443.666.949.94 1.553a.75.75 0 1 1-1.365.62c-.553-1.217-1.32-1.94-2.3-2.768L6.7 5.527c-.814-.68-1.75-1.462-2.692-2.619a3.7 3.7 0 0 0-1.023.88c-.406.495-.663 1.036-.722 1.508.116.122.306.21.591.239.388.038.797-.06 1.032-.19a.75.75 0 0 1 .728 1.31c-.515.287-1.23.439-1.906.373-.682-.067-1.473-.38-1.879-1.193L.75 5.677V5.5c0-.984.48-1.94 1.077-2.664.46-.559 1.05-1.055 1.673-1.353z"/></svg>');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 .018-1.042.75.75 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.76 2.76 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6 6 0 0 0-.26.16 1 1 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1 1 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.61.61 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1 1 0 0 0-.34.398M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.344 2.343za8 8 0 0 1 11.314 11.314A8.002 8.002 0 0 1 .234 10.089a8 8 0 0 1 2.11-7.746m1.06 10.253a6.5 6.5 0 1 0 9.108-9.275 6.5 6.5 0 0 0-9.108 9.275M6.03 4.97 8 6.94l1.97-1.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734L9.06 8l1.97 1.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215L8 9.06l-1.97 1.97a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L6.94 8 4.97 6.03a.75.75 0 0 1 .018-1.042.75.75 0 0 1 1.042-.018"/></svg>');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.25 1.25 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006-.004-.009-.006-.006-.008-.001q-.005 0-.009.004"/></svg>');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4.72.22a.75.75 0 0 1 1.06 0l1 .999a3.5 3.5 0 0 1 2.441 0l.999-1a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.775.776c.616.63.995 1.493.995 2.444v.327q0 .15-.025.292c.408.14.764.392 1.029.722l1.968-.787a.75.75 0 0 1 .556 1.392L13 7.258V9h2.25a.75.75 0 0 1 0 1.5H13v.5q-.002.615-.141 1.186l2.17.868a.75.75 0 0 1-.557 1.392l-2.184-.873A5 5 0 0 1 8 16a5 5 0 0 1-4.288-2.427l-2.183.873a.75.75 0 0 1-.558-1.392l2.17-.868A5 5 0 0 1 3 11v-.5H.75a.75.75 0 0 1 0-1.5H3V7.258L.971 6.446a.75.75 0 0 1 .558-1.392l1.967.787c.265-.33.62-.583 1.03-.722a1.7 1.7 0 0 1-.026-.292V4.5c0-.951.38-1.814.995-2.444L4.72 1.28a.75.75 0 0 1 0-1.06m.53 6.28a.75.75 0 0 0-.75.75V11a3.5 3.5 0 1 0 7 0V7.25a.75.75 0 0 0-.75-.75ZM6.173 5h3.654A.17.17 0 0 0 10 4.827V4.5a2 2 0 1 0-4 0v.327c0 .096.077.173.173.173"/></svg>');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M5 5.782V2.5h-.25a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458Zm-2.4 6.565a.75.75 0 0 0 .633 1.153h9.534a.75.75 0 0 0 .633-1.153L12.225 10.5h-8.45ZM9.5 2.5h-3V6c0 .143-.04.283-.117.403L4.73 9h6.54L9.617 6.403A.75.75 0 0 1 9.5 6Z"/></svg>');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1.75 2.5h10.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5m4 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5m0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5M2.5 7.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 1.5 0"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans:300,300i,400,400i,700,700i%7CRed+Hat+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Merriweather Sans";--md-code-font:"Red Hat Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 32c0 113.6-84.6 207.5-194.2 222-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0h32c17.7 0 32 14.3 32 32M0 96c0-17.7 14.3-32 32-32h32c123.7 0 224 100.3 224 224v192c0 17.7-14.3 32-32 32s-32-14.3-32-32V320C100.3 320 0 219.7 0 96"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  CryptoPredict
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../project/" class="md-tabs__link">
+        
+  
+    
+  
+  Project
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../modeling/" class="md-tabs__link">
+        
+  
+    
+  
+  Modeling
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../results/" class="md-tabs__link">
+        
+  
+    
+  
+  Modelling results and Discussion
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../monitoring/" class="md-tabs__link">
+        
+  
+    
+  
+  Monitoring and Alerting Services
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../airflow/" class="md-tabs__link">
+          
+  
+  Tools...
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../model-ltsm/" class="md-tabs__link">
+          
+  
+  Model...
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 32c0 113.6-84.6 207.5-194.2 222-7.1-53.4-30.6-101.6-65.3-139.3C290.8 46.3 364 0 448 0h32c17.7 0 32 14.3 32 32M0 96c0-17.7 14.3-32 32-32h32c123.7 0 224 100.3 224 224v192c0 17.7-14.3 32-32 32s-32-14.3-32-32V320C100.3 320 0 219.7 0 96"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CryptoPredict
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Project
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Capability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Collection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Processing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Training
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Training">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prediction-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prediction Generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Interface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scalability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scalability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Maintenance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture layers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#business-user-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Business (user process)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applicative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applicative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streamlit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Streamlit
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Streamlit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      API management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prediction-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prediction API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gateway-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gateway API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gateway API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoints_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modeling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modeling
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modelling results and Discussion
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring and Alerting Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tools...
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Tools...
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../airflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Airflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fastapi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FastAPI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mlflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MLFlow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prometheus/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prometheus
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grafana/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grafana
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamlit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Streamlit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Model...
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Model...
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-ltsm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LTSM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Capability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Collection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Processing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Training
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model Training">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prediction-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prediction Generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Interface
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scalability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scalability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-and-maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring and Maintenance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sub-capabilities_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sub-capabilities
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture layers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#business-user-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Business (user process)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applicative" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applicative
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streamlit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Streamlit
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Streamlit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      API management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prediction-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prediction API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prediction API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gateway-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gateway API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gateway API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoints_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
+<h2 id="capability">Capability<a class="headerlink" href="#capability" title="Permanent link">&para;</a></h2>
+<p>This diagram provides a structured view of the capabilities and sub-capabilities involved in a cryptocurrency prediction application, or at least how we imagine it !</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>All sub capabilities surrounded by red line are note implemented in ths Proof Of Concept (POC).</p>
+</details>
+<p><img alt="Infrastructure - Overview" src="../images/archview-capability.png" /></p>
+<h3 id="data-collection">Data Collection<a class="headerlink" href="#data-collection" title="Permanent link">&para;</a></h3>
+<p>This capability involves gathering data from various sources, which is essential for making accurate predictions.</p>
+<h4 id="sub-capabilities">Sub-capabilities<a class="headerlink" href="#sub-capabilities" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Real-time Market Data Retrieval:</strong></em> Continuously collecting current price, volume, and other relevant market data from exchanges and financial platforms.</p>
+</li>
+<li>
+<p><em><strong>Historical Data Access:</strong></em> Accessing past market data to identify patterns and trends over time.</p>
+</li>
+<li>
+<p><em><strong>API Integration for Data Sources:</strong></em> Connecting with external APIs to fetch data from different exchanges, news platforms, social media, and more.</p>
+</li>
+</ul>
+<h3 id="data-processing">Data Processing<a class="headerlink" href="#data-processing" title="Permanent link">&para;</a></h3>
+<p>Once data is collected, it needs to be processed to make it suitable for analysis and model training.</p>
+<h4 id="sub-capabilities_1">Sub-capabilities<a class="headerlink" href="#sub-capabilities_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Data Cleaning and Normalization:</strong></em> Removing noise and inconsistencies in the data, and normalizing it to a standard format.</p>
+</li>
+<li>
+<p><em><strong>Feature Extraction and Selection:</strong></em> Identifying and selecting the most relevant features that will be used in model training.</p>
+</li>
+<li>
+<p><em><strong>Data Transformation and Aggregation:</strong></em> Transforming data into a structured format and aggregating it to make it suitable for analysis.</p>
+</li>
+</ul>
+<h3 id="model-training">Model Training<a class="headerlink" href="#model-training" title="Permanent link">&para;</a></h3>
+<p>Training predictive models using the processed data to forecast future cryptocurrency prices and trends.</p>
+<h4 id="sub-capabilities_2">Sub-capabilities<a class="headerlink" href="#sub-capabilities_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Selection of Machine Learning Algorithms:</strong></em> Choosing the appropriate machine learning algorithms for prediction (e.g., LSTM, Random Forest, SVM).</p>
+</li>
+<li>
+<p><em><strong>Training and Validation of Models:</strong></em> Training the models using historical data and validating their performance using a validation set.</p>
+</li>
+<li>
+<p>_<strong>Hyperparameter Tuning:</strong> Adjusting the model parameters to optimize performance.</p>
+</li>
+</ul>
+<h3 id="prediction-generation">Prediction Generation<a class="headerlink" href="#prediction-generation" title="Permanent link">&para;</a></h3>
+<p>Generating predictions based on the trained models.</p>
+<h4 id="sub-capabilities_3">Sub-capabilities:<a class="headerlink" href="#sub-capabilities_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Real-time Prediction Generation:</strong></em> Producing predictions in real-time based on current market data.</p>
+</li>
+<li>
+<p><em><strong>Batch Prediction Processing:</strong></em> Running predictions in batches for historical analysis or reporting.</p>
+</li>
+<li>
+<p><em><strong>Integration with Prediction APIs:</strong></em> Exposing prediction functionalities through APIs for other applications to consume.</p>
+</li>
+</ul>
+<h3 id="user-interface">User Interface<a class="headerlink" href="#user-interface" title="Permanent link">&para;</a></h3>
+<p>Providing an interface for users to interact with the application, view predictions, and customize their experience.</p>
+<h4 id="sub-capabilities_4">Sub-capabilities<a class="headerlink" href="#sub-capabilities_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Dashboard for Visualizing Predictions:</strong></em> Creating interactive dashboards to display predictions, trends, and insights.</p>
+</li>
+<li>
+<p><em><strong>Alerts and Notifications:</strong></em> Sending real-time alerts and notifications for significant market movements.</p>
+</li>
+<li>
+<p><em><strong>User Customization Options:</strong></em> Allowing users to customize their dashboards and set preferences for alerts and notifications.</p>
+</li>
+</ul>
+<h3 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
+<p>Ensuring that the application and data are secure from unauthorized access and breaches.</p>
+<h4 id="sub-capabilities_5">Sub-capabilities<a class="headerlink" href="#sub-capabilities_5" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Data Encryption and Protection:</strong></em> Encrypting data at rest and in transit to protect it from unauthorized access.</p>
+</li>
+<li>
+<p><em><strong>Secure API Access:</strong></em> Implementing security measures like API keys and authentication to secure API endpoints.</p>
+</li>
+<li>
+<p><em><strong>Anomaly Detection and Response:</strong></em> Detecting and responding to anomalies in data access and usage.</p>
+</li>
+</ul>
+<h3 id="scalability">Scalability<a class="headerlink" href="#scalability" title="Permanent link">&para;</a></h3>
+<p>Ensuring that the application can handle increased loads and grow as needed.</p>
+<h4 id="sub-capabilities_6">Sub-capabilities<a class="headerlink" href="#sub-capabilities_6" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Load Balancing and Resource Management:</strong></em> Distributing workload across multiple servers to ensure optimal performance.</p>
+</li>
+<li>
+<p><em><strong>Horizontal Scaling of Services:</strong></em> Adding more instances of services to handle increased demand.</p>
+</li>
+<li>
+<p><em><strong>Efficient Data Storage Solutions:</strong></em> Implementing scalable and efficient storage solutions to manage large volumes of data.</p>
+</li>
+</ul>
+<h3 id="monitoring-and-maintenance">Monitoring and Maintenance<a class="headerlink" href="#monitoring-and-maintenance" title="Permanent link">&para;</a></h3>
+<p>Regularly monitoring and maintaining the application to ensure it runs smoothly.</p>
+<h4 id="sub-capabilities_7">Sub-capabilities<a class="headerlink" href="#sub-capabilities_7" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><em><strong>Performance Monitoring:</strong></em> Continuously monitoring the performance of the application and its components.</p>
+</li>
+<li>
+<p><em><strong>Log Management and Analysis:</strong></em> Collecting and analyzing logs to identify and troubleshoot issues.</p>
+</li>
+<li>
+<p><em><strong>Regular Model Retraining and Updates:</strong></em> Regularly updating the models with new data to ensure their accuracy and relevance.</p>
+</li>
+</ul>
+<p>Our standard methodology has involved several key steps: 
+- data collection
+- data loading and preprocessing (normalization, transformation)
+- model creation
+- model training
+- model prediction and evaluation
+- model deployment. </p>
+<h2 id="architecture-layers">Architecture layers<a class="headerlink" href="#architecture-layers" title="Permanent link">&para;</a></h2>
+<h3 id="business-user-process">Business (user process)<a class="headerlink" href="#business-user-process" title="Permanent link">&para;</a></h3>
+<p>The user journey refers to the sequence of steps a user takes to interact with our application. In the context of a cryptocurrency prediction application with a FastAPI front end, the user journey can be broken down into several stages. </p>
+<p><img alt="User Journey" src="../images/Business-Process.png" /></p>
+<h3 id="applicative">Applicative<a class="headerlink" href="#applicative" title="Permanent link">&para;</a></h3>
+<p>This diagram illustrate all apps used in our application.</p>
+<p><img alt="User Journey" src="../images/Application.png" /></p>
+<h3 id="technology">Technology<a class="headerlink" href="#technology" title="Permanent link">&para;</a></h3>
+<p>When choosing infrastructure containers for a cryptocurrency prediction project, several factors come into play to ensure scalability, reliability, and efficiency. </p>
+<p>This project can be view a a POC and we did not use Orchestration with Kubernetes, we used Docker and Docker-Compose on a single VM.</p>
+<p>This schema illustrate the containerized structure of the application.</p>
+<p><img alt="Infrastructure - Overview" src="../images/archview-technology-usage.png" /></p>
+<h4 id="streamlit">Streamlit<a class="headerlink" href="#streamlit" title="Permanent link">&para;</a></h4>
+<p>Streamlit is our frontend application. It's the only service available only on the public network. It shares the public network with the gateway API which is used to access the private services securely. It's exposed on the port 8501.</p>
+<h5 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h5>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>RepoCrypto/frontend/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── Dockerfile              # Streamlit container configuration
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── app.py                  # Streamlit entry point
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── requirements.txt        # Python dependencies
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── utils/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── __init__.py
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── api_client.py      # API client functions
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   └── auth.py            # authentification functions
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└── pages/
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    ├── __init__.py
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    ├── account.py         # manage his account
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    ├── administration.py  # manage user accounts
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    ├── create_user.py     # create a new user
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    ├── data_analysis.py   # data analysis of historical data
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    ├── home.py            # home page
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    ├── model.py           # model management
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    └── predictions.py     # predictions visualization
+</span></code></pre></div>
+<p>Some pages are only accessible for admin users, such as administration.py and create_user. Other pages are accessible for all users. </p>
+<p>The frontend use the role and the token to manage the access to the pages.</p>
+<p>The only service with which the frontend communicate is the gateway API. It's throught the API that the frontend can access authentification / authorization services and backend features.</p>
+<p>In streamlit we used plotly to create the charts and display the data.</p>
+<p>Below is the scheme of Streamlit features through the API Gateway endpoints</p>
+<p><img alt="Streamlit scheme" src="../images/streamlit.png" /></p>
+<h4 id="api-management">API management<a class="headerlink" href="#api-management" title="Permanent link">&para;</a></h4>
+<p>in our project, we decided to have 2 FastAPI applications, one is only on a private network for security reasons and the other one is on both private and public networks to work as a bridge between the frontend (streamlit), the private API and other services.</p>
+<p>Please see below an illustration of our API architecture</p>
+<p><img alt="Infrastructure - Overview" src="../images/archview-technology-api.png" /></p>
+<ul>
+<li>Private API : The goal of our private API is to communicates with airflow to trigger training and prediction tasks.</li>
+</ul>
+<h5 id="prediction-api">Prediction API<a class="headerlink" href="#prediction-api" title="Permanent link">&para;</a></h5>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>PredictionAPI/
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── app/
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── __init__.py
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   ├── main.py          # FastAPI application entry point
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   ├── registry.py      # Prometheus metrics configuration
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   └── prediction/
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│       ├── __init__.py
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│       └── router.py    # Prediction endpoints and logic
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>├── Dockerfile          # Container configuration
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>├── gunicorn_conf.py   # Gunicorn server settings
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>├── start-reload.sh 
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>├── start.sh 
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>└── requirements.txt   # Python dependencies
+</span></code></pre></div>
+<p>The Dockerfile configures the containerized environment for the Prediction API. 
+* It is used by the docker-compose file to start this service. </p>
+<ul>
+<li>It exposes port 3001, uses gunicorn_conf.py to configure the gunicorn server and requirements.txt to install the dependencies. </li>
+</ul>
+<p>The dockerfile is configured to use the start-reload.sh script to start the service in development mode (enabling hot reloading) and the start.sh script to start the service in production mode.</p>
+<p>Gunicorn_conf.py configures the Gunicorn WSGI server that runs the FastAPI application. It manages the number of workers, timeout, and other settings.</p>
+<p>main.py is the entry point of the FastAPI application. It initializes the application and sets up the necessary configurations. It sets up CORS middleware, implements rate limiting, configures Prometheus metrics middleware and registers routers.</p>
+<p>As we have FastAPI running with multiple Gunicorn workers, the request is load balanced across the workers. It also meands that registry is crucial for prometheus metrics to be scraped properly. </p>
+<p>Registry.py is used to configure the prometheus metrics which are  used in the main.py and router.py files.
+Router.py defines the routes and the logic behind them.</p>
+<h6 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h6>
+<p>How requests are handled:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>graph LR
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    A[Client Request] --&gt; B[Docker Container]
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    B --&gt; C[Gunicorn]
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    C --&gt; D[FastAPI App]
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    D --&gt; E[Route Handlers]
+</span></code></pre></div></p>
+<p>we have several endpoints:</p>
+<ul>
+<li>
+<p><em><strong>GET /metrics</strong></em></p>
+<ul>
+<li>Response: Prometheus metrics in text format</li>
+<li>This endpoint provides monitoring metrics including:<ul>
+<li>prediction_api_request_count: Total requests</li>
+<li>prediction_api_request_latency_seconds: Request timing</li>
+<li>prediction_api_exception_count: Error tracking</li>
+<li>prediction_api_prediction_count: Prediction usage</li>
+<li>prediction_api_model_score: Model performance</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><em><strong>GET /predict/latest-prediction</strong></em></p>
+<ul>
+<li>Response: JSON object containing the latest prediction</li>
+<li>It uses the prediction saved in the database to avoid calling the model unnecessarily.</li>
+</ul>
+</li>
+<li>
+<p><em><strong>GET /predict/model-evaluation</strong></em></p>
+<ul>
+<li>Response: JSON object containing the model evaluation (MSE (train/test) and R² score (train/test))</li>
+<li>It uses the evaluation saved in the database to avoid calling the model unnecessarily.</li>
+</ul>
+</li>
+<li>
+<p><em><strong>GET /predict/models</strong></em></p>
+<ul>
+<li>Response: JSON object containing the list of available models</li>
+<li>It uses MLflow client to get the list of models.</li>
+</ul>
+</li>
+<li>
+<p><em><strong>GET /predict/best-model</strong></em></p>
+<ul>
+<li>Response: JSON object containing the best model</li>
+<li>It uses the best models in the database to return the best model based on the MSE.</li>
+</ul>
+</li>
+<li>
+<p><em><strong>POST /predict/train</strong></em></p>
+</li>
+<li><em><strong>POST /predict/score</strong></em></li>
+<li><em><strong>POST /predict/predict</strong></em><ul>
+<li>These endpoints are used to trigger the training, scoring and prediction tasks in airflow.</li>
+</ul>
+</li>
+</ul>
+<p>The endpoints works with:
+* PostgreSQL database
+* MLflow
+* Airflow
+* Prometheus</p>
+<h5 id="gateway-api">Gateway API<a class="headerlink" href="#gateway-api" title="Permanent link">&para;</a></h5>
+<p>The goal of our gateway API is to work as a bridge between the frontend and the private API and other services for security reasons.</p>
+<h6 id="structure_1">Structure<a class="headerlink" href="#structure_1" title="Permanent link">&para;</a></h6>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>PredictionAPI/
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── app/
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│   ├── __init__.py
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>│   ├── main.py          # FastAPI application entry point
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>│   ├── database.py      # Database configuration
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│   └── authentication/
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│       ├── __init__.py
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│       ├── security.py  # Token generation and verification functions
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>│       ├── utils.py     # Password hashing and verification functions
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>│       └── router.py    # Authentication endpoints and logic
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>│   └── crypto/
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>│       ├── __init__.py
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>│       └──  router.py    # Crypto endpoints and logic
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>│   └── prediction/
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>│       ├── __init__.py
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>│       └── router.py    # Prediction endpoints and logic
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>├── Dockerfile          # Container configuration
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>├── gunicorn_conf.py   # Gunicorn server settings
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>├── start-reload.sh 
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>├── start.sh 
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>└── requirements.txt   # Python dependencies
+</span></code></pre></div>
+<p>The architecture is quite similar to the private API but it has some differences. It includes authentication and authorization mechanisms based on user roles, passwords and tokens. These enables us to protect sensitive and critical points.</p>
+<p>The crypto folder includes the endpoints to get the list of available cryptocurrencies, add new cryptocurrencies based on what's available in Kraken (our dataprovider) delete cryptocurrencies, get current prices or historical data.
+The prediction folder just had endpoints querying the private API to get the predictions, models, trigger training, scoring and prediction tasks...</p>
+<h6 id="endpoints_1">Endpoints<a class="headerlink" href="#endpoints_1" title="Permanent link">&para;</a></h6>
+<p>The list of all endpoints:</p>
+<ul>
+<li><em><strong>POST /auth/signup</strong></em> : Record new user</li>
+<li><em><strong>POST /auth/login (not protected)</strong></em> : User loggin</li>
+<li><em><strong>GET /auth/users/me</strong></em> : Modify user information profil by user</li>
+<li><em><strong>PUT /auth/user/me</strong></em> : Check user account for user</li>
+<li><em><strong>DELETE /auth/users/{username}</strong></em> : Delete users by admin</li>
+<li><em><strong>PUT /auth/users/{username}/role</strong></em> : Modify user role by admin</li>
+<li><em><strong>GET /auth/users</strong></em> : Get users list by admin</li>
+<li><em><strong>GET /crypto/assets</strong></em> : Get all assets in db</li>
+<li><em><strong>POST /crypto/assets</strong></em> : Add new asset</li>
+<li><em><strong>GET /crypto/asset_history/{asset}</strong></em> : Get asset OHLC value history to date </li>
+<li><em><strong>DELETE /crypto/assets/{asset_id}</strong></em> : Get asset OHLC value history to date </li>
+<li><em><strong>GET /crypto/kraken_assets</strong></em> : Get list of assets from provider</li>
+<li><em><strong>GET /crypto/asset_latest/{asset}</strong></em> : Get last OHCL value from Db</li>
+<li><em><strong>GET /prediction/latest-prediction</strong></em> : Get last prediction for asset (BTC)</li>
+<li><em><strong>GET /prediction/model-evaluation</strong></em> : Get last model evalution for asset (BTC)</li>
+<li><em><strong>GET /prediction/best-model</strong></em> : Get prediction of best model for asset (BTC)</li>
+<li><em><strong>GET /prediction/models</strong></em> : List all model experiments</li>
+<li><em><strong>POST /prediction/train</strong></em> : Trigger Airflow DAG training</li>
+<li><em><strong>POST /prediction/score</strong></em> : Trigger Airflow DAG scoring</li>
+<li><em><strong>POST /prediction/predict</strong></em> : Trigger Airflow DAG prediction</li>
+</ul>
+<p>The endpoints works with:
+* Private API
+* PostgreSQL database
+* Airflow</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../project/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Project">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Project
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../modeling/" class="md-footer__link md-footer__link--next" aria-label="Next: Modeling">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Modeling
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 CryptoMen ;-)
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.footer", "navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
