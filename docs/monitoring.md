@@ -12,6 +12,7 @@ Prometheus is connected to services (Prediction APIs, Airflow, node-explorer, Al
 It is configured using the prometheus.yml file, which is set up to scrape logs from those different services
 
 Classical scheme is the following :
+
 ![Schema classique du fonctionnement de Prometheus](images/prometheus.png)
 
 We have use another classical approah using **Stats_exporter**. The StatsD exporter is a drop-in replacement for StatsD, used to collect various metrics and convert them to Prometheus format automaticly via configured mapping rules.
@@ -21,10 +22,7 @@ For example, Airflow emits metrics in the StatsD format automatically if certain
 
 New schemes are the following :
 
-+----------+                         +-------------------+                        +--------------+
-|  StatsD  |---(UDP/TCP repeater)--->|  statsd_exporter  |<---(scrape /metrics)---|  Prometheus  |
-+----------+                         +-------------------+                        +--------------+
-
+![Statsd exporter](images/statsd_exporter.png)
 
 ### Node-exporter:
 
