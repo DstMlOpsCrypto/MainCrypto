@@ -54,7 +54,6 @@ tracking_uri = "http://mlflow-server:5000"
 mlflow.set_tracking_uri(tracking_uri)
 
 neurons = 350
-#neurons = 32
 
 # MLflow Tracking client
 client = MlflowClient(tracking_uri= tracking_uri)
@@ -96,11 +95,12 @@ def pipeline_train():
         print("MLflow run started")
         
         for pas_temps in [14]:  # paramater finally fixed to 14       
-                for batch_size in [2]: # 2,5,10,15,20,30,40]:#15,20]
+                for batch_size in [2,5,10,20]: # 2,5,10,15,20,30,40]:#15,20]
                    
                     # Initializing run                
                     with mlflow.start_run(run_name=run_name, experiment_id=experiment_id, nested=True):
-
+                        
+                        #
                         print(f"Début de l'entrainement du modèle suivant : pas_temps = {pas_temps}, batch_size = {batch_size}, neurons = {neurons}, currency = {ticker}, period = {period}", end= "\n\n")
                         
                         #Building dataset for a pas_temps value
@@ -108,8 +108,8 @@ def pipeline_train():
                         print("Construction du Dataset terminée")      
                                         
                         # Model instanciation
-                        #model = LSTMModel(neurons=350)
-                        model = LSTMModel(neurons=32)
+                        model = LSTMModel(neurons=neurons)
+                       
                         # Training
                         history, model, duration_seconds = train(X_train, y_train, X_test, y_test, model, batch_size)
                         print(f"Entrainement du modèle {model} effectué en {duration_seconds} secondes.")
@@ -159,7 +159,7 @@ def pipeline_train():
 
             # Model instanciation
             #model = LSTMModel(neurons=350)
-            model = LSTMModel(neurons=32)
+            model = LSTMModel(neurons=neurons)
 
             # Best model Training
             history, model, duration_seconds = train(X_train, y_train, X_test, y_test, model, batch_size)
