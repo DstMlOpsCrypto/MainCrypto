@@ -10,8 +10,7 @@ bash local_docker_clean.sh
 # sudo chmod -R 777 mlflow-artifacts/
 # export AIRFLOW_UID=50000
 
-
-### Install environnement
+bash se### Launch docker compose stats-exporter, model-score-sender and p airflow-init
 docker-compose up stats-exporter model-score-sender
 
 docker-compose up airflow-init
@@ -19,6 +18,6 @@ docker-compose up airflow-init
 ### Launch docker compose
 docker-compose up -d
 
-#wait 65s for containers to get ready
+#wait 65s for all containers to get ready
 sleep 65
 docker container ls

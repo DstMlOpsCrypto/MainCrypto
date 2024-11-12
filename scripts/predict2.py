@@ -9,7 +9,6 @@ import argparse
 import sys
 import os
 
-### START:ADDED FOR API
 import psycopg2
 from datetime import datetime
 
@@ -34,9 +33,6 @@ def get_db():
         dbname=os.getenv('DB_NAME', 'cryptoDb')
     )
     return conn
-### END:ADDED FOR API
-
-
 
 #PATH
 # Récupérer le chemin du répertoire courant
@@ -88,10 +84,9 @@ asset = args.asset
 period='1d'
 pas_temps=14
 
-# Mise en place des nouveaux arguments
-# bitcoin = args.bitcoin
-# currency = args.currency
-# ticker = bitcoin + currency
+
+
+
 
 def pipeline_predict():
     """
@@ -109,9 +104,12 @@ def pipeline_predict():
         # Data loading 
         df = load_data_2(table='ohlc', asset=asset)
         print("Chargement des données KRAKEN effectué")
-        # Data Normalization
-        df_array, df.index, scaler = normalize_data2(df= df, period=period)
-        print("Normalisation des données effectuée")
+   
+        # remove useless columns
+        df.drop(columns= ['asset','dtutc','open','high','low','volume','trades'], axis=1, inplace =True)
+
+        # tf np.array
+        df_array = np.array(df, dtype=np.float64)
       
     except Exception as e:
         print(f"Error loading data: {e}") 
@@ -126,33 +124,19 @@ def pipeline_predict():
         print(e)
         print ("Le chargement des données de test a échoué")
     
-    #modif old way
-    #df_array = load_transform_data(ticker=ticker, period=period)
-
     #load best_model
     best_model = load_best_model(experiment_id=experiment_id,model_name =model_name, model_version = model_version, tracking_uri = tracking_uri)
         
     #prediction
     test_predict = best_model.predict(X_test)
     
-    #scaling
-    test_predict = test_predict/scaler.scale_[0]
-    X_test = X_test/scaler.scale_[0]    
-
-    print("test_predict :", test_predict)
-    print("test_predict shape", test_predict.shape)
-
-    prediction = int(X_test[-1, 0].item())
-    
-    print(f"La valeur du Bitcoin était de {int(X_test[-1, 0].item())} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction} {ticker} pour aujourd'hui")
-
-    ### START:ADDED FOR API
     prediction_value = float(test_predict[-1].item())
     prediction_date = datetime.now()
 
+    print(f"La valeur du Bitcoin était de {int(X_test[-1, 0].item())} {ticker} hier à la fermeture. Le modèle prédit une valeur de {prediction_value} {ticker} pour {prediction_date}")
+
     # Save the prediction to the database
     save_prediction_to_db(prediction_date, prediction_value)
-    ### END:ADDED FOR API
 
     return {"prediction": prediction}
 
