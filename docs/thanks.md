@@ -8,13 +8,6 @@ Your expertise and passion have not only imparted knowledge but also inspired us
 
 Your invaluable insights have made a significant impact on our learning experience. We are incredibly grateful for the time and energy you have devoted to our development.
 
-### Special Mentions
-
-- **Professor [Name]**: For your detailed lectures on data engineering that laid a strong foundation for our understanding.
-- **Speaker [Name]**: For your engaging workshops that made complex concepts more accessible and enjoyable.
-- **Professor [Name]**: For your guidance on machine learning algorithms and practical applications.
-- **Speaker [Name]**: For your inspiring talks on the latest trends and innovations in the field.
-
 ## Dev team members
 
 ### [Frederic]
@@ -23,10 +16,10 @@ Your invaluable insights have made a significant impact on our learning experien
 
 ### [Tristan]
 
-- **Topics**: API, Frontend.
+- **Topics**: API, Frontend
 
 ### [Yann]
-- **Topics**: Devops
+- **Topics**: Devops, Airflow, Database, Documentation
 
 
 ## Conclusion

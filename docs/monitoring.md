@@ -39,6 +39,8 @@ Grafana allow to create dashboards and alerts that can act on data from any of o
 It also contain its own Alertmanager system.
 Service is available on browser port 30020.
 
+
+
 #### Dashboard
 
 It allows different metrics to be displayed as dashboards, making it easier to understand and analyze data.
@@ -80,6 +82,7 @@ Alerting system have be done through Grafana Alertmanager, through configuration
 
 ### Structure
 
+```text
 Main Repo/
 ├── prom/
 │   ├── __init__.py│   
@@ -99,5 +102,5 @@ Main Repo/
 │   ├── statsd/
 │   │   ├── first_model_score.py.yml  # Script to send a first score to stasd and initiate alerting
 │   │   ├── stats_mapping.yml  # configration file to map metrics between statsd and other services like Airflow
-
+```
 
